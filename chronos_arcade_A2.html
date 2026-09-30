@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Chronos Arcade · Time Traveler Challenge (A2)</title>
+<style>
+:root {
+  --bg: #0b0f19;
+  --panel: #161f30;
+  --accent-cyan: #00f0ff;
+  --accent-gold: #ffbe0b;
+  --accent-orange: #ff5400;
+  --led-green: #00ff66;
+  --led-red: #ff3344;
+  --text: #e2e8f0;
+  --muted: #8892b0;
+  --border: #24324d;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  padding: 16px 12px 60px;
+}
+
+.wrap { max-width: 660px; margin: 0 auto; }
+
+/* HEADER LEVEL BADGE */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.level-tag {
+  background: rgba(0, 240, 255, 0.15);
+  color: var(--accent-cyan);
+  border: 1px solid var(--accent-cyan);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+/* TIME CIRCUITS DASHBOARD */
+.dashboard {
+  background: #0f1420;
+  border: 2px solid #334155;
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 0 25px rgba(0, 240, 255, 0.12);
+}
+
+.circuit-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  background: #05070c;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #1e293b;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.digit-label {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  margin-bottom: 2px;
+}
+.digit-val {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1.15rem;
+  font-weight: 900;
+}
+.dest-time { color: var(--led-red); }
+.pres-time { color: var(--led-green); }
+.last-time { color: var(--accent-gold); }
+
+/* ENERGY & FLUX CAPACITOR BAR */
+.flux-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.88rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.meter-wrap {
+  background: #1e293b;
+  height: 14px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #334155;
+}
+.meter-fill {
+  background: linear-gradient(90deg, #ffbe0b, #00f0ff);
+  height: 100%;
+  width: 0%;
+  transition: width 0.4s ease;
+  box-shadow: 0 0 10px var(--accent-cyan);
+}
+
+/* CARDS DE MISIÓN */
+.card {
+  background: var(--panel);
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  margin-bottom: 16px;
+}
+
+.badge {
+  display: inline-block;
+  background: rgba(0, 240, 255, 0.12);
+  color: var(--accent-cyan);
+  border: 1px solid var(--accent-cyan);
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+
+.title { font-size: 1.05rem; font-weight: 700; margin-bottom: 12px; }
+
+.q-box {
+  background: #0d121d;
+  border: 1px solid #1f2a40;
+  padding: 16px;
+  border-radius: 12px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 16px;
+  line-height: 1.45;
+}
+
+/* BOTONES CON ATAJOS */
+.btn-grid { display: flex; flex-direction: column; gap: 10px; }
+.time-btn {
+  background: #1a2438;
+  color: var(--text);
+  border: 1.5px solid #2d3e5e;
+  padding: 14px 16px;
+  border-radius: 12px;
+  font-size: 0.98rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.18s ease;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.time-btn:hover {
+  border-color: var(--accent-cyan);
+  background: rgba(0, 240, 255, 0.08);
+  transform: translateY(-1px);
+}
+.time-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.kbd-badge {
+  background: #0b0f19;
+  border: 1px solid #3b82f6;
+  color: var(--accent-cyan);
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-family: monospace;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+/* FEEDBACK */
+.fb {
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+.fb.ok { background: rgba(0, 255, 102, 0.1); border: 1px solid var(--led-green); color: var(--led-green); }
+.fb.bad { background: rgba(255, 84, 0, 0.12); border: 1px solid var(--accent-orange); color: #ffaa80; }
+
+.next-wrap {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+.next-btn {
+  background: linear-gradient(135deg, var(--accent-cyan), #0077ff);
+  color: #05070c;
+  border: none;
+  font-size: 0.95rem;
+  font-weight: 800;
+  padding: 12px 22px;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0, 240, 255, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* MODAL VICTORIA */
+.modal-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(5, 7, 12, 0.92);
+  display: flex; align-items: center; justify-content: center;
+  padding: 16px; z-index: 1000;
+}
+.modal-box {
+  background: var(--panel);
+  border: 2px solid var(--accent-cyan);
+  border-radius: 20px;
+  padding: 28px 20px;
+  max-width: 440px;
+  text-align: center;
+  box-shadow: 0 0 35px rgba(0, 240, 255, 0.4);
+}
+.badge-wip {
+  display: inline-block;
+  background: rgba(255, 190, 11, 0.15);
+  color: var(--accent-gold);
+  border: 1px dashed var(--accent-gold);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-top: 14px;
+}
+</style>
+</head>
+<body>
+
+<div id="winModal" class="modal-overlay" style="display:none;">
+  <div class="modal-box">
+    <div style="font-size:3.2rem;margin-bottom:10px;">⚡ 🚗 💨</div>
+    <h2 style="color:var(--accent-cyan);margin-bottom:8px;">¡88 MPH ALCANZADAS!</h2>
+    <p style="font-size:1.05rem;font-weight:700;color:#fff;">¡Salto Temporal al Futuro Completado!</p>
+    <p style="color:var(--muted);font-size:0.9rem;margin-top:10px;line-height:1.5;">
+      El Condensador de Flujos ha absorbido exitosamente los <b>200 GW de energía gramatical</b>. Dominaste las formas del futuro en inglés.
+    </p>
+
+    <div class="badge-wip">
+      🛠️ MÓDULO VIAJE AL PASADO: EN CALIBRACIÓN
+    </div>
+    <p style="color:#94a3b8;font-size:0.82rem;margin-top:10px;">
+      El circuito hacia el Pasado (1955 y 1985) aún está en fase de reparación en el taller del Doc Brown. Próximamente se desbloqueará la máquina para explorar las estructuras del pasado.
+    </p>
+
+    <button class="next-btn" style="width:100%;margin-top:20px;justify-content:center;" onclick="resetJourney()">Reintentar Viaje al Futuro (Enter)</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="top-bar">
+    <span class="level-tag">🎯 LEVEL: A2 (Elementary / Pre-Intermediate)</span>
+    <span style="font-size:0.8rem;color:var(--muted);font-weight:600;">⌨️ Teclas 1, 2, 3 + Enter</span>
+  </div>
+
+  <div class="dashboard">
+    <div class="circuit-row">
+      <div>
+        <div class="digit-label dest-time">DESTINATION TIME</div>
+        <div class="digit-val dest-time">OCT 21 2045</div>
+      </div>
+      <div>
+        <div class="digit-label pres-time">PRESENT TIME</div>
+        <div class="digit-val pres-time" id="clockNow">ONLINE</div>
+      </div>
+      <div>
+        <div class="digit-label last-time">ENERGY STORED</div>
+        <div class="digit-val last-time"><span id="energyNum">0</span> GW</div>
+      </div>
+    </div>
+
+    <div class="flux-box">
+      <span style="color:var(--accent-cyan);">⚡ FLUX CAPACITOR STATUS</span>
+      <span style="color:var(--muted);"><span id="energyPercent">0</span> / 200 GW</span>
+    </div>
+    <div class="meter-wrap">
+      <div class="meter-fill" id="meterFill"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="badge" id="cBadge">NIVEL 1</span>
+    <h3 class="title" id="cTitle">Cargando situación temporal...</h3>
+    <div class="q-box" id="cQuestion">...</div>
+    <div class="btn-grid" id="cButtons"></div>
+    <div id="cFeedback"></div>
+    <div class="next-wrap" id="cNext" style="display:none;">
+      <button class="next-btn" id="btnNextRound" onclick="loadNextRound()">
+        Siguiente Coordenada <span class="kbd-badge" style="background:rgba(0,0,0,0.3);border-color:#fff;color:#fff;">↵ Enter</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ==========================================
+// 1. CONEXIÓN APPS SCRIPT
+// ==========================================
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby5R48KuWd2BG9aoXFurbujbdSfGVf8ZpRAQtxMAyqYZeHwaMZxYSkCtYojOuYtu5ud/exec";
+
+function logToSheet(payload) {
+  if (!SCRIPT_URL) return;
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  }).catch(e => console.error("Error al registrar:", e));
+}
+
+// ==========================================
+// 2. BANCO DE 30 CONSIGNAS (SIN PISTAS DIRECTAS EN LAS OPCIONES)
+// ==========================================
+const missionDeck = [
+  // --- TUS 8 PREGUNTAS ORIGINALES DE BASE ---
+  {
+    badge: "HILL VALLEY WEATHER · PISTAS SENSORIALES",
+    title: "¿Evidencia Inmediata o Conjetura Mental?",
+    q: "Look at those dark, thick storm clouds covering Hill Valley right now!",
+    options: ["⚡ Evidencia sensorial presente", "💭 Conjetura / Creencia mental"],
+    correct: "⚡ Evidencia sensorial presente",
+    why: "Ves las nubes de tormenta en el cielo ahora mismo: es evidencia física presente (exige 'be going to')."
+  },
+  {
+    badge: "DELOREAN MOTOR · PREDICCIÓN CON CAUSA FÍSICA",
+    title: "Elige la predicción correcta para el motor",
+    q: "The engine is overheating and smoke is pouring out! It _______ (stall)!",
+    options: ["is going to stall", "will stall"],
+    correct: "is going to stall",
+    why: "El humo y la temperatura son evidencia inminente que justifica 'is going to'."
+  },
+  {
+    badge: "FLUX CAPACITOR · DECISIÓN INSTANTÁNEA",
+    title: "Reacción y ayuda en el momento exacto",
+    q: 'Doc: "Marty, the flux capacitor needs a new fuse right now!" — Marty: "Hold on, I _______ (get) it from the trunk!"',
+    options: ["will get", "am going to get"],
+    correct: "will get",
+    why: "Decisión instantánea tomada en el segundo de la conversación (Will)."
+  },
+  {
+    badge: "PLUTONIUM FUEL · PLAN PREMEDITADO",
+    title: "¿Plan premeditado o Impulso?",
+    q: 'Marty: "Why did you buy all those plutonium containers yesterday?" — Doc: "Because I _______ (power) the time machine tonight."',
+    options: ["am going to power", "will power"],
+    correct: "am going to power",
+    why: "Haber comprado los suministros el día anterior demuestra un plan previo."
+  },
+  {
+    badge: "EXOPLANETAS · DETECCIÓN DE PARADOJA",
+    title: "¿La oración respeta las normas de futuro?",
+    q: '"In the year 2085, scientists are going to discover oceans on Kepler-452b."',
+    options: ["✗ Paradoja / Error de uso", "✓ Estructura temporal correcta"],
+    correct: "✗ Paradoja / Error de uso",
+    why: "Es una conjetura sobre un año lejano sin evidencia hoy. Debe ser: 'will discover'."
+  },
+  {
+    badge: "TWIN PINES · HORARIO OFICIAL",
+    title: "Cronograma de la estación de trenes",
+    q: "Train schedule to Twin Pines: The departure _______ (take place) at exactly 08:00 AM.",
+    options: ["takes place", "will take place", "is taking place"],
+    correct: "takes place",
+    why: "Horarios fijos y tablas oficiales de transporte se expresan en Present Simple."
+  },
+  {
+    badge: "CLOCK TOWER · COMPROMISO AGENDADO",
+    title: "Cita fijada con Jennifer",
+    q: "Confirmed in the notebook: I _______ (meet) Jennifer at the clock tower at 5:00 PM.",
+    options: ["am meeting", "meet", "will meet"],
+    correct: "am meeting",
+    why: "Compromiso coordinado con otra persona (Arrangement) = Present Continuous."
+  },
+  {
+    badge: "FALTA DE PLUTONIO · MODAL MIGHT",
+    title: "Posibilidad no garantizada (50%)",
+    q: "We haven't decided yet and plutonium is scarce. We _______ (travel) on Friday, but we are not sure.",
+    options: ["might travel", "are definitely going to travel", "will certainly travel"],
+    correct: "might travel",
+    why: "'Not sure' indica duda o posibilidad sin certeza (50%); requiere 'might'."
+  },
+
+  // --- SECCIÓN A COMPLEMENTARIA: PISTAS VISUALES VS CONJETURA MENTAL ---
+  {
+    badge: "DELOREAN DASHBOARD · PISTAS FÍSICAS",
+    title: "¿Evidencia que ves ahora o solo una idea?",
+    q: "Look at the car! The digital screen says 87 MPH and blue sparks are flying!",
+    options: ["⚡ Evidencia sensorial presente", "💭 Conjetura / Creencia mental"],
+    correct: "⚡ Evidencia sensorial presente",
+    why: "Ves la velocidad y las chispas con tus propios ojos ahora mismo (requiere 'be going to')."
+  },
+  {
+    badge: "HOVERBOARDS · OPINIÓN SOBRE EL FUTURO",
+    title: "¿Evidencia que ves ahora o solo una idea?",
+    q: "In my opinion, flying hoverboards will be very popular in the year 2050.",
+    options: ["⚡ Evidencia sensorial presente", "💭 Conjetura / Creencia mental"],
+    correct: "💭 Conjetura / Creencia mental",
+    why: "'In my opinion' expresa una idea personal sobre el futuro lejano (requiere 'will')."
+  },
+  {
+    badge: "JURASSIC PARK · PISTAS FÍSICAS",
+    title: "¿Evidencia que ves ahora o solo una idea?",
+    q: "Look at the glass of water inside the car! The water is shaking rhythmically!",
+    options: ["⚡ Evidencia sensorial presente", "💭 Conjetura / Creencia mental"],
+    correct: "⚡ Evidencia sensorial presente",
+    why: "Ves las ondas en el agua por las pisadas del dinosaurio: evidencia física presente."
+  },
+  {
+    badge: "ROBOTS SCI-FI · OPINIONES",
+    title: "¿Evidencia que ves ahora o solo una idea?",
+    q: "I believe friendly robots will explore deep caves on the Moon one day.",
+    options: ["⚡ Evidencia sensorial presente", "💭 Conjetura / Creencia mental"],
+    correct: "💭 Conjetura / Creencia mental",
+    why: "'I believe' y 'one day' indican una creencia o deseo mental a futuro (requiere 'will')."
+  },
+  {
+    badge: "NAVE ESPACIAL · ALARMA SONORA",
+    title: "¿Evidencia que ves ahora o solo una idea?",
+    q: "Listen to the spaceship! A loud emergency siren is sounding right now!",
+    options: ["⚡ Evidencia sensorial presente", "💭 Conjetura / Creencia mental"],
+    correct: "⚡ Evidencia sensorial presente",
+    why: "La sirena que suena en este momento es una percepción física inmediata."
+  },
+  {
+    badge: "VIDA EN MARTE · OPINIONES",
+    title: "¿Evidencia que ves ahora o solo una idea?",
+    q: "Doc thinks that astronauts will build a permanent science lab on Mars.",
+    options: ["⚡ Evidencia sensorial presente", "💭 Conjetura / Creencia mental"],
+    correct: "💭 Conjetura / Creencia mental",
+    why: "'Doc thinks' indica su opinión personal sobre el futuro lejano (requiere 'will')."
+  },
+
+  // --- SECCIÓN B COMPLEMENTARIA: PREDICCIONES (WILL VS BE GOING TO) ---
+  {
+    badge: "MEDIDOR DE PLUTONIO · EVIDENCIA VISIBLE",
+    title: "Elige la predicción correcta para la máquina",
+    q: "Be careful! The plutonium gauge is flashing on EMPTY! The machine _______ (stop)!",
+    options: ["is going to stop", "will stop"],
+    correct: "is going to stop",
+    why: "El indicador parpadeando en vacío es evidencia física inminente (Be Going To)."
+  },
+  {
+    badge: "TERMINATOR · ESPERANZA Y FE",
+    title: "Expresar confianza en el porvenir",
+    q: "John Connor: 'I believe humanity _______ (win) the battle against the machines.'",
+    options: ["will win", "is going to win"],
+    correct: "will win",
+    why: "'I believe' expresa convicción y esperanza personal en el futuro (Will)."
+  },
+  {
+    badge: "TORMENTA DE IONES · RADAR VISIBLE",
+    title: "Detección visual de tormenta espacial",
+    q: "Look at the radar screen! That fast asteroid _______ (hit) the satellite!",
+    options: ["is going to hit", "will hit"],
+    correct: "is going to hit",
+    why: "Ves la trayectoria del asteroide en la pantalla del radar en este momento."
+  },
+  {
+    badge: "PREMIOS DE CINE · OPINIÓN",
+    title: "Pregunta sobre expectativas de estreno",
+    q: "Do you think the new science fiction movie _______ (win) an award this year?",
+    options: ["will win", "is going to win"],
+    correct: "will win",
+    why: "Pide una opinión o corazonada sin garantías ('Do you think')."
+  },
+  {
+    badge: "TUBO DE PLASMA · PELIGRO VISIBLE",
+    title: "Falla visible en los tubos del laboratorio",
+    q: "Look at that glass tube cracking! Sparks are flying! It _______ (break)!",
+    options: ["is going to break", "will break"],
+    correct: "is going to break",
+    why: "Ves las grietas y las chispas rompiendo el tubo en este instante."
+  },
+  {
+    badge: "FÍSICA SOLAR · HECHO A LARGO PLAZO",
+    title: "El sol en el futuro lejano",
+    q: "Astronomers know that the Sun _______ (shine) for billions of years.",
+    options: ["will shine", "is going to shine"],
+    correct: "will shine",
+    why: "Hecho astronómico a miles de millones de años (Will)."
+  },
+
+  // --- SECCIÓN C COMPLEMENTARIA: DECISIONES ESPONTÁNEAS VS PLANES ---
+  {
+    badge: "PUERTA DEL LABORATORIO · REACCIÓN RÁPIDA",
+    title: "Reaccionar y ayudar en el instante",
+    q: 'Doc: "Marty, the lab door is stuck!" — Marty: "Wait Doc, I _______ (push) it!"',
+    options: ["will push", "am going to push"],
+    correct: "will push",
+    why: "Decisión instantánea tomada en el momento de la urgencia (Will)."
+  },
+  {
+    badge: "CÁMARA DE VIDEO JVC · PLAN PREVIO",
+    title: "Intención con preparativos listos",
+    q: 'Marty: "Why did you bring this big video camera?" — Doc: "Because I _______ (film) the test tonight."',
+    options: ["am going to film", "will film"],
+    correct: "am going to film",
+    why: "Haber traído la cámara comprueba que el plan ya estaba decidido de antemano."
+  },
+  {
+    badge: "INTERCOMUNICADOR · REACCIÓN INMEDIATA",
+    title: "Respuesta al llamado de la radio",
+    q: 'Doc: "The radio communicator is beeping!" — Marty: "I _______ (answer) it!"',
+    options: ["will answer", "am going to answer"],
+    correct: "will answer",
+    why: "Ofrecimiento espontáneo que surge al escuchar el sonido (Will)."
+  },
+  {
+    badge: "TELESCOPIO ESPACIAL · PLAN CONFIRMADO",
+    title: "Plan premeditado con reservas",
+    q: 'A: "Why did you reserve the telescope for tonight?" — B: "We _______ (observe) Saturn\'s rings."',
+    options: ["are going to observe", "will observe"],
+    correct: "are going to observe",
+    why: "Haber reservado el telescopio demuestra un plan previo (Be going to)."
+  },
+  {
+    badge: "CAJA DE REPUESTOS · AYUDA RÁPIDA",
+    title: "Ofrecimiento amable en el taller",
+    q: 'Doc: "Great Scott! This box of DeLorean parts is very heavy!" — Marty: "I _______ (carry) it for you!"',
+    options: ["will carry", "am going to carry"],
+    correct: "will carry",
+    why: "Ofrecimiento impulsivo y amable ante la situación (Will)."
+  },
+
+  // --- SECCIÓN D COMPLEMENTARIA: DETECCIÓN DE PARADOJAS (ERRORES COMUNES) ---
+  {
+    badge: "INSPECTOR DE ERRORES · HUMO DEL DELOREAN",
+    title: "¿La oración respeta las normas de futuro?",
+    q: '"Look at the black smoke coming from the DeLorean! I think the car will break down."',
+    options: ["✗ Paradoja / Error de uso", "✓ Estructura temporal correcta"],
+    correct: "✗ Paradoja / Error de uso",
+    why: "Si el humo ya sale, hay evidencia visible. Debe ser: 'is going to break down'."
+  },
+  {
+    badge: "INSPECTOR DE ERRORES · CIUDADES EN LA LUNA",
+    title: "¿La oración respeta las normas de futuro?",
+    q: '"In the 22nd century, robotic machines will build domes on the Moon."',
+    options: ["✓ Estructura temporal correcta", "✗ Paradoja / Error de uso"],
+    correct: "✓ Estructura temporal correcta",
+    why: "Correcta: Conjetura sobre un siglo distante sin evidencia física directa hoy (Will)."
+  },
+  {
+    badge: "INSPECTOR DE ERRORES · ALARMA DEL TALLER",
+    title: "¿La oración respeta las normas de futuro?",
+    q: '"A: The lab buzzer is ringing! — B: Relax Doc, I am going to answer it!"',
+    options: ["✗ Paradoja / Error de uso", "✓ Estructura temporal correcta"],
+    correct: "✗ Paradoja / Error de uso",
+    why: "Responder al zumbador que suena en el momento es espontáneo: debe ser 'I will answer it'."
+  },
+
+  // --- SECCIÓN E COMPLEMENTARIA: TIMETABLES, AGENDAS Y DUDA (MIGHT) ---
+  {
+    badge: "CABO CAÑAVERAL · HORARIO OFICIAL",
+    title: "Horario oficial de despegue espacial",
+    q: "Official schedule: The rocket launch _______ (take place) at 06:15 AM tomorrow.",
+    options: ["takes place", "will take place", "is taking place"],
+    correct: "takes place",
+    why: "Los cronogramas y misiones espaciales oficiales se expresan en Present Simple."
+  },
+  {
+    badge: "ESTRENO DE CINE · CARTELERA OFICIAL",
+    title: "Horario de la cartelera del cine",
+    q: "Cinema board: The premiere of Back to the Future _______ (start) at 20:00 tonight.",
+    options: ["starts", "will start", "is going to start"],
+    correct: "starts",
+    why: "Los horarios publicados en carteleras de espectáculos usan Present Simple."
+  },
+  {
+    badge: "ALMUERZO CON DOC · AGENDA CONFIRMADA",
+    title: "Compromiso agendado",
+    q: "It's on my calendar: I _______ (have) lunch with Doc Brown tomorrow at 1:00 PM.",
+    options: ["am having", "have", "will have"],
+    correct: "am having",
+    why: "Cita coordinada y agendada con otra persona = Present Continuous."
+  },
+  {
+    badge: "NUBES DE POLVO ESPACIAL · DUDA (MIGHT)",
+    title: "Posibilidad no asegurada en el espacio",
+    q: "Space radar shows dust clouds ahead. The shuttle _______ (slow) down, but ground control isn't sure.",
+    options: ["might slow", "is definitely going to slow", "will certainly slow"],
+    correct: "might slow",
+    why: "'Isn't sure' denota una probabilidad no confirmada (50%), expresada con 'might'."
+  }
+];
+
+// ==========================================
+// 3. MOTOR DEL JUEGO Y CONTROL DE ATAJOS
+// ==========================================
+let energy = 0;
+const TARGET_ENERGY = 200;
+let queue = [];
+let currentRound = null;
+let currentShuffledOpts = [];
+let roundActive = false;
+let playerNick = localStorage.getItem("english_player_nick") || "Viajero del Tiempo";
+
+function shuffle(arr) {
+  let b = arr.slice();
+  for (let i = b.length - 1; i > 0; i--) {
+    let j = Math.floor(Math.random() * (i + 1));
+    [b[i], b[j]] = [b[j], b[i]];
+  }
+  return b;
+}
+
+function initDeck() {
+  queue = shuffle(missionDeck);
+}
+
+function updateEnergy(add) {
+  energy = Math.min(TARGET_ENERGY, energy + add);
+  document.getElementById("energyNum").textContent = energy;
+  document.getElementById("energyPercent").textContent = energy;
+  const pct = (energy / TARGET_ENERGY) * 100;
+  document.getElementById("meterFill").style.width = pct + "%";
+
+  if (energy >= TARGET_ENERGY) {
+    setTimeout(showVictory, 800);
+  }
+}
+
+function loadNextRound() {
+  if (queue.length === 0) initDeck();
+  currentRound = queue.shift();
+  roundActive = true;
+
+  document.getElementById("cBadge").textContent = currentRound.badge;
+  document.getElementById("cTitle").textContent = currentRound.title;
+  document.getElementById("cQuestion").textContent = currentRound.q;
+  document.getElementById("cFeedback").innerHTML = "";
+  document.getElementById("cNext").style.display = "none";
+
+  const btnBox = document.getElementById("cButtons");
+  btnBox.innerHTML = "";
+
+  currentShuffledOpts = shuffle(currentRound.options);
+  currentShuffledOpts.forEach((opt, idx) => {
+    const keyNum = idx + 1;
+    const b = document.createElement("button");
+    b.className = "time-btn";
+    b.innerHTML = `<span class="kbd-badge">[${keyNum}]</span> <span>${opt}</span>`;
+    b.onclick = () => chooseAnswer(opt);
+    btnBox.appendChild(b);
+  });
+}
+
+function chooseAnswer(selected) {
+  if (!roundActive) return;
+  roundActive = false;
+
+  const isCorrect = (selected === currentRound.correct);
+  const fb = document.getElementById("cFeedback");
+
+  document.querySelectorAll(".time-btn").forEach(b => b.disabled = true);
+
+  if (isCorrect) {
+    fb.className = "fb ok";
+    fb.innerHTML = `⚡ <b>¡CALIBRACIÓN PRECISA! +25 Gigavatios.</b><br>${currentRound.why}`;
+    updateEnergy(25);
+    queue.push(currentRound);
+  } else {
+    fb.className = "fb bad";
+    fb.innerHTML = `⚠️ <b>Fluctuación temporal detectada.</b> La respuesta correcta era: <b>${currentRound.correct}</b>.<br>${currentRound.why}<br><i>El circuito se reinsertará pronto para fijar el conocimiento.</i>`;
+    if (queue.length > 2) queue.splice(2, 0, currentRound);
+    else queue.push(currentRound);
+  }
+
+  document.getElementById("cNext").style.display = "flex";
+
+  logToSheet({
+    player: playerNick,
+    module: "Chronos Sci-Fi Future (A2)",
+    eventType: "Calibración Temporal",
+    question: currentRound.q,
+    answer: selected,
+    isCorrect: isCorrect,
+    score: `${energy} / ${TARGET_ENERGY} GW`
+  });
+}
+
+function showVictory() {
+  roundActive = false;
+  document.getElementById("winModal").style.display = "flex";
+  logToSheet({
+    player: playerNick,
+    module: "Chronos Arcade",
+    eventType: "Misión Completada (88 MPH)",
+    question: "Salto Temporal al Futuro",
+    answer: "200 GW Alcanzados",
+    isCorrect: true,
+    score: "100%"
+  });
+}
+
+function resetJourney() {
+  document.getElementById("winModal").style.display = "none";
+  energy = 0;
+  updateEnergy(0);
+  initDeck();
+  loadNextRound();
+}
+
+// ATAJOS DE TECLADO (1, 2, 3 Y ENTER)
+window.addEventListener("keydown", function(e) {
+  if (document.getElementById("winModal").style.display === "flex") {
+    if (e.key === "Enter") {
+      resetJourney();
+    }
+    return;
+  }
+
+  if (roundActive) {
+    if (e.key === "1" && currentShuffledOpts.length >= 1) {
+      chooseAnswer(currentShuffledOpts[0]);
+    } else if (e.key === "2" && currentShuffledOpts.length >= 2) {
+      chooseAnswer(currentShuffledOpts[1]);
+    } else if (e.key === "3" && currentShuffledOpts.length >= 3) {
+      chooseAnswer(currentShuffledOpts[2]);
+    }
+  } else {
+    if (e.key === "Enter" && document.getElementById("cNext").style.display !== "none") {
+      loadNextRound();
+    }
+  }
+});
+
+// Inicialización
+initDeck();
+loadNextRound();
+</script>
+</body>
+</html>
