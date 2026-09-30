@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>English Academy · Gamified Hub</title>
+<style>
+:root {
+  --bg: #f4f7fb;
+  --card: #ffffff;
+  --text: #1e293b;
+  --muted: #64748b;
+  --primary: #2563eb;
+  --primary-light: #eff6ff;
+  --accent: #0ea5e9;
+  --ok: #10b981;
+  --ok-bg: #ecfdf5;
+  --bad: #ef4444;
+  --bad-bg: #fef2f2;
+  --border: #e2e8f0;
+  --shadow: 0 4px 14px rgba(0,0,0,0.06);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  padding-bottom: 50px;
+}
+
+.container { max-width: 680px; margin: 0 auto; padding: 16px; }
+
+/* HEADER & PLAYER STATUS */
+.app-header {
+  background: var(--card);
+  padding: 16px 20px;
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.player-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--primary-light);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+.xp-badge {
+  background: #fef08a;
+  color: #854d0e;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+/* TOP PROGRESS BAR */
+.progress-wrap {
+  background: #e2e8f0;
+  height: 8px;
+  border-radius: 8px;
+  margin-bottom: 18px;
+  overflow: hidden;
+}
+.progress-fill {
+  background: linear-gradient(90deg, #10b981, #0ea5e9);
+  height: 100%;
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+/* MODULE SELECTION */
+.selector-box {
+  background: var(--card);
+  padding: 12px 16px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+.selector-box label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+select {
+  width: 100%;
+  padding: 10px;
+  margin-top: 6px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  background: #fff;
+  color: var(--text);
+  outline: none;
+}
+
+/* TABS */
+.tab-row { display: flex; gap: 8px; margin-bottom: 16px; }
+.tab-btn {
+  flex: 1;
+  padding: 10px;
+  border-radius: 10px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-align: center;
+}
+.tab-btn.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+/* EXERCISE CARDS */
+.card {
+  background: var(--card);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  margin-bottom: 16px;
+}
+.level-badge {
+  display: inline-block;
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+.card-title { font-size: 1rem; font-weight: 700; margin-bottom: 12px; }
+.question-box {
+  background: #f8fafc;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  font-size: 1.02rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 14px;
+}
+
+/* BUTTONS */
+.btn-grid { display: flex; flex-direction: column; gap: 8px; }
+.opt-btn {
+  background: #fff;
+  border: 1.5px solid var(--border);
+  padding: 12px 16px;
+  border-radius: 12px;
+  text-align: left;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.opt-btn:hover { border-color: var(--primary); background: var(--primary-light); }
+.opt-btn:disabled { cursor: not-allowed; opacity: 0.7; }
+.next-btn {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 10px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-top: 12px;
+}
+
+/* FEEDBACK */
+.feedback-box {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 0.92rem;
+  font-weight: 500;
+  line-height: 1.45;
+}
+.feedback-box.correct { background: var(--ok-bg); color: var(--ok); }
+.feedback-box.wrong { background: var(--bad-bg); color: var(--bad); }
+
+/* MODAL REGISTRO NICKNAME */
+.modal-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(15, 23, 42, 0.6);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px; z-index: 1000;
+}
+.modal-box {
+  background: #fff;
+  padding: 24px;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 380px;
+  text-align: center;
+}
+.modal-box input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 2px solid var(--border);
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  margin: 16px 0;
+}
+.modal-box button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<div id="nickModal" class="modal-overlay" style="display:none;">
+  <div class="modal-box">
+    <div style="font-size:2.5rem;margin-bottom:8px;">🎮</div>
+    <h2>¡Bienvenido al Desafío!</h2>
+    <p style="color:var(--muted);font-size:0.88rem;margin-top:4px;">Elegí tu nombre de jugador para guardar tus trofeos y récords de sesión.</p>
+    <input type="text" id="nickInput" placeholder="Ej: SuperAlex, Falcon, Luna..." maxlength="16">
+    <button onclick="saveNick()">¡Comenzar a Jugar!</button>
+  </div>
+</div>
+
+<div class="container">
+  <header class="app-header">
+    <div class="player-pill">
+      <span>👤</span>
+      <span id="playerDisplay">Jugador</span>
+    </div>
+    <div class="xp-badge">⚡ <span id="xpDisplay">0</span> XP</div>
+  </header>
+
+  <div class="progress-wrap">
+    <div class="progress-fill" id="progressBar"></div>
+  </div>
+
+  <div class="selector-box">
+    <label>MÓDULO DE ENTRENAMIENTO</label>
+    <select id="moduleSelect" onchange="switchModule(this.value)">
+      <option value="quant">📦 There is/are & Cuantificadores</option>
+      <option value="tenses">⚡ Present Simple vs. Continuous</option>
+      <option value="travel">✈️ Travel Survival Situations</option>
+      <option value="future">🔮 Future Mastery: Will vs Going To</option>
+    </select>
+  </div>
+
+  <div class="tab-row">
+    <button class="tab-btn active" id="tab-train" onclick="setMode('train')">🧪 Práctica Inteligente</button>
+    <button class="tab-btn" id="tab-challenge" onclick="setMode('challenge')">🏆 Reto Evaluativo (10 Preguntas)</button>
+  </div>
+
+  <div id="exerciseContainer">
+    <div class="card">
+      <span class="level-badge" id="cardBadge">Nivel 1</span>
+      <h3 class="card-title" id="cardTitle">Título</h3>
+      <div class="question-box" id="questionText">Cargando consigna...</div>
+      <div class="btn-grid" id="optionsGrid"></div>
+      <div id="feedbackText"></div>
+      <div style="text-align:right;" id="nextContainer" style="display:none;">
+        <button class="next-btn" id="btnNext" onclick="nextCard()">Siguiente pregunta ❯</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ==========================================
+// 1. CONEXIÓN APPS SCRIPT
+// ==========================================
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbww6B5JXUY9e1PyH0gb6hCGA4ostY-f2P1yNS1IsmLHyP967RyFdE2UajA5FH8ukXF49w/exec";
+
+function sendDataToSheet(payload) {
+  if (!SCRIPT_URL) return;
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  }).catch(e => console.error("Error al registrar:", e));
+}
+
+// ==========================================
+// 2. PERFIL DE JUGADOR & XP
+// ==========================================
+let player = localStorage.getItem("english_player_nick") || "";
+let xp = parseInt(localStorage.getItem("english_player_xp") || "0", 10);
+
+function checkPlayer() {
+  if (!player) {
+    document.getElementById("nickModal").style.display = "flex";
+  } else {
+    document.getElementById("playerDisplay").textContent = player;
+    document.getElementById("xpDisplay").textContent = xp;
+  }
+}
+
+function saveNick() {
+  const val = document.getElementById("nickInput").value.trim();
+  if (!val) return;
+  player = val;
+  localStorage.setItem("english_player_nick", player);
+  document.getElementById("playerDisplay").textContent = player;
+  document.getElementById("nickModal").style.display = "none";
+}
+
+function addXP(points) {
+  xp += points;
+  localStorage.setItem("english_player_xp", xp);
+  document.getElementById("xpDisplay").textContent = xp;
+}
+
+function shuffle(arr) {
+  let b = arr.slice();
+  for (let i = b.length - 1; i > 0; i--) {
+    let j = Math.floor(Math.random() * (i + 1));
+    [b[i], b[j]] = [b[j], b[i]];
+  }
+  return b;
+}
+
+// ==========================================
+// 3. BANCO COMPLETO DE EJERCICIOS
+// ==========================================
+const databaseRaw = {
+  quant: [
+    { level: "Nivel 1 · Sustantivos", title: "¿Contable o Incontable?", q: '"hotel room"', options: ["Contable", "Incontable"], correct: "Contable", why: "Tiene plural directo: 'two hotel rooms'." },
+    { level: "Nivel 1 · Sustantivos", title: "¿Contable o Incontable?", q: '"luggage"', options: ["Contable", "Incontable"], correct: "Incontable", why: "Se cuantifica como masa o concepto global; no admite plural ni 'a/an'." },
+    { level: "Nivel 1 · Sustantivos", title: "¿Contable o Incontable?", q: '"traffic"', options: ["Contable", "Incontable"], correct: "Incontable", why: "'Traffic' es incontable." },
+    { level: "Nivel 1 · Sustantivos", title: "¿Contable o Incontable?", q: '"boarding pass"', options: ["Contable", "Incontable"], correct: "Contable", why: "Es un objeto físico individual contable." },
+    { level: "Nivel 1 · Sustantivos", title: "¿Contable o Incontable?", q: '"information"', options: ["Contable", "Incontable"], correct: "Incontable", why: "'Information' es un sustantivo incontable en inglés." },
+    { level: "Nivel 2 · Estructura", title: "There is vs. There are", q: "_______ two pharmacies on Maple Street.", options: ["There are", "There is"], correct: "There are", why: "El sustantivo está en plural ('two pharmacies')." },
+    { level: "Nivel 2 · Estructura", title: "There is vs. There are", q: "_______ a lot of traffic on the highway this morning.", options: ["There is", "There are"], correct: "There is", why: "'Traffic' es incontable y va en singular." },
+    { level: "Nivel 2 · Estructura", title: "There is vs. There are", q: "_______ an ATM next to the grocery store.", options: ["There is", "There are"], correct: "There is", why: "Se refiere a una sola unidad singular ('an ATM')." },
+    { level: "Nivel 2 · Estructura", title: "There is vs. There are", q: "_______ some clean towels inside the hotel bathroom.", options: ["There are", "There is"], correct: "There are", why: "'Towels' es plural contable." },
+    { level: "Nivel 2 · Estructura", title: "There is vs. There are", q: "_______ very little milk in the fridge.", options: ["There is", "There are"], correct: "There is", why: "'Milk' es incontable." },
+    { level: "Nivel 3 · Cuantificadores", title: "Elegí el cuantificador adecuado", q: "There isn't _______ traffic today; the street is almost deserted.", options: ["much", "many", "few"], correct: "much", why: "'Traffic' es incontable en oración negativa." },
+    { level: "Nivel 3 · Cuantificadores", title: "Elegí el cuantificador adecuado", q: "Are there _______ vegetarian options on the dinner menu?", options: ["many", "much", "little"], correct: "many", why: "'Options' es contable plural en pregunta." },
+    { level: "Nivel 3 · Cuantificadores", title: "Elegí el cuantificador adecuado", q: "Don't worry, there is _______ time before the flight leaves, we can relax.", options: ["a little", "little", "few"], correct: "a little", why: "'Time' es incontable con sentido positivo de que alcanza." },
+    { level: "Nivel 3 · Cuantificadores", title: "Elegí el cuantificador adecuado", q: "Hurry up! There is _______ time left and we haven't checked in yet!", options: ["little", "a little", "a few"], correct: "little", why: "'Time' es incontable con sentido de escasez (casi nada)." },
+    { level: "Nivel 3 · Cuantificadores", title: "Elegí el cuantificador adecuado", q: "Could I have _______ still water, please?", options: ["some", "any", "many"], correct: "some", why: "En pedidos amables usamos 'some' aunque sea pregunta." },
+    { level: "Nivel 3 · Cuantificadores", title: "Elegí el cuantificador adecuado", q: "It's an isolated village; there are _______ shops open on weekends.", options: ["few", "a few", "little"], correct: "few", why: "'Shops' es plural contable con sentido negativo/escaso." }
+  ],
+  tenses: [
+    { level: "Nivel 1 · Temporalidad", title: "Simple vs. Continuous", q: "Look! The referee _______ (show) a red card to the defender right now!", options: ["is showing", "shows"], correct: "is showing", why: "'Look!' y 'right now' marcan una acción en curso." },
+    { level: "Nivel 1 · Temporalidad", title: "Simple vs. Continuous", q: "Carlos usually _______ (drink) black tea in the morning before work.", options: ["drinks", "is drinking"], correct: "drinks", why: "'Usually' indica una rutina frecuente (Present Simple)." },
+    { level: "Nivel 1 · Temporalidad", title: "Simple vs. Continuous", q: "The train to London _______ (leave) at 09:15 AM every single day.", options: ["leaves", "is leaving"], correct: "leaves", why: "Horario repetido y cronograma establecido (Present Simple)." },
+    { level: "Nivel 1 · Temporalidad", title: "Simple vs. Continuous", q: "Listen! The baby _______ (cry) in the room next door!", options: ["is crying", "cries"], correct: "is crying", why: "'Listen!' marca un suceso en desarrollo en este instante." },
+    { level: "Nivel 2 · 3ra Persona & Auxiliares", title: "Regla He/She/It", q: "My father _______ (not / like) traveling by bus at night.", options: ["doesn't like", "don't like", "doesn't likes"], correct: "doesn't like", why: "He niega con doesn't + verbo en forma base." },
+    { level: "Nivel 2 · 3ra Persona & Auxiliares", title: "Regla He/She/It", q: "_______ your sister study English at university?", options: ["Does", "Do", "Is"], correct: "Does", why: "'Your sister' (She) formula preguntas con 'Does'." },
+    { level: "Nivel 2 · 3ra Persona & Auxiliares", title: "Regla He/She/It", q: "Why _______ they always arrive late for the tour?", options: ["do", "does", "are"], correct: "do", why: "El sujeto es 'they', por ende el auxiliar es 'do'." },
+    { level: "Nivel 2 · 3ra Persona & Auxiliares", title: "Regla He/She/It", q: "He _______ (watch) television every evening after dinner.", options: ["watches", "watchs", "watch"], correct: "watches", why: "Verbos terminados en -ch agregan -es en tercera persona." },
+    { level: "Nivel 3 · Inspector de Errores", title: "¿La oración es correcta o contiene error?", q: '"Does the price includes tax?"', options: ["✓ Correcta", "✗ Contiene un error"], correct: "✗ Contiene un error", why: "Error: El auxiliar 'Does' ya marca la 3ra persona; el verbo debe ser 'include' (sin -s)." },
+    { level: "Nivel 3 · Inspector de Errores", title: "¿La oración es correcta o contiene error?", q: '"We doesn\'t buy expensive souvenirs on our trips."', options: ["✓ Correcta", "✗ Contiene un error"], correct: "✗ Contiene un error", why: "Error: Con 'We' se niega usando 'don't'." },
+    { level: "Nivel 3 · Inspector de Errores", title: "¿La oración es correcta o contiene error?", q: '"Listen! Someone is knocking at the hotel door."', options: ["✓ Correcta", "✗ Contiene un error"], correct: "✓ Correcta", why: "Correcta: Acción en desarrollo captada por el oído al momento." }
+  ],
+  travel: [
+    { level: "Nivel 1 · Hotel Check-in", title: "Situaciones de Hotel", q: "Llegás a recepción y querés registrarte con tu reserva:", options: ["Hi, I have a reservation under [My Name].", "Give me my room now.", "Where is my apartment?"], correct: "Hi, I have a reservation under [My Name].", why: "Estructura formal y estándar de check-in." },
+    { level: "Nivel 1 · Tiendas", title: "Cortesía en comercios", q: "El vendedor se acerca muy insistente y solo estás mirando:", options: ["I'm just looking, thanks!", "I don't have money for this.", "Do not touch me, please."], correct: "I'm just looking, thanks!", why: "La frase universal de cortesía para pedir espacio." },
+    { level: "Nivel 1 · Aeropuerto", title: "Valijas extraviadas", q: "En el aeropuerto no encuentras la cinta donde sale tu equipaje:", options: ["Excuse me, where is baggage reclaim?", "Which gate is my flight leaving?", "I missed my flight."], correct: "Excuse me, where is baggage reclaim?", why: "'Baggage reclaim' es la zona de retiro de equipaje." },
+    { level: "Nivel 1 · Cafetería", title: "Bebidas para llevar", q: "Querés pedir un café para llevar:", options: ["Can I have a coffee to go, please?", "Give me a coffee for walking.", "Can I take coffee outside?"], correct: "Can I have a coffee to go, please?", why: "Se utiliza 'to go' (EE.UU.) o 'takeaway' (UK)." },
+    { level: "Nivel 1 · Hotel", title: "Falla de llave", q: "Tu tarjeta magnética no abre la puerta del cuarto:", options: ["Excuse me, my keycard isn't working.", "I lost my room door.", "Is breakfast included here?"], correct: "Excuse me, my keycard isn't working.", why: "Chunk exacto para fallas de tarjetas de hotel." },
+    { level: "Nivel 2 · Diferencias Culturales", title: "Pedir la cuenta en EE.UU.", q: "Terminaste de cenar en Miami y vas a pedir la cuenta:", options: ["Can I get the check, please?", "Could I have the bill?", "Where is my receipt?"], correct: "Can I get the check, please?", why: "En EE.UU. se usa 'check', mientras que 'bill' es propio de UK." },
+    { level: "Nivel 2 · Farmacia", title: "Medicamentos sin receta", q: "Necesitás saber si un analgésico es de venta libre:", options: ["Can I buy this over the counter?", "Do I need an urgent doctor?", "Is this medicine legal?"], correct: "Can I buy this over the counter?", why: "'Over the counter' (OTC) significa que es de venta libre." },
+    { level: "Nivel 2 · Migraciones", title: "Entrevista en aduana", q: "Un oficial te pregunta: 'What is the purpose of your visit?':", options: ["Vacation / Business.", "Ten days or two weeks.", "Yes, I have liquids."], correct: "Vacation / Business.", why: "'Purpose' indaga el motivo del viaje (turismo o negocios)." }
+  ],
+  future: [
+    { level: "Nivel 1 · Detective de Evidencias", title: "¿Evidencia presente o Conjetura mental?", q: "Look at those dark, thick clouds gathering over the mountain!", options: ["Evidencia física presente", "Opinión / Creencia mental"], correct: "Evidencia física presente", why: "Pista visual inminente en el cielo (se usará 'be going to')." },
+    { level: "Nivel 1 · Detective de Evidencias", title: "¿Evidencia presente o Conjetura mental?", q: "In my opinion, electric aircraft will become very affordable in 2050.", options: ["Evidencia física presente", "Opinión / Creencia mental"], correct: "Opinión / Creencia mental", why: "Conjetura a futuro lejano sin comprobación física hoy (usa 'will')." },
+    { level: "Nivel 2 · Predicciones", title: "Will vs. Be Going To", q: "Be careful! The ladder is wobbling! He _______ (fall)!", options: ["is going to fall", "will fall"], correct: "is going to fall", why: "Hay una causa física inestable visible en este momento." },
+    { level: "Nivel 2 · Predicciones", title: "Will vs. Be Going To", q: "I think that in the year 2060, artificial intelligence _______ (replace) many jobs.", options: ["will replace", "is going to replace"], correct: "will replace", why: "Es una creencia u opinión sobre el futuro ('I think')." },
+    { level: "Nivel 3 · Decisiones", title: "¿Espontánea o Plan previo?", q: 'A: "The phone is ringing!" — B: "No worries, I _______ (answer) it."', options: ["will answer", "am going to answer"], correct: "will answer", why: "Decisión y ofrecimiento instantáneo tomado en el momento." },
+    { level: "Nivel 3 · Decisiones", title: "¿Espontánea o Plan previo?", q: 'A: "Why did you buy so much food?" — B: "Because I _______ (cook) lasagna tonight."', options: ["am going to cook", "will cook"], correct: "am going to cook", why: "Intención previa meditada; las compras hechas lo comprueban." },
+    { level: "Nivel 4 · Coherencia", title: "¿Lógica temporal correcta?", q: '"Look at the black smoke coming out of the engine! I think the car will break down."', options: ["✓ Correcta", "✗ Error de lógica temporal"], correct: "✗ Error de lógica temporal", why: "Si el humo ya sale, hay evidencia física. Debe ser: 'is going to break down'." },
+    { level: "Nivel 5 · Horarios y Agendas", title: "Formas de Futuro", q: "Official airport schedule: The flight to London _______ (depart) at 07:15 AM.", options: ["departs", "will depart", "is departing"], correct: "departs", why: "Horarios oficiales de transporte público (Timetables) = Present Simple." },
+    { level: "Nivel 5 · Horarios y Agendas", title: "Formas de Futuro", q: "It is written in my planner and confirmed: I _______ (meet) the doctor tomorrow at 4 PM.", options: ["am meeting", "meet", "will meet"], correct: "am meeting", why: "Cita personal coordinada y agendada = Present Continuous." }
+  ]
+};
+
+// ==========================================
+// 4. MOTOR DE REPETICIÓN ESPACIADA (SPACED REPETITION)
+// ==========================================
+let queues = {
+  quant: [],
+  tenses: [],
+  travel: [],
+  future: []
+};
+
+// Inicializa las colas barajadas
+function initQueues() {
+  for (let key in databaseRaw) {
+    queues[key] = shuffle(databaseRaw[key].map((item, idx) => ({ ...item, id: `${key}_${idx}` })));
+  }
+}
+
+let currentModule = "quant";
+let currentItem = null;
+let currentMode = "train";
+let challengeScore = 0;
+let challengeTotal = 10;
+let challengeCount = 0;
+
+function switchModule(mod) {
+  currentModule = mod;
+  if (!queues[mod] || queues[mod].length === 0) {
+    queues[mod] = shuffle(databaseRaw[mod].map((item, idx) => ({ ...item, id: `${mod}_${idx}` })));
+  }
+  loadCard();
+}
+
+function setMode(mode) {
+  currentMode = mode;
+  document.getElementById("tab-train").classList.toggle("active", mode === "train");
+  document.getElementById("tab-challenge").classList.toggle("active", mode === "challenge");
+  challengeScore = 0;
+  challengeCount = 0;
+  updateProgress(0);
+  switchModule(currentModule);
+}
+
+function updateProgress(percent) {
+  document.getElementById("progressBar").style.width = percent + "%";
+}
+
+function getNextItem() {
+  let q = queues[currentModule];
+  if (!q || q.length === 0) {
+    // Si se agotan todas las tarjetas, regenera el mazo barajado completo
+    queues[currentModule] = shuffle(databaseRaw[currentModule].map((item, idx) => ({ ...item, id: `${currentModule}_${idx}` })));
+    q = queues[currentModule];
+  }
+  // Extrae la primera tarjeta en turno
+  return q.shift();
+}
+
+function loadCard() {
+  currentItem = getNextItem();
+
+  document.getElementById("cardBadge").textContent = currentItem.level;
+  document.getElementById("cardTitle").textContent = currentItem.title;
+  document.getElementById("questionText").textContent = currentItem.q;
+  document.getElementById("feedbackText").innerHTML = "";
+  document.getElementById("nextContainer").style.display = "none";
+
+  const grid = document.getElementById("optionsGrid");
+  grid.innerHTML = "";
+
+  const shuffledOptions = shuffle(currentItem.options);
+  shuffledOptions.forEach(opt => {
+    const btn = document.createElement("button");
+    btn.className = "opt-btn";
+    btn.textContent = opt;
+    btn.onclick = () => selectOption(opt);
+    grid.appendChild(btn);
+  });
+}
+
+function selectOption(selected) {
+  const isCorrect = (selected === currentItem.correct);
+  const fb = document.getElementById("feedbackText");
+
+  const buttons = document.querySelectorAll(".opt-btn");
+  buttons.forEach(b => b.disabled = true);
+
+  if (isCorrect) {
+    fb.innerHTML = `<div class="feedback-box correct">✓ ¡Correcto! +10 XP.<br>${currentItem.why}</div>`;
+    addXP(10);
+    if (currentMode === "challenge") challengeScore++;
+
+    // ALGORITMO: Si acertó, la tarjeta va al fondo del mazo (tardará mucho en volver)
+    queues[currentModule].push(currentItem);
+  } else {
+    fb.innerHTML = `<div class="feedback-box wrong">✗ Incorrecto. Respuesta: <b>${currentItem.correct}</b>.<br>${currentItem.why}</div>`;
+
+    // ALGORITMO: Si erró, se reinserta muy cerca (a 2 posiciones de distancia) para repasar pronto
+    if (queues[currentModule].length > 2) {
+      queues[currentModule].splice(2, 0, currentItem);
+    } else {
+      queues[currentModule].push(currentItem);
+    }
+  }
+
+  document.getElementById("nextContainer").style.display = "block";
+
+  // Envío a Google Sheets
+  sendDataToSheet({
+    player: player,
+    module: currentModule,
+    eventType: currentMode === "train" ? "Práctica Inteligente" : "Reto",
+    question: currentItem.q,
+    answer: selected,
+    isCorrect: isCorrect,
+    score: currentMode === "challenge" ? `${challengeScore}/${challengeCount + 1}` : `${xp} XP`
+  });
+
+  if (currentMode === "challenge") {
+    challengeCount++;
+    updateProgress((challengeCount / challengeTotal) * 100);
+    if (challengeCount >= challengeTotal) {
+      setTimeout(showChallengeResult, 1400);
+    }
+  }
+}
+
+function showChallengeResult() {
+  const percent = Math.round((challengeScore / challengeTotal) * 100);
+  document.getElementById("exerciseContainer").innerHTML = `
+    <div class="card" style="text-align:center;padding:34px 20px;">
+      <div style="font-size:3.5rem;">🏆</div>
+      <h2 style="margin:12px 0;">¡Reto Completado, ${player}!</h2>
+      <p style="color:var(--muted);font-size:1.1rem;margin-bottom:18px;">
+        Acertaste <b>${challengeScore}</b> de <b>${challengeTotal}</b> preguntas (${percent}%).
+      </p>
+      <button class="opt-btn" style="text-align:center;background:var(--primary);color:#fff;display:inline-block;width:auto;padding:12px 24px;" onclick="location.reload()">Jugar otro reto</button>
+    </div>
+  `;
+
+  sendDataToSheet({
+    player: player,
+    module: currentModule,
+    eventType: "Evaluación Final",
+    question: "Reto 10 Preguntas Terminado",
+    answer: `${challengeScore}/${challengeTotal}`,
+    isCorrect: percent >= 70,
+    score: `${percent}%`
+  });
+}
+
+function nextCard() {
+  loadCard();
+}
+
+// Inicialización
+initQueues();
+checkPlayer();
+loadCard();
+</script>
+</body>
+</html>
