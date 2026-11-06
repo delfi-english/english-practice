@@ -2,344 +2,306 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My English Platform | Game Center</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Mi Plataforma de Inglés</title>
     <style>
-        :root {
-            --bg-color: #f0fdf4; /* Tono verde/menta muy suave de fondo */
-            --bg-sidebar: #ffffff;
-            --primary: #4f46e5;
-            --primary-hover: #4338ca;
-            --accent: #10b981; /* Verde esmeralda para los juegos */
-            --text-main: #1f2937;
-            --text-light: #6b7280;
-            --border: #e5e7eb;
-            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
-            --transition: all 0.3s ease;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-            -webkit-tap-highlight-color: transparent;
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #3730a3;
+            --secondary: #f3f4f6;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --white: #ffffff;
         }
 
         body {
-            background-color: #f3f4f6; /* Gris de fondo principal */
-            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #eef2ff;
+            color: var(--text-dark);
             display: flex;
             min-height: 100vh;
         }
 
-        /* SIDEBAR: LA VENTANA DE TEORÍA */
-        .theory-sidebar {
-            width: 320px;
-            background-color: var(--bg-sidebar);
-            border-right: 1px solid var(--border);
+        /* SIDEBAR (Theory Library) */
+        .sidebar {
+            width: 260px;
+            background-color: var(--white);
+            border-right: 1px solid #e5e7eb;
             display: flex;
             flex-direction: column;
-            position: sticky;
-            top: 0;
-            height: 100vh;
-            overflow-y: auto;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.03);
+            flex-shrink: 0;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
             z-index: 10;
         }
 
-        .sidebar-header {
-            padding: 30px 25px 20px;
-            border-bottom: 1px solid var(--border);
-            background: linear-gradient(135deg, var(--primary) 0%, #3730a3 100%);
-            color: white;
+        .sidebar-brand {
+            background-color: var(--primary);
+            color: var(--white);
+            padding: 25px 20px;
+            text-align: left;
         }
 
-        .sidebar-header h1 {
+        .sidebar-brand h2 {
+            margin: 0;
             font-size: 1.5rem;
             font-weight: 800;
-            margin-bottom: 5px;
-            letter-spacing: -0.5px;
         }
 
-        .sidebar-header p {
-            font-size: 0.9rem;
+        .sidebar-brand p {
+            margin: 5px 0 0 0;
+            font-size: 0.85rem;
             opacity: 0.9;
         }
 
-        .theory-index {
+        .sidebar-nav {
             padding: 20px 0;
+            overflow-y: auto;
         }
 
-        .theory-category {
-            padding: 0 25px;
-            margin-bottom: 10px;
+        .nav-category {
             font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 1px;
             color: var(--text-light);
-            font-weight: 700;
+            font-weight: 800;
+            margin: 20px 20px 10px;
         }
 
-        .theory-link {
+        .nav-item {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 12px 25px;
-            color: var(--text-main);
+            padding: 12px 20px;
+            color: var(--text-dark);
             text-decoration: none;
-            font-weight: 500;
+            font-weight: 600;
             font-size: 0.95rem;
-            transition: var(--transition);
-            border-left: 4px solid transparent;
+            transition: all 0.2s;
         }
 
-        .theory-link:hover {
-            background-color: #f8fafc;
+        .nav-item:hover {
+            background-color: #f5f3ff;
             color: var(--primary);
-            border-left-color: var(--primary);
         }
 
-        .theory-link span.icon {
+        .nav-icon {
+            margin-right: 12px;
             font-size: 1.2rem;
         }
 
-        /* MAIN CONTENT: EL ARCADE DE JUEGOS */
-        .main-arcade {
+        /* MAIN CONTENT (Game Arcade) */
+        .main-content {
             flex-grow: 1;
             padding: 40px;
-            background-color: var(--bg-color);
+            overflow-y: auto;
         }
 
-        .arcade-header {
+        .header-title {
+            margin-top: 0;
+            font-size: 2.5rem;
+            color: var(--text-dark);
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+
+        .header-subtitle {
+            color: var(--text-light);
+            font-size: 1.1rem;
             margin-bottom: 40px;
         }
 
-        .arcade-header h2 {
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: var(--text-main);
-            margin-bottom: 10px;
-            letter-spacing: -1px;
-        }
-
-        .arcade-header p {
-            font-size: 1.1rem;
-            color: var(--text-light);
-        }
-
+        /* GAMES GRID */
         .games-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
         }
 
         .game-card {
-            background: white;
+            background: var(--white);
             border-radius: 16px;
             overflow: hidden;
-            box-shadow: var(--shadow-sm);
-            transition: var(--transition);
-            border: 1px solid var(--border);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
             display: flex;
             flex-direction: column;
         }
 
         .game-card:hover {
-            transform: translateY(-8px);
-            box-shadow: var(--shadow-md);
-            border-color: var(--accent);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
 
-        .game-banner {
+        .card-header {
             height: 120px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 4rem;
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            color: white;
-            position: relative;
         }
 
-        /* Estilos específicos de cada banner de juego */
-        .banner-chronos { background: linear-gradient(135deg, #0b0c10 0%, #1f2833 100%); }
-        .banner-clash { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
-        .banner-spot { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
-        .banner-match { background: linear-gradient(135deg, #ec4899 0%, #be185d 100%); }
+        .emoji-hero {
+            font-size: 4rem;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+        }
 
-        .game-info {
+        /* Colores de las tarjetas */
+        .bg-dark { background-color: #1f2937; }
+        .bg-warning { background-color: #f59e0b; }
+        .bg-success { background-color: #10b981; }
+        .bg-danger { background-color: #e11d48; }
+        .bg-info { background-color: #0ea5e9; }
+        .bg-purple { background-color: #8b5cf6; }
+        .bg-pink { background-color: #ec4899; }
+        .bg-teal { background-color: #14b8a6; }
+        .bg-indigo { background-color: #4f46e5; }
+        .bg-orange { background-color: #ea580c; }
+        .bg-lime { background-color: #84cc16; }
+        .bg-rose { background-color: #f43f5e; }
+
+        .card-body {
             padding: 25px;
-            flex-grow: 1;
             display: flex;
             flex-direction: column;
+            flex-grow: 1;
         }
 
         .game-title {
-            font-size: 1.3rem;
-            font-weight: 700;
-            margin-bottom: 8px;
-            color: var(--text-main);
+            margin: 0 0 10px 0;
+            font-size: 1.25rem;
+            color: var(--text-dark);
         }
 
         .game-desc {
-            font-size: 0.95rem;
             color: var(--text-light);
+            font-size: 0.9rem;
+            line-height: 1.5;
             margin-bottom: 20px;
             flex-grow: 1;
         }
 
-        .game-tags {
+        .tags {
             display: flex;
+            flex-wrap: wrap;
             gap: 8px;
             margin-bottom: 20px;
-            flex-wrap: wrap;
         }
 
         .tag {
             background-color: #e0e7ff;
-            color: #3730a3;
+            color: var(--primary-dark);
+            font-size: 0.75rem;
             padding: 4px 10px;
             border-radius: 20px;
-            font-size: 0.75rem;
             font-weight: 600;
         }
 
         .btn-play {
             display: block;
-            width: 100%;
             text-align: center;
-            background-color: var(--text-main);
-            color: white;
+            background-color: #111827;
+            color: var(--white);
+            text-decoration: none;
             padding: 12px;
             border-radius: 8px;
-            text-decoration: none;
             font-weight: 600;
-            transition: var(--transition);
+            transition: background-color 0.2s;
         }
 
         .btn-play:hover {
-            background-color: var(--accent);
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-        }
-        
-        .btn-disabled {
-            background-color: var(--border);
-            color: var(--text-light);
-            cursor: not-allowed;
-        }
-        .btn-disabled:hover {
-            background-color: var(--border);
-            box-shadow: none;
+            background-color: var(--success);
         }
 
-        /* MOBILE RESPONSIVE */
-        @media (max-width: 900px) {
-            body {
-                flex-direction: column;
-            }
-            .theory-sidebar {
-                width: 100%;
-                height: auto;
-                position: relative;
-                border-right: none;
-                border-bottom: 1px solid var(--border);
-            }
-            .theory-index {
-                display: flex;
-                overflow-x: auto;
-                padding: 15px;
-                gap: 15px;
-                scrollbar-width: none; /* Oculta scrollbar en Firefox */
-            }
-            .theory-index::-webkit-scrollbar {
-                display: none; /* Oculta scrollbar en Chrome/Safari */
-            }
-            .theory-category {
-                display: none; /* Ocultamos los títulos de categoría en celu para ahorrar espacio */
-            }
-            .theory-link {
-                white-space: nowrap;
-                background-color: #f3f4f6;
-                border-radius: 20px;
-                border-left: none;
-                padding: 8px 15px;
-            }
-            .main-arcade {
-                padding: 25px 15px;
-            }
-            .arcade-header h2 {
-                font-size: 2rem;
-            }
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            .sidebar { width: 100%; border-right: none; border-bottom: 1px solid #e5e7eb; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+            .sidebar-nav { display: flex; overflow-x: auto; padding: 10px; white-space: nowrap; }
+            .nav-category { display: none; }
+            .nav-item { padding: 8px 15px; background: var(--secondary); margin-right: 10px; border-radius: 20px; font-size: 0.85rem; }
+            .main-content { padding: 20px; }
+            .header-title { font-size: 2rem; }
         }
     </style>
 </head>
 <body>
 
-    <!-- LA VENTANA DE TEORÍA (Índice lateral) -->
-    <aside class="theory-sidebar">
-        <div class="sidebar-header">
-            <h1>Theory Library 📚</h1>
+    <!-- SIDEBAR: THEORY LIBRARY -->
+    <div class="sidebar">
+        <div class="sidebar-brand">
+            <h2>Theory Library 📚</h2>
             <p>Tu enciclopedia de inglés</p>
         </div>
+        
+        <div class="sidebar-nav">
+            <div class="nav-category">Bases y Vocabulario</div>
+            <a href="teoria-nivel1.html#greetings" class="nav-item"><span class="nav-icon">👋</span> Greetings & Family</a>
+            <a href="teoria-nivel1.html#places" class="nav-item"><span class="nav-icon">🗺️</span> Places & Directions</a>
+            <a href="teoria-nivel1.html#shopping" class="nav-item"><span class="nav-icon">🛍️</span> Shopping & Prices</a>
 
-        <div class="theory-index">
-            
-            <div class="theory-category">Bases y Vocabulario</div>
-            <a href="teoria.html#greetings" class="theory-link">
-                <span class="icon">👋</span> Greetings & Family
-            </a>
-            <a href="teoria.html#places" class="theory-link">
-                <span class="icon">🗺️</span> Places & Directions
-            </a>
-            <a href="teoria.html#shopping" class="theory-link">
-                <span class="icon">🛍️</span> Shopping & Prices
-            </a>
+            <div class="nav-category">Gramática y Tiempos</div>
+            <a href="teoria-nivel1.html#present" class="nav-item"><span class="nav-icon">☕</span> Presente (Simple & Cont.)</a>
+            <a href="teoria-nivel1.html#past" class="nav-item"><span class="nav-icon">🕰️</span> Past Simple & Irregular</a>
+            <a href="teoria-nivel1.html#future" class="nav-item"><span class="nav-icon">🚀</span> Future (Will / Going to)</a>
 
-            <div class="theory-category" style="margin-top: 15px;">Gramática y Tiempos</div>
-            <a href="teoria.html#present" class="theory-link">
-                <span class="icon">☕</span> Presente (Simple & Cont.)
-            </a>
-            <a href="teoria.html#past" class="theory-link">
-                <span class="icon">🕰️</span> Past Simple & Irregular
-            </a>
-            <a href="teoria.html#future" class="theory-link">
-                <span class="icon">🔮</span> Future (Will / Going to)
-            </a>
-            
-            <div class="theory-category" style="margin-top: 15px;">Estructuras Clave</div>
-            <a href="teoria.html#comparatives" class="theory-link">
-                <span class="icon">⚖️</span> Comparativos & Superlativos
-            </a>
-            <a href="teoria.html#modals" class="theory-link">
-                <span class="icon">🚦</span> Verbos Modales (Can, Must, Should)
-            </a>
-            <a href="teoria.html#pronouns" class="theory-link">
-                <span class="icon">👤</span> Pronombres & Posesivos
-            </a>
-            
+            <div class="nav-category">Estructuras Clave</div>
+            <a href="teoria-nivel1.html#comparatives" class="nav-item"><span class="nav-icon">⚖️</span> Comparativos & Superlativos</a>
+            <a href="teoria-nivel1.html#modals" class="nav-item"><span class="nav-icon">🚦</span> Verbos Modales</a>
+            <a href="teoria-nivel1.html#pronouns" class="nav-item"><span class="nav-icon">👤</span> Pronombres & Posesivos</a>
         </div>
-    </aside>
+    </div>
 
-    <!-- EL ARCADE (Centro de Juegos) -->
-    <main class="main-arcade">
-        <div class="arcade-header">
-            <h2>Game Center 🎮</h2>
-            <p>Selecciona una misión para poner a prueba tu conocimiento.</p>
-        </div>
+    <!-- MAIN CONTENT: GAME ARCADE -->
+    <div class="main-content">
+        <h1 class="header-title">Game Center 🎮</h1>
+        <p class="header-subtitle">Selecciona una misión para poner a prueba tu conocimiento.</p>
 
         <div class="games-grid">
             
-            <!-- JUEGO 1: CHRONOS ARCADE -->
+            <!-- 1. Starter Module -->
             <div class="game-card">
-                <div class="game-banner banner-chronos">⏳</div>
-                <div class="game-info">
+                <div class="card-header bg-indigo">
+                    <span class="emoji-hero">🚀</span>
+                </div>
+                <div class="card-body">
+                    <h3 class="game-title">Starter Module</h3>
+                    <p class="game-desc">Aprende y escucha vocabulario esencial con tarjetas interactivas de memoria 3D.</p>
+                    <div class="tags">
+                        <span class="tag">Vocab</span>
+                        <span class="tag">Listening</span>
+                        <span class="tag">Basics</span>
+                    </div>
+                    <a href="starter-module.html" class="btn-play">▶ Jugar Misión</a>
+                </div>
+            </div>
+
+            <!-- 2. Phonetics Studio -->
+            <div class="game-card">
+                <div class="card-header bg-pink">
+                    <span class="emoji-hero">🎙️</span>
+                </div>
+                <div class="card-body">
+                    <h3 class="game-title">Phonetics Studio</h3>
+                    <p class="game-desc">Entrena tu oído y mejora tu pronunciación con el estudio de fonética.</p>
+                    <div class="tags">
+                        <span class="tag">Pronunciation</span>
+                        <span class="tag">Speaking</span>
+                    </div>
+                    <a href="phonetics-studio.html" class="btn-play">▶ Jugar Misión</a>
+                </div>
+            </div>
+
+            <!-- 3. Time Hopper -->
+            <div class="game-card">
+                <div class="card-header bg-dark">
+                    <span class="emoji-hero">⏳</span>
+                </div>
+                <div class="card-body">
                     <h3 class="game-title">Time Hopper (Chronos)</h3>
                     <p class="game-desc">Detecta la pista de tiempo y repara la oración antes de que la línea temporal colapse.</p>
-                    <div class="game-tags">
+                    <div class="tags">
                         <span class="tag">Past</span>
                         <span class="tag">Present</span>
                         <span class="tag">Future</span>
@@ -348,53 +310,152 @@
                 </div>
             </div>
 
-            <!-- JUEGO 2: COMPARISON CLASH -->
+            <!-- 4. Comparison Clash -->
             <div class="game-card">
-                <div class="game-banner banner-clash">⚔️</div>
-                <div class="game-info">
+                <div class="card-header bg-warning">
+                    <span class="emoji-hero">⚔️</span>
+                </div>
+                <div class="card-body">
                     <h3 class="game-title">Comparison Clash</h3>
                     <p class="game-desc">Duelos de estructura. Supera las trampas de los comparativos, superlativos y la estructura as...as.</p>
-                    <div class="game-tags">
+                    <div class="tags">
                         <span class="tag">Comparatives</span>
                         <span class="tag">Superlatives</span>
-                        <span class="tag">Irregulars</span>
                     </div>
                     <a href="comparatives-module.html" class="btn-play">▶ Jugar Misión</a>
                 </div>
             </div>
 
-            <!-- JUEGO 3: SPOT THE OBJECT -->
+            <!-- 5. Airport Scramble -->
             <div class="game-card">
-                <div class="game-banner banner-spot">🕵️‍♂️</div>
-                <div class="game-info">
-                    <h3 class="game-title">Spot the Object</h3>
-                    <p class="game-desc">Agudiza la vista y encuentra lugares y objetos escondidos por toda la ciudad interactiva.</p>
-                    <div class="game-tags">
-                        <span class="tag">Prepositions</span>
-                        <span class="tag">Places</span>
-                        <span class="tag">Vocab</span>
+                <div class="card-header bg-info">
+                    <span class="emoji-hero">✈️</span>
+                </div>
+                <div class="card-body">
+                    <h3 class="game-title">Airport Scramble</h3>
+                    <p class="game-desc">Ordena las palabras perdidas en la cinta de equipaje para armar frases clave de aeropuerto.</p>
+                    <div class="tags">
+                        <span class="tag">Travel</span>
+                        <span class="tag">Chunks</span>
                     </div>
-                    <!-- Si ya tenés el archivo, cambiá el href a "spot-object.html" -->
-                    <a href="#" class="btn-play btn-disabled">Próximamente</a>
+                    <a href="airport-scramble.html" class="btn-play">▶ Jugar Misión</a>
                 </div>
             </div>
 
-            <!-- JUEGO 4: DIALOGUE MATCH -->
+            <!-- 6. Hotel Check-in -->
             <div class="game-card">
-                <div class="game-banner banner-match">🧩</div>
-                <div class="game-info">
-                    <h3 class="game-title">Dialogue Match</h3>
-                    <p class="game-desc">Une las frases rotas y reconstruye conversaciones cotidianas (hotel, aeropuerto, cafetería).</p>
-                    <div class="game-tags">
-                        <span class="tag">Small Talk</span>
-                        <span class="tag">Chunks</span>
+                <div class="card-header bg-rose">
+                    <span class="emoji-hero">🏨</span>
+                </div>
+                <div class="card-body">
+                    <h3 class="game-title">Hotel Friends</h3>
+                    <p class="game-desc">Practica frases esenciales para hacer el check-in y resolver problemas en tu habitación de hotel.</p>
+                    <div class="tags">
+                        <span class="tag">Travel</span>
+                        <span class="tag">Dialogues</span>
                     </div>
-                    <a href="#" class="btn-play btn-disabled">Próximamente</a>
+                    <a href="hotel-friends.html" class="btn-play">▶ Jugar Misión</a>
+                </div>
+            </div>
+
+            <!-- 7. Cafe Dialogue -->
+            <div class="game-card">
+                <div class="card-header bg-orange">
+                    <span class="emoji-hero">☕</span>
+                </div>
+                <div class="card-body">
+                    <h3 class="game-title">Cafe Dialogue</h3>
+                    <p class="game-desc">Interactúa como cliente en una cafetería y aprende a pedir comida y bebida de manera cortés.</p>
+                    <div class="tags">
+                        <span class="tag">Food</span>
+                        <span class="tag">Requests</span>
+                    </div>
+                    <a href="cafe-dialogue.html" class="btn-play">▶ Jugar Misión</a>
+                </div>
+            </div>
+
+            <!-- 8. Pharmacy Match -->
+            <div class="game-card">
+                <div class="card-header bg-success">
+                    <span class="emoji-hero">💊</span>
+                </div>
+                <div class="card-body">
+                    <h3 class="game-title">Pharmacy Match</h3>
+                    <p class="game-desc">Relaciona síntomas con los medicamentos correctos (Over The Counter vs Prescription).</p>
+                    <div class="tags">
+                        <span class="tag">Health</span>
+                        <span class="tag">Vocabulary</span>
+                    </div>
+                    <a href="pharmacy-match.html" class="btn-play">▶ Jugar Misión</a>
+                </div>
+            </div>
+
+            <!-- 9. GPS Navigator -->
+            <div class="game-card">
+                <div class="card-header bg-teal">
+                    <span class="emoji-hero">🗺️</span>
+                </div>
+                <div class="card-body">
+                    <h3 class="game-title">GPS Navigator</h3>
+                    <p class="game-desc">Aprende a dar y entender indicaciones para moverte por la ciudad sin perderte.</p>
+                    <div class="tags">
+                        <span class="tag">Directions</span>
+                        <span class="tag">City</span>
+                    </div>
+                    <a href="gps-navigator.html" class="btn-play">▶ Jugar Misión</a>
+                </div>
+            </div>
+
+            <!-- 10. Spot the Object -->
+            <div class="game-card">
+                <div class="card-header bg-purple">
+                    <span class="emoji-hero">🕵️</span>
+                </div>
+                <div class="card-body">
+                    <h3 class="game-title">Spot the Object</h3>
+                    <p class="game-desc">Agudiza la vista y encuentra lugares y objetos escondidos practicando preposiciones de lugar.</p>
+                    <div class="tags">
+                        <span class="tag">Prepositions</span>
+                        <span class="tag">Places</span>
+                    </div>
+                    <a href="spot-object.html" class="btn-play">▶ Jugar Misión</a>
+                </div>
+            </div>
+
+            <!-- 11. Fill the Blanks -->
+            <div class="game-card">
+                <div class="card-header bg-lime">
+                    <span class="emoji-hero">📝</span>
+                </div>
+                <div class="card-body">
+                    <h3 class="game-title">Fill the Blanks</h3>
+                    <p class="game-desc">Rellena los espacios vacíos en conversaciones cotidianas para practicar estructuras gramaticales.</p>
+                    <div class="tags">
+                        <span class="tag">Grammar</span>
+                        <span class="tag">Practice</span>
+                    </div>
+                    <a href="fill-blanks.html" class="btn-play">▶ Jugar Misión</a>
+                </div>
+            </div>
+
+            <!-- 12. Word Search -->
+            <div class="game-card">
+                <div class="card-header bg-danger">
+                    <span class="emoji-hero">🔍</span>
+                </div>
+                <div class="card-body">
+                    <h3 class="game-title">Word Search</h3>
+                    <p class="game-desc">Encuentra el vocabulario escondido en esta clásica sopa de letras interactiva.</p>
+                    <div class="tags">
+                        <span class="tag">Vocabulary</span>
+                        <span class="tag">Mini-game</span>
+                    </div>
+                    <a href="sopa-letras.html" class="btn-play">▶ Jugar Misión</a>
                 </div>
             </div>
 
         </div>
-    </main>
+    </div>
 
 </body>
 </html>
