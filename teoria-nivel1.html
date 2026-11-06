@@ -2,148 +2,359 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Apuntes de Gramática y Vocabulario</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Theory Library - Mi Plataforma</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; display: flex; height: 100vh; }
-        
-        /* Menú lateral de temas */
-        .sidebar-teoria { width: 300px; background-color: white; border-right: 1px solid #dee2e6; overflow-y: auto; padding: 20px; box-shadow: 2px 0 5px rgba(0,0,0,0.05); }
-        .sidebar-teoria h2 { font-size: 20px; color: #7b2cbf; margin-bottom: 20px; border-bottom: 2px solid #f0f2f5; padding-bottom: 10px; }
-        
-        .tema-btn { display: block; width: 100%; text-align: left; background: none; border: none; padding: 15px; margin-bottom: 8px; border-radius: 8px; font-size: 15px; font-weight: bold; color: #495057; cursor: pointer; transition: 0.2s; }
-        .tema-btn:hover { background-color: #f8f9fa; color: #7b2cbf; }
-        .tema-btn.activo { background-color: #7b2cbf; color: white; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
 
-        /* Área donde se lee la teoría */
-        .contenido-teoria { flex: 1; padding: 40px 60px; overflow-y: auto; background-color: #f8f9fa; }
-        .hoja-apunte { background-color: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); max-width: 800px; margin: 0 auto; display: none; }
-        .hoja-apunte.visible { display: block; } /* Solo se muestra la hoja activa */
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #3730a3;
+            --secondary: #f3f4f6;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --white: #ffffff;
+            --accent: #f59e0b;
+        }
 
-        /* Estilos del texto adentro del apunte */
-        .hoja-apunte h1 { color: #212529; font-size: 28px; margin-bottom: 10px; }
-        .hoja-apunte h3 { color: #7b2cbf; margin-top: 30px; border-bottom: 1px solid #dee2e6; padding-bottom: 5px; }
-        .hoja-apunte p { font-size: 16px; color: #495057; line-height: 1.6; margin-bottom: 15px; }
-        .chunk-box { background-color: #e9ecef; border-left: 4px solid #7b2cbf; padding: 15px; margin: 15px 0; border-radius: 0 8px 8px 0; }
-        .chunk-box strong { color: #212529; display: block; font-size: 18px; }
-        .chunk-box em { color: #6c757d; font-size: 14px; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9fafb;
+            color: var(--text-dark);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR (Igual al index) */
+        .sidebar {
+            width: 260px;
+            background-color: var(--white);
+            border-right: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+            z-index: 10;
+        }
+
+        .sidebar-brand {
+            background-color: var(--primary);
+            color: var(--white);
+            padding: 25px 20px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .sidebar-brand h2 { margin: 0; font-size: 1.5rem; font-weight: 800; }
+        .sidebar-brand p { margin: 5px 0 0 0; font-size: 0.85rem; opacity: 0.9; }
+
+        .sidebar-nav { padding: 20px 0; overflow-y: auto; }
         
-        .btn-practicar { display: inline-block; background-color: #28a745; color: white; padding: 12px 20px; border-radius: 5px; text-decoration: none; font-weight: bold; margin-top: 30px; text-align: center; }
-        .btn-practicar:hover { background-color: #218838; }
+        .nav-category {
+            font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px;
+            color: var(--text-light); font-weight: 800; margin: 20px 20px 10px;
+        }
+
+        .nav-item {
+            display: flex; align-items: center; padding: 10px 20px;
+            color: var(--text-dark); text-decoration: none; font-weight: 600;
+            font-size: 0.95rem; transition: all 0.2s;
+        }
+        .nav-item:hover { background-color: #f5f3ff; color: var(--primary); }
+        .nav-icon { margin-right: 12px; font-size: 1.2rem; }
+        .btn-back { margin: 20px; text-align: center; background: var(--text-dark); color: white; border-radius: 8px; justify-content: center; }
+
+        /* MAIN CONTENT */
+        .main-content {
+            flex-grow: 1; padding: 40px 60px; max-width: 900px;
+        }
+        
+        .theory-section {
+            background: var(--white); padding: 40px; border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); margin-bottom: 40px;
+            scroll-margin-top: 40px;
+        }
+
+        .theory-section h2 { font-size: 2rem; color: var(--primary); margin-top: 0; display: flex; align-items: center; gap: 10px; }
+        .theory-section h3 { font-size: 1.3rem; margin-top: 30px; border-bottom: 2px solid var(--secondary); padding-bottom: 10px; }
+        .theory-section p, .theory-section ul { font-size: 1.05rem; line-height: 1.6; color: #4b5563; }
+        .theory-section ul li { margin-bottom: 10px; }
+        
+        .chunk { font-weight: 700; color: var(--primary-dark); }
+        .note-box { background-color: #fffbeb; border-left: 4px solid var(--accent); padding: 15px 20px; border-radius: 0 8px 8px 0; margin: 20px 0; font-size: 0.95rem; }
+
+        /* TABLAS */
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; border-radius: 8px; overflow: hidden; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #e5e7eb; }
+        th { background-color: var(--secondary); color: var(--text-dark); font-weight: 700; }
+        tr:last-child td { border-bottom: none; }
+
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            .sidebar { width: 100%; height: auto; position: relative; border-right: none; }
+            .sidebar-nav { display: flex; overflow-x: auto; padding: 10px; white-space: nowrap; }
+            .nav-category { display: none; }
+            .nav-item { padding: 8px 15px; background: var(--secondary); margin-right: 10px; border-radius: 20px; }
+            .main-content { padding: 20px; }
+            .theory-section { padding: 25px; }
+        }
     </style>
 </head>
 <body>
 
-    <div class="sidebar-teoria">
-        <h2>Módulo 0: Supervivencia</h2>
-        <!-- Botones que activan las diferentes hojas -->
-        <button class="tema-btn activo" onclick="mostrarTema('tema-cortesia', this)">1. Las Palabras Mágicas</button>
-        <button class="tema-btn" onclick="mostrarTema('tema-aeropuerto', this)">2. Aeropuerto y Aduana</button>
-        <button class="tema-btn" onclick="mostrarTema('tema-hotel', this)">3. Hotel y Check-in</button>
+    <!-- SIDEBAR ÍNDICE -->
+    <div class="sidebar">
+        <a href="index.html" class="sidebar-brand">
+            <h2>Theory Library 📚</h2>
+            <p>Volver al Game Center</p>
+        </a>
+        
+        <div class="sidebar-nav">
+            <div class="nav-category">Bases y Vocabulario</div>
+            <a href="#greetings" class="nav-item"><span class="nav-icon">👋</span> Greetings & Family</a>
+            <a href="#places" class="nav-item"><span class="nav-icon">🗺️</span> Places & Directions</a>
+            <a href="#shopping" class="nav-item"><span class="nav-icon">🛍️</span> Shopping & Food</a>
+
+            <div class="nav-category">Gramática y Tiempos</div>
+            <a href="#present" class="nav-item"><span class="nav-icon">☕</span> Presente Simple & Cont.</a>
+            <a href="#past" class="nav-item"><span class="nav-icon">🕰️</span> Past Simple</a>
+            <a href="#future" class="nav-item"><span class="nav-icon">🚀</span> Future (Will / Going to)</a>
+
+            <div class="nav-category">Estructuras Clave</div>
+            <a href="#comparatives" class="nav-item"><span class="nav-icon">⚖️</span> Comparatives</a>
+            <a href="#modals" class="nav-item"><span class="nav-icon">🚦</span> Modal Verbs</a>
+            <a href="#pronouns" class="nav-item"><span class="nav-icon">👤</span> Pronouns & Possessives</a>
+            
+            <a href="index.html" class="nav-item btn-back">◀ Volver a los juegos</a>
+        </div>
     </div>
 
-    <div class="contenido-teoria">
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
         
-        <!-- HOJA 1: CORTESÍA -->
-        <div id="tema-cortesia" class="hoja-apunte visible">
-            <h1>Las palabras mágicas: Cortesía y supervivencia</h1>
-            <p>Establecer una comunicación positiva desde el primer momento es clave cuando viajamos. No hace falta saber toda la gramática, pero sí estas frases (Chunks) que te salvarán en cualquier situación.</p>
+        <!-- GREETINGS & FAMILY -->
+        <div id="greetings" class="theory-section">
+            <h2>👋 Frases de Supervivencia y Familia</h2>
+            <p>Establecer una comunicación positiva es el primer paso para perder el miedo a hablar. Aquí tienes tu botiquín de emergencia.</p>
             
-            <h3>Saludos según la hora</h3>
-            <div class="chunk-box">
-                <strong>Hello / Good Morning / Good Evening</strong>
-                <em>Hola / Buen día / Buenas tardes-noches</em>
-            </div>
-
-            <h3>Para mostrar respeto y pedir ayuda</h3>
-            <div class="chunk-box">
-                <strong>Please / Thank you</strong>
-                <em>Imprescindibles en cualquier interacción.</em>
-            </div>
-            <div class="chunk-box">
-                <strong>Excuse me</strong>
-                <em>La mejor forma de llamar la atención de alguien educadamente (ej: antes de preguntar una calle).</em>
-            </div>
-
-            <h3>Cuando no entendés algo</h3>
-            <div class="chunk-box">
-                <strong>I'm sorry, I don't understand</strong>
-                <em>Una frase honesta que le indica al interlocutor que debe hablar más despacio o de otra forma.</em>
-            </div>
-            <div class="chunk-box">
-                <strong>Can you repeat, please?</strong>
-                <em>Tu mejor herramienta cuando no captás algo a la primera.</em>
-            </div>
-
-            <a href="sopa-letras.html" class="btn-practicar">🎮 Practicar en Sopa de Letras</a>
-        </div>
-
-        <!-- HOJA 2: AEROPUERTO -->
-        <div id="tema-aeropuerto" class="hoja-apunte">
-            <h1>Airport and Customs (Aeropuerto y Aduana)</h1>
-            <p>El primer desafío al llegar a un país de habla inglesa. Aquí tenés las frases armadas para pasar migraciones y encontrar tu avión sin problemas.</p>
-            
-            <h3>Preguntas Clave (Chunks)</h3>
-            <div class="chunk-box">
-                <strong>"Where is gate [number]?"</strong>
-                <em>¿Dónde está la puerta de embarque [número]?</em>
-            </div>
-            <div class="chunk-box">
-                <strong>"I'm traveling for vacation / business."</strong>
-                <em>Vengo por vacaciones / negocios (Ideal para el oficial de migraciones).</em>
-            </div>
-
-            <h3>Vocabulario de Equipaje (Luggage / Baggage)</h3>
+            <h3>Survival Chunks (Frases salvavidas)</h3>
             <ul>
-                <li><strong>Carry-on luggage:</strong> Equipaje de mano.</li>
-                <li><strong>"I would like to check in this bag":</strong> Quisiera despachar esta valija.</li>
-                <li><strong>"My luggage is missing":</strong> Mi equipaje está perdido.</li>
+                <li><span class="chunk">Excuse me:</span> La mejor forma de llamar la atención educadamente[cite: 6].</li>
+                <li><span class="chunk">I'm sorry, I don't understand:</span> Una frase honesta que indica que deben hablarte más despacio[cite: 6].</li>
+                <li><span class="chunk">Can you repeat, please?:</span> Tu mejor herramienta cuando no captas algo a la primera[cite: 6].</li>
             </ul>
 
-            <h3>En la Aduana (Customs)</h3>
-            <div class="chunk-box">
-                <strong>"I have nothing to declare."</strong>
-                <em>No tengo nada para declarar.</em>
-            </div>
-            
-            <a href="airport-scramble.html" class="btn-practicar">🎮 Jugar al Airport Scramble</a>
+            <h3>Family Members</h3>
+            <p><strong>Direct family:</strong> parents (padres), father / dad, mother / mom, brother, sister, sibling (hermano/a en general)[cite: 96, 97].</p>
+            <p><strong>Extended family:</strong> grandparents (abuelos), grandfather / grandpa, grandmother / grandma, uncle (tío), aunt (tía), cousin (primo/a)[cite: 96, 97].</p>
         </div>
 
-        <!-- HOJA 3: HOTEL (En construcción) -->
-        <div id="tema-hotel" class="hoja-apunte">
-            <h1>Hotel and Check-in</h1>
-            <p>Llegaste a destino. Es hora de pedir tu habitación, preguntar por el Wi-Fi y asegurar el desayuno.</p>
+        <!-- PLACES & DIRECTIONS -->
+        <div id="places" class="theory-section">
+            <h2>🗺️ Lugares e Indicaciones</h2>
+            <p>Vocabulario clave para cuando estés caminando por la ciudad y necesites encontrar un lugar[cite: 16].</p>
             
-            <h3>Frases Mágicas</h3>
-            <div class="chunk-box">
-                <strong>"Hi, I have a reservation under [Tu Nombre]."</strong>
-                <em>Tengo una reserva a nombre de...</em>
-            </div>
-            <div class="chunk-box">
-                <strong>"Can I get a room with a double bed?"</strong>
-                <em>¿Puedo tener una habitación con cama matrimonial?</em>
-            </div>
+            <h3>Vocabulario esencial</h3>
+            <ul>
+                <li><strong>Airport</strong> (aeropuerto), <strong>Hospital</strong> (hospital), <strong>Pharmacy</strong> (farmacia), <strong>ATM</strong> (cajero automático)[cite: 16, 17].</li>
+                <li><span class="chunk">Bathroom vs Restroom:</span> En EE.UU. se usa <em>restroom</em> (público) o <em>bathroom</em> (casas). En Reino Unido se usa <em>toilet</em>[cite: 17].</li>
+            </ul>
 
-            <a href="hotel-friends.html" class="btn-practicar">🎮 Practicar escena de Friends</a>
+            <h3>Giving Directions (Dando indicaciones)</h3>
+            <table>
+                <tr><th>Instrucción</th><th>Inglés</th></tr>
+                <tr><td>Seguí derecho</td><td><span class="chunk">Go straight ahead</span>[cite: 18]</td></tr>
+                <tr><td>Doblá a la izquierda / derecha</td><td><span class="chunk">Turn left / Turn right</span>[cite: 18]</td></tr>
+                <tr><td>Está al lado de...</td><td><span class="chunk">It is next to...</span>[cite: 18]</td></tr>
+                <tr><td>Está enfrente de...</td><td><span class="chunk">It is opposite to...</span>[cite: 18]</td></tr>
+            </table>
+        </div>
+
+        <!-- SHOPPING & FOOD -->
+        <div id="shopping" class="theory-section">
+            <h2>🛍️ Compras y Restaurantes</h2>
+            <p>Usa estructuras corteses para comprar recuerdos o pedir comida sin sonar demandante[cite: 12].</p>
+            
+            <h3>En el restaurante</h3>
+            <ul>
+                <li><span class="chunk">I would like the menu:</span> (Quisiera el menú). Reemplaza al seco "I want"[cite: 12].</li>
+                <li><span class="chunk">Water, still or sparkling:</span> (Agua sin gas o con gas)[cite: 12].</li>
+                <li><span class="chunk">Can I get the check, please?:</span> (¿Me traés la cuenta?). En EE.UU. usan <em>Check</em>, en Europa usan <em>Bill</em>[cite: 12, 13].</li>
+            </ul>
+
+            <h3>De compras</h3>
+            <ul>
+                <li><span class="chunk">How much does this cost?</span> (¿Cuánto cuesta esto?)[cite: 19].</li>
+                <li><span class="chunk">Do you have this in size M?</span> (¿Tienen esto en talle M?)[cite: 19].</li>
+                <li><span class="chunk">I'm just looking, thanks!</span> (Solo estoy mirando, ¡gracias!)[cite: 19].</li>
+            </ul>
+        </div>
+
+        <!-- PRESENTE -->
+        <div id="present" class="theory-section">
+            <h2>☕ Presente Simple vs. Presente Continuo</h2>
+            <p>¡Cuidado de no confundirlos! Tienen usos muy diferentes en inglés[cite: 52].</p>
+            
+            <table>
+                <tr>
+                    <th>Present Simple (Rutinas)</th>
+                    <th>Present Continuous (Ahora mismo)</th>
+                </tr>
+                <tr>
+                    <td><strong>Uso:</strong> Hábitos, rutinas, verdades[cite: 52].<br><em>(every day, usually, always)</em>[cite: 52].</td>
+                    <td><strong>Uso:</strong> Acciones que suceden en este exacto momento[cite: 52].<br><em>(now, at the moment, look!)</em>[cite: 52].</td>
+                </tr>
+                <tr>
+                    <td><em>Haaland <strong>plays</strong> football every week.</em>[cite: 52]</td>
+                    <td><em>Messi <strong>is playing</strong> a match right now.</em>[cite: 52]</td>
+                </tr>
+            </table>
+
+            <h3>Reglas de 3ra Persona (Present Simple)</h3>
+            <p>Para I, You, We, They usamos el verbo normal (ej. <em>They live</em>)[cite: 44]. Pero para <strong>He, She, It</strong> agregamos una terminación[cite: 44]:</p>
+            <ul>
+                <li>Mayoría de los verbos: añadir <strong>-s</strong> (work → works)[cite: 44].</li>
+                <li>Terminados en -ch, -sh, -ss, -x, -o: añadir <strong>-es</strong> (watch → watches, go → goes)[cite: 44].</li>
+                <li>Consonante + y: cambiar a <strong>-ies</strong> (study → studies)[cite: 44].</li>
+            </ul>
+            
+            <div class="note-box">
+                <strong>¿Cómo se niega y se pregunta en Present Simple?</strong><br>
+                Usamos auxiliares: <strong>don't / doesn't</strong> para negar[cite: 44], y <strong>Do / Does</strong> para preguntar[cite: 44]. ¡Cuando usas el auxiliar, el verbo vuelve a la normalidad sin "S"![cite: 44].
+            </div>
+        </div>
+
+        <!-- PAST SIMPLE -->
+        <div id="past" class="theory-section">
+            <h2>🕰️ Past Simple</h2>
+            <p>El Past Simple sirve para acciones que empezaron y terminaron en el pasado (yesterday, last night)[cite: 72].</p>
+            
+            <h3>Verbos Regulares e Irregulares</h3>
+            <ul>
+                <li><strong>Regulares:</strong> Solo le sumamos <strong>-ed</strong> al verbo base (play → played, work → worked)[cite: 72, 73].</li>
+                <li><strong>Irregulares:</strong> Cambian por completo y no siguen reglas (go → went, see → saw, eat → ate)[cite: 75, 76].</li>
+            </ul>
+            <p><em>¡No hay que preocuparse por la 'S' de he/she/it! Se usa la misma forma para todas las personas.</em>[cite: 73]</p>
+
+            <h3>El comodín Didn't</h3>
+            <p>Para negar o preguntar, usamos <strong>did</strong> / <strong>didn't</strong>. Como el auxiliar ya marca el pasado, el verbo principal vuelve a su forma original[cite: 77, 78].</p>
+            <ul>
+                <li><strong>(+)</strong> She <em>visited</em> her grandparents[cite: 78].</li>
+                <li><strong>(-)</strong> She <strong>didn't</strong> <em>visit</em> her grandparents (No: didn't visited)[cite: 78].</li>
+                <li><strong>(?)</strong> <strong>Did</strong> you <em>call</em> him last night?[cite: 78]</li>
+            </ul>
+        </div>
+
+        <!-- FUTURE -->
+        <div id="future" class="theory-section">
+            <h2>🚀 Tiempos Futuros (Will vs. Going To)</h2>
+            <p>Para hablar de planes y decisiones, usamos dos estructuras principales[cite: 54]:</p>
+            
+            <table>
+                <tr>
+                    <th>Will / Won't</th>
+                    <th>Be Going To</th>
+                </tr>
+                <tr>
+                    <td><strong>Decisiones instantáneas</strong> tomadas al hablar[cite: 56].<br><em>(Ej: "I'll go check the door"[cite: 56])</em>.</td>
+                    <td><strong>Planes previos</strong> ya decididos antes de hablar[cite: 57].<br><em>(Ej: "She is going to study medicine"[cite: 57])</em>.</td>
+                </tr>
+                <tr>
+                    <td><strong>Predicciones por opinión</strong> (creo, supongo)[cite: 56].<br><em>(Ej: "I think they will win"[cite: 56])</em>.</td>
+                    <td><strong>Predicciones con evidencia visual</strong> presente[cite: 57].<br><em>(Ej: "Look at those clouds! It is going to rain"[cite: 56])</em>.</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- COMPARATIVES -->
+        <div id="comparatives" class="theory-section">
+            <h2>⚖️ Comparativos y Superlativos</h2>
+            
+            <p><strong>Comparativo (+ than):</strong> Compara dos cosas (A es más... que B)[cite: 106].<br>
+            <strong>Superlativo (the +):</strong> Destaca a uno dentro de todo un grupo[cite: 106].</p>
+
+            <table>
+                <tr>
+                    <th>Tipo de Adjetivo</th>
+                    <th>Comparativo (+ than)</th>
+                    <th>Superlativo (the +)</th>
+                </tr>
+                <tr>
+                    <td><strong>Cortos</strong> (1 sílaba)[cite: 106]</td>
+                    <td><span class="chunk">-er than</span> (faster than)[cite: 106]</td>
+                    <td><span class="chunk">the -est</span> (the fastest)[cite: 106]</td>
+                </tr>
+                <tr>
+                    <td><strong>Largos</strong> (2+ sílabas)[cite: 107]</td>
+                    <td><span class="chunk">more... than</span> (more modern)[cite: 107]</td>
+                    <td><span class="chunk">the most...</span> (the most modern)[cite: 107]</td>
+                </tr>
+                <tr>
+                    <td><strong>Irregulares</strong> (good, bad, far)[cite: 108]</td>
+                    <td>better / worse / farther[cite: 108]</td>
+                    <td>the best / the worst / the farthest[cite: 108]</td>
+                </tr>
+            </table>
+
+            <h3>Estructura de Igualdad (As... As)</h3>
+            <p>Para decir que dos cosas son iguales o empatan, usamos <strong>as + adjetivo base + as</strong>[cite: 111]. El adjetivo no lleva modificaciones[cite: 111].</p>
+            <div class="note-box">
+                <strong>Los 3 Errores Fatales:</strong><br>
+                1. ❌ <em>He is as taller as me.</em> → ✅ <strong>He is as tall as me.</strong>[cite: 112]<br>
+                2. ❌ <em>My city is more quiet than...</em> → ✅ <strong>My city is quieter than...</strong>[cite: 112]<br>
+                3. ❌ <em>This hotel is not as better as...</em> → ✅ <strong>This hotel is not as good as...</strong>[cite: 112]
+            </div>
+        </div>
+
+        <!-- MODAL VERBS -->
+        <div id="modals" class="theory-section">
+            <h2>🚦 Verbos Modales</h2>
+            <p>Son pequeños verbos auxiliares que expresan la intención o actitud del que habla (capacidad, obligación, consejo)[cite: 115].</p>
+            
+            <h3>Las 3 Reglas de Oro[cite: 115, 116]</h3>
+            <ol>
+                <li><strong>No llevan "S" jamás:</strong> (I can, she can, nunca <em>she cans</em>)[cite: 116].</li>
+                <li><strong>Verbo en Infinitivo SIN "TO":</strong> Siempre va el verbo base directo (You should go, no <em>You should to go</em>)[cite: 116].</li>
+                <li><strong>Se niegan y preguntan solos:</strong> No usan do/does/did. (Cannot, shouldn't. Can you...?)[cite: 116].</li>
+            </ol>
+
+            <h3>El Mapa Modal</h3>
+            <ul>
+                <li><strong>Ability & Requests:</strong> <span class="chunk">Can / Could / Be able to</span>[cite: 116, 118]. (Ej. <em>Can I open the window?</em>[cite: 116]).</li>
+                <li><strong>Advice:</strong> <span class="chunk">Should / Ought to</span>[cite: 117, 125]. Para dar sugerencias o consejos[cite: 125, 126].</li>
+                <li><strong>Obligation:</strong> <span class="chunk">Must / Have to</span>[cite: 117, 129]. Leyes u obligaciones estrictas[cite: 117, 130].</li>
+                <li><strong>Prohibition vs Option:</strong> <span class="chunk">Mustn't</span> (Está prohibido)[cite: 117, 130] vs <span class="chunk">Don't have to</span> (No hace falta / Opcional)[cite: 117, 130].</li>
+                <li><strong>Deduction:</strong> <span class="chunk">Must be</span> (Seguro que sí, 95%[cite: 134]) vs <span class="chunk">Can't be</span> (Imposible, 0%[cite: 134]).</li>
+            </ul>
+        </div>
+
+        <!-- PRONOUNS -->
+        <div id="pronouns" class="theory-section" style="margin-bottom: 80px;">
+            <h2>👤 Pronombres y Posesivos</h2>
+            
+            <h3>Sujeto vs. Objeto</h3>
+            <p>El verbo funciona como una frontera divisoria[cite: 101]:</p>
+            <ul>
+                <li><strong>Antes del verbo (Sujeto):</strong> <em>I, You, He, She, It, We, They</em>[cite: 101]. (Ej. <strong>She</strong> called me)[cite: 99].</li>
+                <li><strong>Después del verbo o preposición (Objeto):</strong> <em>me, you, him, her, it, us, them</em>[cite: 101]. (Ej. I called <strong>her</strong>[cite: 99]. / Come with <strong>me</strong>[cite: 101]).</li>
+            </ul>
+
+            <h3>Indicar Posesión</h3>
+            <ul>
+                <li><strong>Adjetivos Posesivos:</strong> Van pegados a la cosa (<em>my car, his job, our house</em>)[cite: 102].</li>
+                <li><strong>Pronombres Posesivos:</strong> Reemplazan a la cosa para no repetir. Llevan "S" al final (<em>mine, yours, hers, theirs, ours</em>)[cite: 103]. (Ej. "It's <strong>mine</strong>" = Es mío[cite: 103]).</li>
+                <li><strong>Genitivo Sajón ('s):</strong> Primero el dueño con 's, y después la cosa[cite: 102]. (Ej. <em>Lucas's jacket</em>[cite: 102]).</li>
+            </ul>
         </div>
 
     </div>
 
-    <script>
-        function mostrarTema(idTema, botonPresionado) {
-            // 1. Ocultamos todas las hojas de teoría
-            const hojas = document.querySelectorAll('.hoja-apunte');
-            hojas.forEach(hoja => hoja.classList.remove('visible'));
-
-            // 2. Mostramos solo la hoja que el alumno eligió
-            document.getElementById(idTema).classList.add('visible');
-
-            // 3. Le sacamos el color violeta a todos los botones
-            const botones = document.querySelectorAll('.tema-btn');
-            botones.forEach(btn => btn.classList.remove('activo'));
-
-            // 4. Le ponemos el color violeta solo al botón que se tocó
-            botonPresionado.classList.add('activo');
-        }
-    </script>
 </body>
 </html>
