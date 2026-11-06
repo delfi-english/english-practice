@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Starter Module | English Learning Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --sidebar-bg: #ffffff;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --primary-light: #e0e7ff;
+            --accent: #8b5cf6;
+            --border: #e2e8f0;
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            display: flex;
+            width: 100%;
+        }
+
+        /* BARRA LATERAL (SIDEBAR) */
+        .sidebar {
+            width: 280px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border);
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 2.5rem;
+        }
+
+        .brand span {
+            color: var(--primary);
+        }
+
+        .nav-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.875rem 1rem;
+            background-color: transparent;
+            border: none;
+            border-radius: 8px;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: left;
+        }
+
+        .nav-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        .nav-btn:hover {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+        }
+
+        .nav-btn.active {
+            background-color: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .btn-back {
+            margin-top: auto;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .btn-back:hover {
+            border-color: var(--text-muted);
+        }
+
+        /* CONTENIDO PRINCIPAL */
+        .main-content {
+            flex-grow: 1;
+            padding: 3rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .section-tab {
+            display: none;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .section-tab.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-header {
+            margin-bottom: 2.5rem;
+        }
+
+        .section-header h1 {
+            font-size: clamp(2rem, 4vw, 2.5rem);
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .section-header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* TEORÍA */
+        .theory-content {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: clamp(1.5rem, 4vw, 3rem);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+        }
+
+        .theory-content h3 {
+            color: var(--primary);
+            font-size: 1.4rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-light);
+        }
+
+        .theory-content h3:first-child {
+            margin-top: 0;
+        }
+
+        .theory-content p {
+            margin-bottom: 1.2rem;
+            font-size: 1.05rem;
+            color: var(--text-main);
+            line-height: 1.8;
+        }
+
+        .theory-content ul {
+            margin-bottom: 1.5rem;
+            padding-left: 1.5rem;
+        }
+
+        .theory-content li {
+            margin-bottom: 0.5rem;
+            font-size: 1.05rem;
+        }
+
+        .example-box {
+            background-color: #f0fdf4; /* Verde muy claro */
+            border-left: 4px solid #22c55e;
+            padding: 1rem 1.5rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1.5rem 0;
+            font-family: monospace;
+            font-size: 1.1rem;
+            color: #166534;
+        }
+
+        /* FLASHCARDS Y CATEGORÍAS */
+        .category-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 2rem;
+        }
+
+        .filter-btn {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .filter-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .filter-btn.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .flashcard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .flashcard-wrapper {
+            /* Wrapper necesario para que el filtro hide/show funcione limpio */
+            transition: var(--transition);
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 200px;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .flashcard-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+            border-radius: 16px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .flashcard:hover .flashcard-inner { box-shadow: var(--shadow-md); }
+        .flashcard.is-flipped .flashcard-inner { transform: rotateY(180deg); }
+
+        .flashcard-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            padding: 15px;
+        }
+
+        .flashcard-front {
+            background-color: var(--card-bg);
+            border: 2px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .flashcard-back {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: white;
+            transform: rotateY(180deg);
+            border: 2px solid transparent;
+        }
+
+        .word-en { font-size: 1.5rem; font-weight: 700; margin-bottom: 15px; }
+        .word-es { font-size: 1.5rem; font-weight: 700; margin-bottom: 10px; }
+        .emoji { font-size: 2.5rem; }
+
+        .btn-audio {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-audio:hover {
+            background-color: var(--primary);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .btn-audio svg { width: 20px; height: 20px; fill: currentColor; }
+
+        /* JUEGOS */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .game-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: var(--transition);
+            text-decoration: none;
+            color: var(--text-main);
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary);
+        }
+
+        .game-icon {
+            font-size: 2rem;
+            background: var(--bg-color);
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            flex-shrink: 0;
+        }
+
+        .game-info h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 4px; }
+        .game-info p { font-size: 0.85rem; color: var(--text-muted); }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .app-container { flex-direction: column; }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                padding: 1.5rem;
+                position: relative;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+                box-shadow: var(--shadow-sm);
+            }
+            .brand { margin-bottom: 1.5rem; }
+            .nav-list {
+                flex-direction: row;
+                overflow-x: auto;
+                padding-bottom: 0.5rem;
+                /* Ocultar barra de scroll en móviles */
+                scrollbar-width: none; 
+            }
+            .nav-list::-webkit-scrollbar { display: none; }
+            .nav-btn { white-space: nowrap; justify-content: center; padding: 10px 15px;}
+            .btn-back { margin-top: 1rem; }
+            .main-content { padding: 2rem 1.5rem; }
+            
+            .category-filters { overflow-x: auto; flex-wrap: nowrap; padding-bottom: 10px; }
+            .filter-btn { white-space: nowrap; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="brand">
+                <span>📘</span> Starter Module
+            </div>
+
+            <ul class="nav-list">
+                <li>
+                    <button class="nav-btn active" onclick="switchTab('theory')" id="nav-theory">
+                        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        Teoría y Bases
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-btn" onclick="switchTab('flashcards')" id="nav-flashcards">
+                        <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        Flashcards
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-btn" onclick="switchTab('games')" id="nav-games">
+                        <svg viewBox="0 0 24 24"><path d="M11 11V5H6v6h5zm2 0h5V5h-5v6zm-2 2H6v6h5v-6zm2 0v6h5v-6h-5z" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        Juegos Interactivos
+                    </button>
+                </li>
+            </ul>
+
+            <button class="nav-btn btn-back" onclick="window.location.href='index.html'">
+                <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                Volver al Hub
+            </button>
+        </aside>
+
+        <main class="main-content">
+            
+            <!-- PESTAÑA 1: TEORÍA -->
+            <section id="section-theory" class="section-tab active">
+                <div class="section-header">
+                    <h1>The First Steps</h1>
+                    <p>Fundamentos para comunicarte desde el día uno.</p>
+                </div>
+
+                <div class="theory-content">
+                    <h3>1. Greetings and Farewells (Saludos y Despedidas)</h3>
+                    <p>En inglés, la forma en la que saludamos depende del contexto y de a quién le estemos hablando. No es lo mismo saludar a tu jefe que a tu mejor amigo.</p>
+                    <ul>
+                        <li><strong>Formales:</strong> Hello, Good morning (Buenos días), Good afternoon (Buenas tardes), Good evening (Buenas noches al llegar).</li>
+                        <li><strong>Informales:</strong> Hi, Hey, What's up? (¿Qué tal?).</li>
+                        <li><strong>Despedidas:</strong> Goodbye, Bye, See you later (Nos vemos luego), Good night (Buenas noches al irse a dormir).</li>
+                    </ul>
+                    
+                    <h3>2. The Verb "To Be" (El Verbo Ser/Estar)</h3>
+                    <p>El verbo más importante del inglés. A diferencia del español, en inglés usamos "To Be" no solo para decir quiénes somos o dónde estamos, sino también para hablar de nuestra edad o de si tenemos hambre/sed.</p>
+                    <div class="example-box">
+                        I am (Yo soy / estoy)<br>
+                        You are (Tú eres / estás)<br>
+                        He / She / It is (Él / Ella / Eso es / está)<br>
+                        We are (Nosotros somos / estamos)<br>
+                        They are (Ellos son / están)
+                    </div>
+                    <p><em>Ejemplo:</em> "I am 25 years old" (Tengo 25 años) o "She is a doctor" (Ella es doctora).</p>
+
+                    <h3>3. Personal Information</h3>
+                    <p>Para presentarnos, solemos utilizar estructuras fijas y funcionales. Aprender estos "bloques" de memoria te ayudará a perder el miedo a hablar en tu primer día.</p>
+                    <ul>
+                        <li><strong>Nombre:</strong> My name is... / I am...</li>
+                        <li><strong>Origen:</strong> I am from... (Soy de...)</li>
+                        <li><strong>Ocupación:</strong> I am a student / teacher / doctor.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- PESTAÑA 2: FLASHCARDS -->
+            <section id="section-flashcards" class="section-tab">
+                <div class="section-header">
+                    <h1>Vocabulary Flashcards</h1>
+                    <p>Toca las tarjetas para girarlas y escucha la pronunciación.</p>
+                </div>
+
+                <!-- Botones de Categorías -->
+                <div class="category-filters">
+                    <button class="filter-btn active" onclick="filterCards('all', this)">All</button>
+                    <button class="filter-btn" onclick="filterCards('greetings', this)">Greetings</button>
+                    <button class="filter-btn" onclick="filterCards('colors', this)">Colors</button>
+                    <button class="filter-btn" onclick="filterCards('family', this)">Family</button>
+                    <button class="filter-btn" onclick="filterCards('places', this)">Places</button>
+                </div>
+
+                <!-- Grilla de Flashcards -->
+                <div class="flashcard-grid" id="flashcards-container">
+                    
+                    <!-- SALUDOS -->
+                    <div class="flashcard-wrapper" data-category="greetings">
+                        <div class="flashcard">
+                            <div class="flashcard-inner">
+                                <div class="flashcard-face flashcard-front">
+                                    <div class="word-en">Hello</div>
+                                    <button class="btn-audio" data-word="Hello" aria-label="Play audio">
+                                        <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+                                    </button>
+                                </div>
+                                <div class="flashcard-face flashcard-back">
+                                    <div class="emoji">👋</div>
+                                    <div class="word-es">Hola</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flashcard-wrapper" data-category="greetings">
+                        <div class="flashcard">
+                            <div class="flashcard-inner">
+                                <div class="flashcard-face flashcard-front">
+                                    <div class="word-en">Good morning</div>
+                                    <button class="btn-audio" data-word="Good morning" aria-label="Play audio">
+                                        <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+                                    </button>
+                                </div>
+                                <div class="flashcard-face flashcard-back">
+                                    <div class="emoji">🌅</div>
+                                    <div class="word-es">Buenos días</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- COLORES -->
+                    <div class="flashcard-wrapper" data-category="colors">
+                        <div class="flashcard">
+                            <div class="flashcard-inner">
+                                <div class="flashcard-face flashcard-front">
+                                    <div class="word-en">Red</div>
+                                    <button class="btn-audio" data-word="Red" aria-label="Play audio">
+                                        <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+                                    </button>
+                                </div>
+                                <div class="flashcard-face flashcard-back">
+                                    <div class="emoji">🔴</div>
+                                    <div class="word-es">Rojo</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flashcard-wrapper" data-category="colors">
+                        <div class="flashcard">
+                            <div class="flashcard-inner">
+                                <div class="flashcard-face flashcard-front">
+                                    <div class="word-en">Blue</div>
+                                    <button class="btn-audio" data-word="Blue" aria-label="Play audio">
+                                        <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+                                    </button>
+                                </div>
+                                <div class="flashcard-face flashcard-back">
+                                    <div class="emoji">🔵</div>
+                                    <div class="word-es">Azul</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FAMILIA -->
+                    <div class="flashcard-wrapper" data-category="family">
+                        <div class="flashcard">
+                            <div class="flashcard-inner">
+                                <div class="flashcard-face flashcard-front">
+                                    <div class="word-en">Mother</div>
+                                    <button class="btn-audio" data-word="Mother" aria-label="Play audio">
+                                        <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+                                    </button>
+                                </div>
+                                <div class="flashcard-face flashcard-back">
+                                    <div class="emoji">👩</div>
+                                    <div class="word-es">Madre</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flashcard-wrapper" data-category="family">
+                        <div class="flashcard">
+                            <div class="flashcard-inner">
+                                <div class="flashcard-face flashcard-front">
+                                    <div class="word-en">Brother</div>
+                                    <button class="btn-audio" data-word="Brother" aria-label="Play audio">
+                                        <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+                                    </button>
+                                </div>
+                                <div class="flashcard-face flashcard-back">
+                                    <div class="emoji">👦</div>
+                                    <div class="word-es">Hermano</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- LUGARES -->
+                    <div class="flashcard-wrapper" data-category="places">
+                        <div class="flashcard">
+                            <div class="flashcard-inner">
+                                <div class="flashcard-face flashcard-front">
+                                    <div class="word-en">House</div>
+                                    <button class="btn-audio" data-word="House" aria-label="Play audio">
+                                        <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+                                    </button>
+                                </div>
+                                <div class="flashcard-face flashcard-back">
+                                    <div class="emoji">🏠</div>
+                                    <div class="word-es">Casa</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flashcard-wrapper" data-category="places">
+                        <div class="flashcard">
+                            <div class="flashcard-inner">
+                                <div class="flashcard-face flashcard-front">
+                                    <div class="word-en">School</div>
+                                    <button class="btn-audio" data-word="School" aria-label="Play audio">
+                                        <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+                                    </button>
+                                </div>
+                                <div class="flashcard-face flashcard-back">
+                                    <div class="emoji">🏫</div>
+                                    <div class="word-es">Escuela</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- PESTAÑA 3: JUEGOS -->
+            <section id="section-games" class="section-tab">
+                <div class="section-header">
+                    <h1>Practice & Games</h1>
+                    <p>Aplica lo aprendido en situaciones reales y divertidas.</p>
+                </div>
+
+                <div class="games-grid">
+                    <a href="#" class="game-card">
+                        <div class="game-icon">🧩</div>
+                        <div class="game-info">
+                            <h3>Dialogue Match</h3>
+                            <p>Une las frases para armar tu primera conversación (Próximamente).</p>
+                        </div>
+                    </a>
+                    
+                    <a href="spot-object.html" class="game-card">
+                        <div class="game-icon">🕵️‍♂️</div>
+                        <div class="game-info">
+                            <h3>Spot the Object</h3>
+                            <p>Juega al detective y encuentra objetos por la ciudad.</p>
+                        </div>
+                    </a>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        // 1. SISTEMA DE PESTAÑAS (TABS)
+        function switchTab(tabId) {
+            // Ocultar todas las secciones
+            document.querySelectorAll('.section-tab').forEach(sec => sec.classList.remove('active'));
+            // Quitar clase active de todos los botones del menú
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            
+            // Mostrar la sección elegida
+            document.getElementById(`section-${tabId}`).classList.add('active');
+            // Marcar el botón elegido
+            document.getElementById(`nav-${tabId}`).classList.add('active');
+            
+            // Si estamos en celular, scrollear suavemente hacia arriba al cambiar de pestaña
+            if(window.innerWidth <= 768) {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        // 2. SISTEMA DE FILTRADO DE FLASHCARDS
+        function filterCards(category, btnElement) {
+            // Actualizar estilo de los botones de filtro
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+
+            // Mostrar/Ocultar tarjetas
+            const cards = document.querySelectorAll('.flashcard-wrapper');
+            cards.forEach(card => {
+                if (category === 'all' || card.getAttribute('data-category') === category) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // 3. LÓGICA DE GIRO DE TARJETAS (FLIP)
+        const flashcards = document.querySelectorAll('.flashcard');
+        flashcards.forEach(card => {
+            card.addEventListener('click', function() {
+                this.classList.toggle('is-flipped');
+            });
+        });
+
+        // 4. LÓGICA DE SÍNTESIS DE VOZ (TEXT-TO-SPEECH)
+        const audioBtns = document.querySelectorAll('.btn-audio');
+        audioBtns.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation(); // Evita que se gire la carta
+                const wordToRead = this.getAttribute('data-word');
+                
+                // Cancelar audios anteriores si los hay
+                window.speechSynthesis.cancel();
+                
+                const utterance = new SpeechSynthesisUtterance(wordToRead);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.85; // Velocidad un poco más lenta y clara
+                utterance.pitch = 1.0;
+                
+                window.speechSynthesis.speak(utterance);
+            });
+        });
+    </script>
+</body>
+</html>

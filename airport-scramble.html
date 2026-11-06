@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Airport Scramble</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #e9ecef; text-align: center; padding: 20px; }
+        .game-container { background-color: white; padding: 30px; border-radius: 10px; max-width: 600px; margin: 0 auto; box-shadow: 0px 4px 10px rgba(0,0,0,0.1); }
+        
+        .zona-palabras {
+            min-height: 60px;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        /* Diseño simulando la cinta de equipaje */
+        #banco-palabras { background-color: #343a40; border: 3px solid #212529; }
+        
+        /* Diseño de la zona donde el alumno arma la oración */
+        #respuesta-armada { background-color: #f8f9fa; border: 2px dashed #adb5bd; }
+
+        .palabra {
+            background-color: #ffca28;
+            color: #333;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0px 2px 5px rgba(0,0,0,0.2);
+            transition: transform 0.1s;
+        }
+        
+        .palabra:active { transform: scale(0.95); } /* Efecto de hundimiento al hacer clic */
+        
+        .btn-comprobar {
+            background-color: #28a745; color: white; border: none; padding: 12px 25px;
+            font-size: 18px; border-radius: 5px; cursor: pointer; margin-top: 15px;
+        }
+        #resultado { margin-top: 20px; font-weight: bold; font-size: 18px; }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <h2>Misión: The Airport Scramble ✈️</h2>
+    <p>Las palabras se mezclaron en la cinta de equipaje. Tocá cada palabra para armar la pregunta correcta.</p>
+
+    <!-- Zona superior donde el alumno construye su respuesta -->
+    <div id="respuesta-armada" class="zona-palabras"></div>
+
+    <!-- Zona inferior con las palabras desordenadas (la "cinta de equipaje") -->
+    <div id="banco-palabras" class="zona-palabras">
+        <!-- Agregamos el onclick="moverPalabra(this)" a cada botón para que sepa qué palabra tocaron -->
+        <button class="palabra" onclick="moverPalabra(this)">leaving</button>
+        <button class="palabra" onclick="moverPalabra(this)">my</button>
+        <button class="palabra" onclick="moverPalabra(this)">gate</button>
+        <button class="palabra" onclick="moverPalabra(this)">?</button>
+        <button class="palabra" onclick="moverPalabra(this)">Which</button>
+        <button class="palabra" onclick="moverPalabra(this)">from</button>
+        <button class="palabra" onclick="moverPalabra(this)">is</button>
+        <button class="palabra" onclick="moverPalabra(this)">flight</button>
+    </div>
+
+    <button class="btn-comprobar" onclick="comprobarRespuesta()">Comprobar Oración</button>
+    <div id="resultado"></div>
+</div>
+
+<script>
+    // Esta función mueve la palabra de arriba hacia abajo y viceversa
+    function moverPalabra(botonTocado) {
+        const banco = document.getElementById('banco-palabras');
+        const respuesta = document.getElementById('respuesta-armada');
+
+        // Si la palabra está en el banco negro, la mueve a la caja blanca
+        if (botonTocado.parentElement === banco) {
+            respuesta.appendChild(botonTocado);
+        } else {
+            // Si ya estaba en la caja blanca, la devuelve al banco negro
+            banco.appendChild(botonTocado);
+        }
+    }
+
+    // Esta función lee el orden de las palabras en la caja blanca y verifica si ganaste
+    function comprobarRespuesta() {
+        const respuesta = document.getElementById('respuesta-armada');
+        let oracionFinal = "";
+
+        // Unimos el texto de todos los botones que están en la caja de respuesta
+        for (let i = 0; i < respuesta.children.length; i++) {
+            oracionFinal += respuesta.children[i].innerText + " ";
+        }
+        
+        oracionFinal = oracionFinal.trim(); // Borra el espacio extra al final de la oración
+
+        const resultadoDiv = document.getElementById('resultado');
+
+        // Compara con la respuesta correcta exacta de tu planificación
+        if (oracionFinal === "Which gate is my flight leaving from ?") {
+            resultadoDiv.innerHTML = "¡Perfecto! Recuperaste tu equipaje. 🧳";
+            resultadoDiv.style.color = "green";
+        } else {
+            resultadoDiv.innerHTML = "Orden incorrecto. Tocá las palabras de arriba para devolverlas e intentá de nuevo.";
+            resultadoDiv.style.color = "red";
+        }
+    }
+</script>
+
+</body>
+</html>

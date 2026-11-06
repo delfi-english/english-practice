@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Fill in the Blanks: Daily Routine</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; padding: 20px; line-height: 1.8; text-align: center; }
+        .game-container { background-color: white; padding: 30px; border-radius: 10px; max-width: 650px; margin: 0 auto; box-shadow: 0px 4px 10px rgba(0,0,0,0.1); text-align: left; }
+        
+        h2 { text-align: center; }
+        .banco-palabras { background-color: #e9ecef; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-weight: bold; text-align: center; color: #495057; font-size: 18px; }
+        .texto-ejercicio { font-size: 18px; color: #333; }
+        
+        input[type="text"] {
+            font-size: 16px; padding: 5px; width: 120px; text-align: center;
+            border: 2px solid #ccc; border-radius: 5px; margin: 0 5px; font-weight: bold;
+            transition: all 0.3s;
+        }
+        input[type="text"]:focus { outline: none; border-color: #7b2cbf; box-shadow: 0 0 5px rgba(123, 44, 191, 0.5); }
+        
+        .correcto { border-color: #28a745 !important; background-color: #e9f7ef; color: #155724; }
+        .incorrecto { border-color: #dc3545 !important; background-color: #f8d7da; color: #721c24; }
+        
+        .btn-comprobar { background-color: #7b2cbf; color: white; border: none; padding: 12px 25px; font-size: 18px; border-radius: 5px; cursor: pointer; margin-top: 20px; width: 100%; }
+        .btn-comprobar:hover { background-color: #5a189a; }
+        #resultado { margin-top: 20px; font-weight: bold; font-size: 18px; text-align: center; }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <h2>Misión: The Daily Routine ☕</h2>
+    <p style="text-align: center;">Completá el texto conjugando los verbos en Present Simple.</p>
+
+    <!-- Ahora esta caja está vacía en el HTML, la llenará JavaScript de forma aleatoria -->
+    <div id="banco-palabras" class="banco-palabras"></div>
+
+    <div class="texto-ejercicio">
+        David is a software developer. Every day, he <input type="text" id="blank0" autocomplete="off"> at 7:00 AM. 
+        He <input type="text" id="blank1" autocomplete="off"> a cup of green tea and toast for breakfast. 
+        At 8:00 AM, he <input type="text" id="blank2" autocomplete="off"> the bus to his office. 
+        He <input type="text" id="blank3" autocomplete="off"> from 9:00 AM to 5:00 PM. 
+        After he <input type="text" id="blank4" autocomplete="off"> work, he often <input type="text" id="blank5" autocomplete="off"> his friends at a café. 
+        In the evening, he <input type="text" id="blank6" autocomplete="off"> television; instead, he prefers to relax at home and <input type="text" id="blank7" autocomplete="off"> a book before going to sleep.
+    </div>
+
+    <button class="btn-comprobar" onclick="comprobarRespuestas()">Comprobar Respuestas</button>
+    <div id="resultado"></div>
+</div>
+
+<script>
+    // 1. LOS VERBOS EN INFINITIVO (Para mostrar mezclados al alumno)
+    const opcionesVerbos = [
+        "wake up", "have", "catch", "work", "finish", "meet", "not watch", "read"
+    ];
+
+    // 2. LAS RESPUESTAS CORRECTAS CONJUGADAS (En el orden exacto del texto)
+    const respuestasCorrectas = [
+        "wakes up", 
+        "has", 
+        "catches", 
+        "works", 
+        "finishes", 
+        "meets", 
+        "doesn't watch", 
+        "reads"
+    ];
+
+    // Función para mezclar un array (la misma lógica que usamos en el juego de farmacia)
+    function mezclarArray(array) {
+        return array.sort(() => Math.random() - 0.5);
+    }
+
+    // Esta función se ejecuta apenas carga la página
+    function cargarBancoPalabras() {
+        // Hacemos una copia del array de verbos y la mezclamos
+        const opcionesMezcladas = mezclarArray([...opcionesVerbos]);
+        
+        // Agarramos las palabras mezcladas y las unimos poniéndoles " | " en el medio
+        document.getElementById("banco-palabras").innerText = opcionesMezcladas.join("  |  ");
+    }
+
+    // Lógica de corrección
+    function comprobarRespuestas() {
+        let aciertos = 0;
+
+        for (let i = 0; i < respuestasCorrectas.length; i++) {
+            const input = document.getElementById("blank" + i);
+            const respuestaAlumno = input.value.trim().toLowerCase(); 
+
+            input.classList.remove("correcto", "incorrecto");
+
+            if (respuestaAlumno === respuestasCorrectas[i]) {
+                input.classList.add("correcto");
+                aciertos++;
+            } else {
+                input.classList.add("incorrecto");
+            }
+        }
+
+        const resultadoDiv = document.getElementById("resultado");
+        if (aciertos === respuestasCorrectas.length) {
+            resultadoDiv.innerText = "¡Excelente! Aplicaste perfecto la regla de la 3ra persona. 🏆";
+            resultadoDiv.style.color = "green";
+        } else {
+            resultadoDiv.innerText = "Tuviste " + aciertos + " aciertos. ¡Revisá los casilleros en rojo y volvé a intentar!";
+            resultadoDiv.style.color = "red";
+        }
+    }
+
+    // ¡Acá llamamos a la función para que llene la caja de palabras al empezar!
+    cargarBancoPalabras();
+</script>
+
+</body>
+</html>

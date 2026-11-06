@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Pharmacy Match</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #e9ecef; text-align: center; padding: 20px; }
+        .game-container { background-color: white; padding: 30px; border-radius: 10px; max-width: 700px; margin: 0 auto; box-shadow: 0px 4px 10px rgba(0,0,0,0.1); }
+        
+        /* Usamos Flexbox para poner las dos columnas una al lado de la otra */
+        .columnas { display: flex; justify-content: space-between; gap: 20px; margin-top: 20px; }
+        .columna { flex: 1; display: flex; flex-direction: column; gap: 15px; }
+
+        .btn-match {
+            background-color: #f8f9fa; color: #333; border: 2px solid #ced4da;
+            padding: 15px; border-radius: 8px; font-size: 16px; font-weight: bold;
+            cursor: pointer; transition: all 0.2s;
+        }
+
+        /* Clases de colores que JavaScript agregará y sacará automáticamente */
+        .btn-match:hover { background-color: #e2e6ea; }
+        .seleccionado { background-color: #ffca28; border-color: #ffb300; color: #000; }
+        .correcto { background-color: #28a745; border-color: #1e7e34; color: white; cursor: default; }
+        .incorrecto { background-color: #dc3545; border-color: #c82333; color: white; }
+
+        #resultado { margin-top: 20px; font-weight: bold; font-size: 18px; min-height: 25px; }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <h2>Misión: The Pharmacy Match 💊</h2>
+    <p>Tocá un medicamento en inglés y luego tocala con su uso correcto en español para emparejarlos.</p>
+
+    <div class="columnas">
+        <!-- Columna Izquierda: Palabras en Inglés -->
+        <div class="columna" id="columna-ingles"></div>
+        
+        <!-- Columna Derecha: Definiciones -->
+        <div class="columna" id="columna-espanol"></div>
+    </div>
+
+    <div id="resultado"></div>
+</div>
+
+<script>
+    // 1. NUESTRA BASE DE DATOS DE PARES
+    // Cada par tiene un "id" (identificador) único para que la compu sepa cuáles coinciden.
+    const pares = [
+        { id: 1, ingles: "Painkillers (Ibuprofen)", espanol: "Analgésicos para dolor o fiebre" },
+        { id: 2, ingles: "Motion sickness pills", espanol: "Pastillas para mareos en auto o avión" },
+        { id: 3, ingles: "Band-aids", espanol: "Curitas para cortes o heridas" },
+        { id: 4, ingles: "Prescription", espanol: "Receta médica firmada por un doctor" }
+    ];
+
+    // Variables para recordar qué botones tocó el alumno
+    let botonInglesSeleccionado = null;
+    let botonEspanolSeleccionado = null;
+    let paresCompletados = 0;
+
+    // 2. FUNCIÓN PARA MEZCLAR LAS PALABRAS
+    // Esto evita que la respuesta correcta esté siempre justo al lado
+    function mezclarArray(array) {
+        return array.sort(() => Math.random() - 0.5);
+    }
+
+    // 3. INICIAR EL JUEGO
+    function cargarJuego() {
+        const colIngles = document.getElementById('columna-ingles');
+        const colEspanol = document.getElementById('columna-espanol');
+
+        // Clonamos el array original y los mezclamos para cada columna
+        const listaIngles = mezclarArray([...pares]);
+        const listaEspanol = mezclarArray([...pares]);
+
+        // Creamos los botones de la columna izquierda
+        listaIngles.forEach(item => {
+            const btn = document.createElement('button');
+            btn.className = 'btn-match';
+            btn.innerText = item.ingles;
+            // Al hacer clic, ejecuta la función de seleccionar enviando su "id"
+            btn.onclick = () => seleccionarIngles(btn, item.id);
+            colIngles.appendChild(btn);
+        });
+
+        // Creamos los botones de la columna derecha
+        listaEspanol.forEach(item => {
+            const btn = document.createElement('button');
+            btn.className = 'btn-match';
+            btn.innerText = item.espanol;
+            btn.onclick = () => seleccionarEspanol(btn, item.id);
+            colEspanol.appendChild(btn);
+        });
+    }
+
+    // 4. LÓGICA AL TOCAR UN BOTÓN EN INGLÉS
+    function seleccionarIngles(boton, id) {
+        // Si el botón ya está correcto, no hacemos nada
+        if (boton.classList.contains('correcto')) return;
+
+        // Despinta el botón que estaba seleccionado antes (si había uno)
+        if (botonInglesSeleccionado) {
+            botonInglesSeleccionado.boton.classList.remove('seleccionado');
+        }
+
+        // Pinta de amarillo el nuevo botón tocado y lo guarda en la memoria
+        boton.classList.add('seleccionado');
+        botonInglesSeleccionado = { boton: boton, id: id };
+
+        verificarMatch();
+    }
+
+    // 5. LÓGICA AL TOCAR UN BOTÓN EN ESPAÑOL
+    function seleccionarEspanol(boton, id) {
+        if (boton.classList.contains('correcto')) return;
+
+        if (botonEspanolSeleccionado) {
+            botonEspanolSeleccionado.boton.classList.remove('seleccionado');
+        }
+
+        boton.classList.add('seleccionado');
+        botonEspanolSeleccionado = { boton: boton, id: id };
+
+        verificarMatch();
+    }
+
+    // 6. COMPROBAR SI SON PAREJA
+    function verificarMatch() {
+        // Solo verifica si el alumno ya tocó un botón de cada lado
+        if (botonInglesSeleccionado && botonEspanolSeleccionado) {
+            
+            const btn1 = botonInglesSeleccionado.boton;
+            const btn2 = botonEspanolSeleccionado.boton;
+            const resultadoDiv = document.getElementById('resultado');
+
+            // Si los ID coinciden...
+            if (botonInglesSeleccionado.id === botonEspanolSeleccionado.id) {
+                btn1.classList.remove('seleccionado');
+                btn2.classList.remove('seleccionado');
+                btn1.classList.add('correcto');
+                btn2.classList.add('correcto');
+                
+                resultadoDiv.innerText = "¡Correcto! ✔️";
+                resultadoDiv.style.color = "green";
+                paresCompletados++;
+
+                // Chequeamos si ganó el juego
+                if (paresCompletados === pares.length) {
+                    resultadoDiv.innerText = "¡Misión completada! Tienes tu botiquín listo. 🚑";
+                }
+
+            } else {
+                // Si se equivocó
+                btn1.classList.remove('seleccionado');
+                btn2.classList.remove('seleccionado');
+                btn1.classList.add('incorrecto');
+                btn2.classList.add('incorrecto');
+                
+                resultadoDiv.innerText = "Ups... esos no coinciden.";
+                resultadoDiv.style.color = "red";
+
+                // Le sacamos el color rojo rápido para que siga jugando
+                setTimeout(() => {
+                    btn1.classList.remove('incorrecto');
+                    btn2.classList.remove('incorrecto');
+                    resultadoDiv.innerText = "";
+                }, 1000);
+            }
+
+            // Vaciamos la memoria para la próxima pareja
+            botonInglesSeleccionado = null;
+            botonEspanolSeleccionado = null;
+        }
+    }
+
+    // Arrancamos el juego
+    cargarJuego();
+</script>
+
+</body>
+</html>

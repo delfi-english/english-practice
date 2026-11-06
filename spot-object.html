@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Spot the Object: There is / There are</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; padding: 20px; }
+        
+        .game-container { background-color: white; width: 100%; max-width: 700px; border-radius: 15px; box-shadow: 0px 5px 15px rgba(0,0,0,0.1); overflow: hidden; }
+        
+        .header-juego { background-color: #7b2cbf; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 18px; font-weight: bold; }
+        
+        .timer { background-color: #dc3545; padding: 5px 15px; border-radius: 20px; }
+        
+        /* El mapa (Acá vas a poner la imagen de tu clase después) */
+        .mapa-visor { width: 100%; height: 350px; background-color: #e9ecef; display: flex; justify-content: center; align-items: center; border-bottom: 3px solid #dee2e6; position: relative; }
+        .mapa-visor img { width: 100%; height: 100%; object-fit: contain; }
+        
+        .panel-preguntas { padding: 30px; text-align: center; }
+        
+        .afirmacion { font-size: 22px; font-weight: bold; color: #212529; margin-bottom: 30px; }
+        
+        .botones-tf { display: flex; justify-content: center; gap: 20px; }
+        .btn-tf { padding: 15px 40px; font-size: 20px; font-weight: bold; color: white; border: none; border-radius: 10px; cursor: pointer; transition: transform 0.1s; width: 150px; }
+        .btn-tf:active { transform: scale(0.95); }
+        .btn-true { background-color: #28a745; }
+        .btn-false { background-color: #dc3545; }
+        
+        /* Pantalla inicial y final */
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255,255,255,0.95); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 20; padding: 30px; text-align: center; }
+        .btn-iniciar { background-color: #7b2cbf; color: white; padding: 15px 30px; border: none; border-radius: 10px; font-size: 20px; font-weight: bold; cursor: pointer; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="game-container" style="position: relative;">
+    
+    <!-- Pantalla de Inicio -->
+    <div class="overlay" id="pantalla-inicio">
+        <h1 style="color: #7b2cbf;">Spot the Object 🕵️‍♂️</h1>
+        <p style="font-size: 18px; color: #495057; margin-bottom: 10px;">Mirá rápido el mapa y decidí si la afirmación es <strong>Verdadera (True)</strong> o <strong>Falsa (False)</strong>.</p>
+        <p style="font-size: 16px; color: #6c757d;">Usaremos: <em>There is, There are, There isn't, There aren't, some, any.</em></p>
+        <button class="btn-iniciar" onclick="empezarJuego()">Empezar Misión (60s)</button>
+    </div>
+
+    <!-- Pantalla Final -->
+    <div class="overlay" id="pantalla-final" style="display: none;">
+        <h1 style="color: #28a745;">¡Tiempo Terminado! ⏱️</h1>
+        <p style="font-size: 22px; color: #212529; margin-top: 10px;" id="puntaje-final">Puntaje: 0 aciertos.</p>
+        <button class="btn-iniciar" onclick="location.reload()">Jugar de nuevo</button>
+    </div>
+
+    <div class="header-juego">
+        <div id="puntos">Puntos: 0</div>
+        <div class="timer" id="tiempo">60s</div>
+    </div>
+
+    <div class="mapa-visor">
+        <img src="imagenes/mapa-ciudad-Gemini.jpg" alt="Mapa de la ciudad">
+    </div>
+
+    <div class="panel-preguntas">
+        <div class="afirmacion" id="texto-afirmacion">Cargando afirmación...</div>
+        
+        <div class="botones-tf">
+            <button class="btn-tf btn-true" onclick="verificar(true)">TRUE (T)</button>
+            <button class="btn-tf btn-false" onclick="verificar(false)">FALSE (F)</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // 1. BASE DE PREGUNTAS (Basado en la clase 8/9)
+    // Para que el juego funcione sin ver tu imagen, las respuestas están configuradas acá. 
+    // Cuando pongas tu mapa real, ajustá el valor de "esVerdadera".
+    const bancoAfirmaciones = [
+        { texto: "There is a Hotel in front of the Riverwalk.", esVerdadera: true },
+        { texto: "There are two stadiums.", esVerdadera: false },
+        { texto: "There isn't any traffic on the bridge.", esVerdadera: true },
+        { texto: "There is a University behind the Art Gallery.", esVerdadera: true },
+        { texto: "There aren't any big boats parked at the Marina.", esVerdadera: false },
+        { texto: "There isn't a gym in this town.", esVerdadera: false },
+        { texto: "There are a lot of trees in the Observatory.", esVerdadera: true },
+        
+        // Nuevas oraciones para agregar
+        { texto: "There is a Market next to the Spa.", esVerdadera: true }, //[cite: 73]
+        { texto: "There are a lot of people in the Plaza.", esVerdadera: true }, //[cite: 73]
+        { texto: "There aren't any helicopters at the Heliport.", esVerdadera: true }, //[cite: 73]
+        { texto: "There is an Aquarium between the Spa and the GYM.", esVerdadera: false }, //[cite: 73]
+        { texto: "There are some green buses on the streets.", esVerdadera: false }, //[cite: 73]
+        { texto: "There isn't an Arcade near the Zoo.", esVerdadera: false }, //[cite: 73]
+        { texto: "There are two fountains in the Plaza.", esVerdadera: true }, //[cite: 73]
+        { texto: "There is a clock on the City Hall building.", esVerdadera: true }, //[cite: 73]
+        { texto: "There are a lot of people at the Skate Park.", esVerdadera: false }, //[cite: 73]
+        { texto: "There isn't a Convention Center in this city.", esVerdadera: false } //[cite: 73]
+    ];        
+
+    let afirmacionesRestantes = [];
+    let afirmacionActual = null;
+    let puntos = 0;
+    let tiempoRestante = 60;
+    let intervaloTimer = null;
+
+    function mezclarArray(array) {
+        return array.sort(() => Math.random() - 0.5);
+    }
+
+    function empezarJuego() {
+        document.getElementById("pantalla-inicio").style.display = "none";
+        
+        // Copiamos y mezclamos las preguntas
+        afirmacionesRestantes = mezclarArray([...bancoAfirmaciones]);
+        
+        puntos = 0;
+        tiempoRestante = 60;
+        document.getElementById("puntos").innerText = `Puntos: ${puntos}`;
+        
+        cargarSiguiente();
+
+        // Inicia el reloj
+        intervaloTimer = setInterval(() => {
+            tiempoRestante--;
+            document.getElementById("tiempo").innerText = `${tiempoRestante}s`;
+            
+            if (tiempoRestante <= 0) {
+                finalizarJuego();
+            }
+        }, 1000); // 1000 milisegundos = 1 segundo
+    }
+
+    function cargarSiguiente() {
+        // Si nos quedamos sin preguntas antes de tiempo, volvemos a mezclar y arrancar
+        if (afirmacionesRestantes.length === 0) {
+            afirmacionesRestantes = mezclarArray([...bancoAfirmaciones]);
+        }
+
+        afirmacionActual = afirmacionesRestantes.pop(); // Saca la última pregunta de la lista
+        document.getElementById("texto-afirmacion").innerText = afirmacionActual.texto;
+    }
+
+    function verificar(respuestaAlumno) {
+        if (tiempoRestante <= 0) return; // Si se acabó el tiempo, los botones no andan
+
+        const box = document.querySelector(".panel-preguntas");
+
+        if (respuestaAlumno === afirmacionActual.esVerdadera) {
+            puntos++;
+            document.getElementById("puntos").innerText = `Puntos: ${puntos}`;
+            box.style.backgroundColor = "#e9f7ef"; // Destello verde
+        } else {
+            box.style.backgroundColor = "#f8d7da"; // Destello rojo
+        }
+
+        // Vuelve al color normal casi al instante
+        setTimeout(() => {
+            box.style.backgroundColor = "transparent";
+        }, 200);
+
+        cargarSiguiente();
+    }
+
+    function finalizarJuego() {
+        clearInterval(intervaloTimer); // Frena el reloj
+        document.getElementById("pantalla-final").style.display = "flex";
+        document.getElementById("puntaje-final").innerText = `Lograste ${puntos} aciertos en 60 segundos.`;
+    }
+ // DETECTAR LAS TECLAS 'T' Y 'F'
+    document.addEventListener('keydown', function(event) {
+        // Los atajos solo funcionan si el juego ya empezó (hay una afirmación) y hay tiempo en el reloj
+        if (tiempoRestante > 0 && afirmacionActual !== null) {
+            
+            // toLowerCase() asegura que funcione ya sea que tengan las mayúsculas activadas o no
+            if (event.key.toLowerCase() === 't') {
+                verificar(true);
+            } else if (event.key.toLowerCase() === 'f') {
+                verificar(false);
+            }
+            
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Dialogue Builder: Cafe & Fast Food</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #e9ecef; display: flex; justify-content: center; padding: 20px; }
+        
+        /* Simulamos la pantalla de un celular */
+        .phone-container { background-color: white; width: 100%; max-width: 400px; height: 650px; border-radius: 20px; box-shadow: 0px 10px 20px rgba(0,0,0,0.2); display: flex; flex-direction: column; overflow: hidden; border: 8px solid #343a40; }
+        
+        .chat-header { background-color: #7b2cbf; color: white; padding: 15px; text-align: center; font-weight: bold; font-size: 18px; }
+        
+        /* El área donde aparecen los mensajes */
+        .chat-box { flex: 1; padding: 15px; overflow-y: auto; background-color: #f8f9fa; display: flex; flex-direction: column; gap: 10px; }
+        
+        /* Estilos de las burbujas de chat */
+        .burbuja { padding: 10px 15px; border-radius: 15px; max-width: 80%; font-size: 15px; line-height: 1.4; animation: aparecer 0.3s ease-out; }
+        .burbuja.npc { background-color: #e9ecef; color: #212529; align-self: flex-start; border-bottom-left-radius: 2px; }
+        .burbuja.user { background-color: #28a745; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
+        .burbuja.error { background-color: #dc3545; color: white; align-self: center; text-align: center; font-size: 13px; max-width: 90%; }
+
+        /* Área de los botones (el teclado del usuario) */
+        .opciones-container { background-color: white; padding: 15px; border-top: 1px solid #dee2e6; display: flex; flex-direction: column; gap: 8px; }
+        
+        .btn-opcion { background-color: #f8f9fa; border: 1px solid #ced4da; padding: 12px; border-radius: 8px; font-size: 14px; text-align: left; cursor: pointer; transition: 0.2s; color: #495057; font-weight: bold; }
+        .btn-opcion:hover { background-color: #e2e6ea; border-color: #adb5bd; }
+
+        @keyframes aparecer {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="phone-container">
+    <div class="chat-header">
+        Max (Homemade Cupcakes) 🧁
+    </div>
+    
+    <!-- Acá se van a ir dibujando los mensajes -->
+    <div class="chat-box" id="chat-box"></div>
+    
+    <!-- Acá van a aparecer las opciones para contestar -->
+    <div class="opciones-container" id="opciones-container"></div>
+</div>
+
+<script>
+    // 1. EL GUIÓN DEL CHAT (Basado en la clase 20/8 y 2 Broke Girls)
+    const conversacion = [
+        {
+            mensajeNpc: "Welcome to Max's Homemade Cupcakes. What can I get you?",
+            opciones: [
+                "I'm traveling for business.",
+                "Can I have a blueberry muffin, please?",
+                "Is the elevator working?"
+            ],
+            correcta: 1 // La opción B es la correcta
+        },
+        {
+            mensajeNpc: "Sure! To go or for here?",
+            opciones: [
+                "I'd like a cup of black tea.",
+                "To go, please.",
+                "Where is the nearest bus stop?"
+            ],
+            correcta: 1
+        },
+        {
+            mensajeNpc: "Alright, that will be $4. Cash or card?",
+            opciones: [
+                "I'll pay with card. Where do I tap it?",
+                "Is service included in the bill?",
+                "How much is it?"
+            ],
+            correcta: 0
+        }
+    ];
+
+    let pasoActual = 0;
+    const chatBox = document.getElementById("chat-box");
+    const opcionesContainer = document.getElementById("opciones-container");
+
+    // 2. FUNCIÓN PARA AGREGAR UN MENSAJE AL CHAT
+    function agregarMensaje(texto, tipo) {
+        const div = document.createElement("div");
+        div.className = `burbuja ${tipo}`; // Puede ser 'npc', 'user' o 'error'
+        div.innerText = texto;
+        chatBox.appendChild(div);
+        
+        // Hace que el chat baje automáticamente si hay muchos mensajes
+        chatBox.scrollTop = chatBox.scrollHeight; 
+    }
+
+    // 3. FUNCIÓN PARA MOSTRAR LAS OPCIONES DEL USUARIO
+    function cargarPaso() {
+        opcionesContainer.innerHTML = ""; // Limpiamos los botones anteriores
+
+        if (pasoActual < conversacion.length) {
+            const paso = conversacion[pasoActual];
+            
+            // 1ro: Max (NPC) envía su mensaje
+            agregarMensaje(paso.mensajeNpc, "npc");
+
+            // 2do: Mostramos los botones para que el alumno responda
+            paso.opciones.forEach((opcionTexto, index) => {
+                const btn = document.createElement("button");
+                btn.className = "btn-opcion";
+                btn.innerText = opcionTexto;
+                btn.onclick = () => verificarRespuesta(index, opcionTexto);
+                opcionesContainer.appendChild(btn);
+            });
+        } else {
+            // Si ya no hay más pasos, terminó el juego
+            agregarMensaje("¡Misión completada! Tienes tu pedido listo. ☕", "error"); // Usamos el estilo rojo para destacar el fin
+            opcionesContainer.innerHTML = "<button class='btn-opcion' style='text-align: center; background-color: #7b2cbf; color: white;' onclick='location.reload()'>Jugar de nuevo</button>";
+        }
+    }
+
+    // 4. FUNCIÓN PARA VERIFICAR LA RESPUESTA
+    function verificarRespuesta(indexElegido, textoElegido) {
+        const paso = conversacion[pasoActual];
+
+        if (indexElegido === paso.correcta) {
+            // El usuario acertó: mostramos su mensaje en verde
+            opcionesContainer.innerHTML = ""; // Borramos los botones
+            agregarMensaje(textoElegido, "user");
+
+            pasoActual++;
+            
+            // Esperamos 1 segundo antes de que Max responda (simula que está escribiendo)
+            setTimeout(() => {
+                cargarPaso();
+            }, 1000);
+
+        } else {
+            // Se equivocó: mostramos una alerta roja chiquita que desaparece sola
+            const errorDiv = document.createElement("div");
+            errorDiv.className = "burbuja error";
+            errorDiv.innerText = "Esa frase no tiene sentido acá. ¡Intentá de nuevo!";
+            chatBox.appendChild(errorDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            setTimeout(() => {
+                errorDiv.remove(); // Borra el error después de 2 segundos
+            }, 2000);
+        }
+    }
+
+    // Iniciamos el chat
+    setTimeout(() => {
+        cargarPaso();
+    }, 500); // Pequeña pausa inicial para que parezca más real
+
+</script>
+
+</body>
+</html>

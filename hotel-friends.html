@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Sitcom English: Hotel Check-in</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; text-align: center; padding: 20px; }
+        .game-container { background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0px 4px 10px rgba(0,0,0,0.1); max-width: 600px; margin: 0 auto; }
+        
+        /* Estilos para que las imágenes y videos no se salgan de la caja */
+        .media-container img { width: 100%; max-height: 250px; object-fit: cover; border-radius: 8px; margin-bottom: 15px; }
+        
+        button { background-color: #7b2cbf; color: white; border: none; padding: 10px 20px; margin: 10px; border-radius: 5px; cursor: pointer; font-size: 16px; width: 90%; }
+        button:hover { background-color: #5a189a; }
+        #resultado { margin-top: 20px; font-weight: bold; font-size: 18px; }
+        #progreso { color: #666; font-size: 14px; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <h2>Escena: Check-in en Las Vegas 🎲</h2>
+    <div id="progreso">Pregunta 1 de 3</div>
+    
+    <!-- ACÁ CREAMOS LA CAJA PARA LAS IMÁGENES/VIDEOS -->
+    <div class="media-container">
+        <img id="imagen-personaje" src="" alt="Escena de la serie">
+    </div>
+
+    <p id="escenario">Cargando escenario...</p>
+
+    <div id="opciones"></div>
+    <div id="resultado"></div>
+</div>
+
+<script>
+    // 1. EL ARRAY DE PREGUNTAS AHORA INCLUYE IMÁGENES Y CLIPS
+    const preguntas = [
+        {
+            escenario: "Ross y Rachel llegan a la recepción. Rachel quiere pedir una habitación con cama matrimonial. ¿Qué debería decir?",
+            opciones: [
+                "Can I have breakfast in my room?",
+                "Can I get a room with a double bed?",
+                "Is the elevator working?"
+            ],
+            respuestaCorrecta: 1,
+            // Imagen que se ve al pensar la respuesta
+            imagenPregunta: "https://media.giphy.com/media/VbJmgHbdw6Dcw/giphy.gif", 
+            // Clip que se ve al acertar
+            clipExito: "https://media.giphy.com/media/31lPv5L3aIvTi/giphy.gif" 
+        },
+        {
+            escenario: "A la mañana siguiente, Joey tiene mucha hambre y quiere saber a qué hora puede ir a comer. ¿Qué pregunta?",
+            opciones: [
+                "Is breakfast included?",
+                "Where is breakfast served?",
+                "What time is breakfast served?"
+            ],
+            respuestaCorrecta: 2,
+            imagenPregunta: "https://media.giphy.com/media/Y4yWtyQtxMeJ8GlAiR/giphy.gif",
+            clipExito: "https://media.giphy.com/media/VABbCpX94WCfS/giphy.gif"
+        },
+        {
+            escenario: "Chandler y Monica están cansados de subir por la escalera con las valijas. Necesitan ayuda.",
+            opciones: [
+                "Where is the elevator?",
+                "Which floor is my room on?",
+                "Is there a quiet room available?"
+            ],
+            respuestaCorrecta: 0,
+            imagenPregunta: "https://media.giphy.com/media/mGK1g88HZRa2FlKGbz/giphy.gif",
+            clipExito: "https://media.giphy.com/media/fCWeE2oO43jxu/giphy.gif"
+        }
+    ];
+
+    let preguntaActual = 0;
+
+    function cargarPregunta() {
+        document.getElementById('resultado').innerHTML = ""; 
+        const pregunta = preguntas[preguntaActual];
+        
+        document.getElementById('progreso').innerText = "Pregunta " + (preguntaActual + 1) + " de " + preguntas.length;
+        document.getElementById('escenario').innerText = pregunta.escenario;
+        
+        // Carga la imagen principal de la pregunta
+        document.getElementById('imagen-personaje').src = pregunta.imagenPregunta;
+
+        const divOpciones = document.getElementById('opciones');
+        divOpciones.innerHTML = ""; 
+
+        for (let i = 0; i < pregunta.opciones.length; i++) {
+            const boton = document.createElement("button");
+            boton.innerText = pregunta.opciones[i];
+            boton.onclick = function() { verificarRespuesta(i) };
+            divOpciones.appendChild(boton);
+        }
+    }
+
+    function verificarRespuesta(indiceElegido) {
+        const pregunta = preguntas[preguntaActual];
+        const resultadoDiv = document.getElementById('resultado');
+
+        if (indiceElegido === pregunta.respuestaCorrecta) {
+            resultadoDiv.innerHTML = "¡Excelente! 🎉";
+            resultadoDiv.style.color = "green";
+            
+            // ¡ACÁ OCURRE LA MAGIA! Cambiamos la imagen estática por el clip de éxito
+            document.getElementById('imagen-personaje').src = pregunta.clipExito;
+
+            // Desactivamos los botones para que no hagan doble clic mientras ven el video
+            const botones = document.getElementById('opciones').getElementsByTagName('button');
+            for (let boton of botones) {
+                boton.disabled = true; 
+            }
+
+            // Ahora esperamos 4000 milisegundos (4 segundos) para que puedan ver el clip antes de avanzar
+            setTimeout(function() {
+                preguntaActual++;
+                
+                if (preguntaActual < preguntas.length) {
+                    cargarPregunta();
+                } else {
+                    document.getElementById('escenario').innerText = "¡Completaste el módulo del Hotel!";
+                    document.getElementById('opciones').innerHTML = "<button onclick='location.reload()'>Jugar de nuevo</button>";
+                    resultadoDiv.innerHTML = "";
+                    document.getElementById('imagen-personaje').src = "https://media.giphy.com/media/xT1XGT9ersCCKjcIGs/giphy.gif"; // Un GIF de festejo final
+                    document.getElementById('progreso').innerText = "¡Módulo completado!";
+                }
+            }, 4000); 
+
+        } else {
+            resultadoDiv.innerHTML = "Mmm... esa no es la frase ideal. ¡Intentá de nuevo!";
+            resultadoDiv.style.color = "red";
+        }
+    }
+
+    cargarPregunta();
+</script>
+
+</body>
+</html>

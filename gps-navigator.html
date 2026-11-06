@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>GPS Navigator: Free Roam</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #343a40; display: flex; justify-content: center; padding: 20px; color: #333; }
+        
+        .dispositivo-gps { background-color: white; width: 100%; max-width: 550px; border-radius: 15px; overflow: hidden; box-shadow: 0px 10px 30px rgba(0,0,0,0.5); }
+        
+        .gps-header { background-color: #28a745; color: white; padding: 15px; text-align: center; font-weight: bold; font-size: 18px; }
+        .destino-texto { font-size: 14px; background-color: rgba(0,0,0,0.2); padding: 5px 10px; border-radius: 5px; margin-top: 5px; display: inline-block; }
+        
+        /* Ciudad de 5x5 */
+        .mapa-grid { display: grid; grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(5, 75px); background-color: #343a40; gap: 4px; padding: 4px; position: relative; }
+        
+        .cell { display: flex; justify-content: center; align-items: center; font-size: 12px; font-weight: bold; text-align: center; border-radius: 4px; position: relative; flex-direction: column; }
+        
+        /* Tipos de casilleros */
+        .edificio { background-color: #adb5bd; border: 2px solid #6c757d; color: white; box-shadow: inset 0 0 10px rgba(0,0,0,0.1); }
+        .edificio span { font-size: 20px; }
+        .calle { background-color: #6c757d; }
+        
+        /* Intersecciones (cruces de calles) */
+        .cruce { background-image: radial-gradient(#ced4da 15%, transparent 16%), radial-gradient(#ced4da 15%, transparent 16%); background-size: 20px 20px; background-position: 0 0, 10px 10px; }
+
+        /* Nuestro vehículo interactivo */
+        #taxi { font-size: 28px; position: absolute; transition: transform 0.3s ease; z-index: 10; line-height: 1; }
+        
+        .panel-control { padding: 20px; background-color: #f8f9fa; }
+        .botones-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        .btn-instruccion { background-color: white; border: 2px solid #ced4da; padding: 15px 5px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; transition: 0.2s; color: #495057; }
+        .btn-instruccion:hover { background-color: #e9ecef; border-color: #adb5bd; }
+        .btn-instruccion:active { transform: scale(0.95); }
+
+        #resultado { text-align: center; margin-top: 15px; font-weight: bold; font-size: 16px; min-height: 25px; }
+    </style>
+</head>
+<body>
+
+<div class="dispositivo-gps">
+    <div class="gps-header">
+        <div>📍 Navegador GPS</div>
+        <div class="destino-texto" id="texto-mision">Calculando ruta...</div>
+    </div>
+
+    <!-- EL MINI MAPA DINÁMICO -->
+    <div class="mapa-grid" id="mapa">
+        <!-- Se llena con JavaScript -->
+    </div>
+
+    <!-- PANEL DE CONTROLES -->
+    <div class="panel-control">
+        <div class="botones-grid">
+            <button class="btn-instruccion" onclick="girar(-90)">↺ Turn left</button>
+            <button class="btn-instruccion" style="background-color: #7b2cbf; color: white;" onclick="avanzar()">⬆ Go straight ahead</button>
+            <button class="btn-instruccion" onclick="girar(90)">Turn right ↻</button>
+        </div>
+        <div id="resultado"></div>
+    </div>
+</div>
+
+<script>
+    // 1. DIBUJAMOS LA CIUDAD (Matriz 5x5)
+    // E = Edificio, C = Calle, X = Cruce
+    const plano = [
+        ['Hospital', 'C', 'Police Station', 'C', 'Bank'],
+        ['C', 'X', 'C', 'X', 'C'],
+        ['School', 'C', 'Park', 'C', 'Cinema'],
+        ['C', 'X', 'C', 'X', 'C'],
+        ['Museum', 'C', 'Cafe', 'C', 'Supermarket']
+    ];
+
+    // Emojis para los edificios
+    const iconos = {
+        'Hospital': '🏥', 'Police Station': '🚓', 'Bank': '🏦', 
+        'School': '🏫', 'Park': '🌳', 'Cinema': '🍿', 
+        'Museum': '🏛️', 'Cafe': '☕', 'Supermarket': '🛒'
+    };
+
+    // 2. ESTADO DEL TAXI
+    let taxiPos = { f: 4, c: 1 }; // Empieza en la calle de abajo a la izquierda
+    let taxiRotacion = 0; // 0 = Norte, 90 = Este, 180 = Sur, -90 = Oeste
+    let destinoActual = "";
+
+    // 3. INICIAR EL MAPA
+    function inicializarJuego() {
+        const mapaDiv = document.getElementById("mapa");
+        mapaDiv.innerHTML = "";
+        let edificiosDisponibles = [];
+
+        // Construir la grilla visual
+        for (let f = 0; f < 5; f++) {
+            for (let c = 0; c < 5; c++) {
+                const celda = document.createElement("div");
+                celda.id = `celda-${f}-${c}`;
+                
+                let tipo = plano[f][c];
+                if (tipo === 'C') {
+                    celda.className = "cell calle";
+                } else if (tipo === 'X') {
+                    celda.className = "cell calle cruce";
+                } else {
+                    celda.className = "cell edificio";
+                    celda.innerHTML = `<span>${iconos[tipo]}</span>${tipo}`;
+                    edificiosDisponibles.push(tipo); // Guardamos la lista de lugares
+                }
+                mapaDiv.appendChild(celda);
+            }
+        }
+
+        // Elegir un destino al azar que no sea el punto de inicio
+        destinoActual = edificiosDisponibles[Math.floor(Math.random() * edificiosDisponibles.length)];
+        document.getElementById("texto-mision").innerText = `"Where is the ${destinoActual}?"`;
+
+        // Colocar el taxi
+        crearTaxi();
+    }
+
+    function crearTaxi() {
+        let taxi = document.getElementById("taxi");
+        if (!taxi) {
+            taxi = document.createElement("div");
+            taxi.id = "taxi";
+            taxi.innerText = "🚕";
+        }
+        taxi.style.transform = `rotate(${taxiRotacion}deg)`;
+        document.getElementById(`celda-${taxiPos.f}-${taxiPos.c}`).appendChild(taxi);
+    }
+
+    // 4. LÓGICA DE MOVIMIENTO
+    function girar(grados) {
+        taxiRotacion += grados;
+        document.getElementById("taxi").style.transform = `rotate(${taxiRotacion}deg)`;
+        document.getElementById("resultado").innerText = "";
+    }
+
+    function avanzar() {
+        // Determinamos hacia dónde apunta el auto (normalizando los grados a 360)
+        let direccion = ((taxiRotacion % 360) + 360) % 360;
+        let nuevaF = taxiPos.f;
+        let nuevaC = taxiPos.c;
+
+        if (direccion === 0) nuevaF -= 1; // Apunta Norte (arriba)
+        else if (direccion === 90) nuevaC += 1; // Apunta Este (derecha)
+        else if (direccion === 180) nuevaF += 1; // Apunta Sur (abajo)
+        else if (direccion === 270) nuevaC -= 1; // Apunta Oeste (izquierda)
+
+        const resultadoDiv = document.getElementById("resultado");
+
+        // Validar que no se salga del mapa
+        if (nuevaF < 0 || nuevaF > 4 || nuevaC < 0 || nuevaC > 4) {
+            resultadoDiv.innerText = "¡Cuidado! Te saliste de la ciudad. 🚫";
+            resultadoDiv.style.color = "red";
+            return;
+        }
+
+        let tipoDestino = plano[nuevaF][nuevaC];
+
+        // Validar a dónde está intentando ir
+        if (tipoDestino === 'C' || tipoDestino === 'X') {
+            // Es una calle, avanzamos normal
+            taxiPos.f = nuevaF;
+            taxiPos.c = nuevaC;
+            crearTaxi();
+            resultadoDiv.innerText = "";
+        } else {
+            // Es un edificio. ¿Es el correcto?
+            if (tipoDestino === destinoActual) {
+                taxiPos.f = nuevaF;
+                taxiPos.c = nuevaC;
+                crearTaxi();
+                resultadoDiv.innerText = `¡Llegaste a ${destinoActual}! 🎉`;
+                resultadoDiv.style.color = "green";
+                
+                // Botón para reiniciar y buscar otro destino
+                setTimeout(() => {
+                    resultadoDiv.innerHTML = `<button class="btn-instruccion" style="background-color: #28a745; color: white;" onclick="location.reload()">Buscar nuevo destino</button>`;
+                }, 1000);
+            } else {
+                // Chocó con el edificio equivocado
+                resultadoDiv.innerText = `Ese es el ${tipoDestino}, ¡seguí buscando!`;
+                resultadoDiv.style.color = "red";
+            }
+        }
+    }
+
+    inicializarJuego();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <!-- CLAVE: Esta etiqueta le dice al celular que adapte el zoom al ancho de la pantalla -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Chronos Arcade: The Timeline Glitch</title>
+    <style>
+        body { 
+            font-family: 'Courier New', Courier, monospace; 
+            background-color: #0b0c10; 
+            color: #c5c6c7; 
+            text-align: center; 
+            padding: 20px 10px; /* Reducido para móviles */
+            margin: 0; 
+            user-select: none; 
+            /* Evita el destello azul al tocar botones en Android/iOS */
+            -webkit-tap-highlight-color: transparent; 
+        }
+        
+        .arcade-machine { 
+            background-color: #1f2833; 
+            border: 4px solid #66fcf1; 
+            box-shadow: 0 0 20px #66fcf1, inset 0 0 20px #45a29e; 
+            padding: 30px 20px; 
+            border-radius: 15px; 
+            max-width: 750px; 
+            width: 100%;
+            box-sizing: border-box; /* Asegura que el padding no desborde el ancho */
+            margin: 0 auto; 
+            position: relative; 
+        }
+
+        /* Usamos font-size adaptativo para el título */
+        h2 { 
+            color: #f0f; 
+            text-shadow: 0 0 10px #f0f; 
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+            font-size: clamp(1.5rem, 5vw, 2.2rem);
+            margin-top: 5px;
+        }
+        
+        /* PANTALLA DE INICIO OVERLAY ADAPTADA */
+        .overlay-inicio { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background-color: rgba(11, 12, 16, 0.98); 
+            z-index: 100; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            border-radius: 11px; 
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .overlay-inicio h1 { 
+            color: #66fcf1; 
+            font-size: clamp(1.8rem, 6vw, 3rem); 
+            text-shadow: 0 0 20px #66fcf1; 
+            margin: 0 0 15px 0; 
+        }
+        .overlay-inicio p { 
+            font-size: clamp(0.9rem, 3.5vw, 1.1rem); 
+            color: #c5c6c7; 
+            max-width: 90%; 
+            line-height: 1.5; 
+            margin: 5px 0;
+        }
+        .insert-coin { 
+            color: #ffeb3b; 
+            font-size: clamp(1.2rem, 5vw, 1.6rem); 
+            animation: parpadeo 1s infinite; 
+            margin-top: 30px; 
+            cursor: pointer; 
+            text-shadow: 0 0 10px #ffeb3b; 
+            font-weight: bold; 
+            line-height: 1.4;
+        }
+        @keyframes parpadeo { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        /* Barra de Energía */
+        .energy-container { 
+            border: 2px solid #66fcf1; 
+            height: 22px; 
+            border-radius: 12px; 
+            margin: 15px 0; 
+            background-color: #000; 
+            overflow: hidden; 
+            position: relative; 
+        }
+        #energy-bar { background: linear-gradient(90deg, #f0f, #66fcf1); height: 100%; width: 0%; transition: width 0.4s ease-out; }
+        
+        /* Pantalla de la Oración - Se adapta el tamaño de letra */
+        .pantalla-oracion { 
+            background-color: #000; 
+            border: 2px dashed #45a29e; 
+            padding: clamp(15px, 4vw, 25px) clamp(10px, 3vw, 20px); 
+            font-size: clamp(1.05rem, 4.5vw, 1.35rem); 
+            margin-bottom: 20px; 
+            border-radius: 8px; 
+            line-height: 1.6; 
+            box-sizing: border-box;
+        }
+        .marcador-tiempo { color: #ffeb3b; text-shadow: 0 0 15px #ffeb3b; font-weight: bold; }
+        .espacio-blanco { display: inline-block; min-width: 60px; border-bottom: 3px solid #f0f; color: #f0f; text-shadow: 0 0 10px #f0f; font-weight: bold; padding: 0 5px; }
+        
+        /* Indicador de Color en Pantalla */
+        .indicador-tiempo { 
+            display: inline-block; 
+            padding: 8px 20px; 
+            border-radius: 8px; 
+            font-weight: bold; 
+            font-size: clamp(0.9rem, 4vw, 1.25rem); 
+            margin-bottom: 15px; 
+            color: #fff; 
+            text-shadow: 1px 1px 2px #000; 
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+        }
+        .bg-sepia { background-color: #b18904; border: 2px solid #e2c044; box-shadow: 0 0 20px #b18904; }
+        .bg-verde { background-color: #28a745; border: 2px solid #54e346; box-shadow: 0 0 20px #28a745; }
+        .bg-violeta { background-color: #7b2cbf; border: 2px solid #9d4edd; box-shadow: 0 0 20px #7b2cbf; }
+
+        /* BOTONERA ADAPTATIVA */
+        .panel-epocas { 
+            display: flex; 
+            justify-content: center; 
+            gap: 12px; 
+            margin-bottom: 20px; 
+            flex-wrap: wrap; /* Clave: si no caben en horizontal, se bajan */
+        }
+        .btn-epoca { 
+            background-color: transparent; 
+            color: #66fcf1; 
+            border: 2px solid #66fcf1; 
+            padding: 14px 15px; 
+            font-size: clamp(0.85rem, 3.8vw, 1rem); 
+            font-family: 'Courier New', Courier, monospace; 
+            font-weight: bold; 
+            cursor: pointer; 
+            border-radius: 5px; 
+            box-shadow: 0 0 10px #66fcf1 inset; 
+            transition: all 0.2s; 
+            flex: 1 1 140px; /* Intenta medir 140px, pero puede crecer o achicarse */
+            min-height: 48px; /* Garantiza el tamaño táctil de accesibilidad */
+            box-sizing: border-box;
+        }
+        .btn-epoca:hover { background-color: #66fcf1; color: #000; box-shadow: 0 0 20px #66fcf1; }
+        
+        .panel-verbos { 
+            display: flex; 
+            justify-content: center; 
+            gap: 10px; 
+            margin-bottom: 20px; 
+            flex-wrap: wrap; 
+        }
+        .btn-verbo { 
+            background-color: #f0f; 
+            color: #fff; 
+            border: none; 
+            padding: 12px 18px; 
+            font-size: clamp(0.9rem, 4vw, 1.1rem); 
+            font-family: 'Courier New', Courier, monospace; 
+            font-weight: bold; 
+            cursor: pointer; 
+            border-radius: 5px; 
+            box-shadow: 0 0 10px #f0f; 
+            transition: all 0.2s; 
+            flex: 1 1 100%; /* En celulares, un verbo por renglón evita toques erróneos */
+            min-height: 48px;
+            box-sizing: border-box;
+        }
+        .btn-verbo:hover { background-color: #ff4dff; box-shadow: 0 0 20px #f0f; }
+
+        /* Botones Finales Adaptativos */
+        .botones-finales { 
+            display: flex; 
+            justify-content: center; 
+            gap: 15px; 
+            flex-wrap: wrap; 
+            margin-top: 15px; 
+        }
+        .btn-reiniciar { 
+            background-color: #66fcf1; 
+            color: #000; 
+            border: none; 
+            padding: 14px 20px; 
+            font-size: clamp(0.9rem, 4vw, 1.1rem); 
+            font-weight: bold; 
+            font-family: 'Courier New', Courier, monospace; 
+            cursor: pointer; 
+            border-radius: 5px; 
+            box-shadow: 0 0 20px #66fcf1; 
+            transition: 0.2s; 
+            flex: 1 1 200px;
+            min-height: 48px;
+        }
+        .btn-reiniciar:hover { background-color: #45a29e; }
+        .btn-menu { background-color: #f0f; box-shadow: 0 0 20px #f0f; color: white; }
+        .btn-menu:hover { background-color: #c900c9; }
+
+        /* Errores */
+        .glitch-error { animation: sacudir 0.3s ease-in-out; border-color: #f00 !important; box-shadow: 0 0 20px #f00 !important; }
+        @keyframes sacudir { 0% { transform: translateX(0); } 25% { transform: translateX(-10px); } 50% { transform: translateX(10px); } 75% { transform: translateX(-10px); } 100% { transform: translateX(0); } }
+        
+        .hidden { display: none !important; }
+        #mensaje-feedback { font-size: clamp(0.85rem, 3.8vw, 1.1rem); font-weight: bold; min-height: 25px; margin-bottom: 10px; }
+        .instrucciones { font-size: clamp(0.75rem, 3.2vw, 0.85rem); color: #adb5bd; margin-top: 15px; }
+
+        /* MEDIA QUERY PARA CELULARES EXTREMADAMENTE CHICOS */
+        @media (max-width: 480px) {
+            .arcade-machine {
+                padding: 15px 12px;
+                border-width: 3px;
+            }
+            .panel-epocas {
+                flex-direction: column; /* Apila las palancas verticales en pantallas chicas */
+                gap: 8px;
+            }
+            .btn-epoca {
+                width: 100%;
+                padding: 12px;
+            }
+            .btn-verbo {
+                padding: 10px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="arcade-machine" id="maquina">
+    
+    <!-- PANTALLA DE INICIO OVERLAY -->
+    <div id="pantalla-inicio" class="overlay-inicio">
+        <h1>CHRONOS ARCADE</h1>
+        <p>El flujo temporal ha colapsado. Las oraciones de los viajeros están perdidas en distintas dimensiones.</p>
+        <p style="color: #66fcf1;">Misión: Identificá la pista temporal y ajustá el verbo para restaurar la línea de tiempo.</p>
+        <div class="insert-coin" onclick="arrancarArcade()">
+            INSERT COIN<br>
+            <span style="font-size: 13px; color: #c5c6c7; font-weight: normal; text-shadow: none;">(Hacé clic o presioná ENTER para comenzar)</span>
+        </div>
+    </div>
+
+    <h2>Time Hopper ⏳</h2>
+    
+    <div class="energy-container">
+        <div id="energy-bar"></div>
+    </div>
+    <div style="font-size: clamp(11px, 3.2vw, 14px); margin-bottom: 15px; color: #66fcf1; font-weight: bold;">
+        ENERGÍA TEMPORAL: <span id="texto-energia">0</span>% (<span id="contador-misiones">0</span>/10)
+    </div>
+
+    <div class="pantalla-oracion" id="pantalla">
+        <span id="texto-inicio">...</span>
+        <span class="espacio-blanco" id="hueco">_____</span>
+        <span id="texto-fin"></span>
+    </div>
+
+    <!-- EL INDICADOR DE COLOR APARECERÁ ACÁ -->
+    <div id="indicador-tiempo" class="indicador-tiempo hidden"></div>
+
+    <div id="mensaje-feedback"></div>
+
+    <div class="panel-epocas hidden" id="panel-epocas">
+        <button class="btn-epoca" onclick="elegirEpoca('PAST')">PAST (⬅)</button>
+        <button class="btn-epoca" onclick="elegirEpoca('PRESENT')">PRESENT (Enter)</button>
+        <button class="btn-epoca" onclick="elegirEpoca('FUTURE')">FUTURE (➡)</button>
+    </div>
+
+    <div class="panel-verbos hidden" id="panel-verbos"></div>
+    <div class="botones-finales" id="contenedor-reinicio"></div>
+
+    <div class="instrucciones">Atajos: Flechas (⬅ ➡), Enter, y Números (1, 2, 3). Al finalizar: Enter para reiniciar.</div>
+</div>
+
+<script>
+    // --- SINTETIZADOR DE AUDIO 8-BITS ---
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function reproducirSonido(tipo) {
+        if(audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        osc.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        
+        if (tipo === 'coin') {
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1);
+            gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+        } else if (tipo === 'acierto') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.1);
+            gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+        } else if (tipo === 'error') {
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(80, audioCtx.currentTime + 0.3);
+            gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+        }
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.3);
+    }
+
+    // --- BASE DE DATOS (DISTRACTORES ACTUALIZADOS PARA CONFUNDIR DENTRO DEL MISMO TIEMPO) ---
+    const bancoMisiones = [
+        // --- PRESENT CONTINUOUS vs PRESENT SIMPLE ---
+        { inicio: "Look at the track! <span class='marcador-tiempo'>Right now</span>, the cars ", fin: " very slowly because of the rain.", epocaCorrecta: "PRESENT", respuestaCorrecta: "are driving", distractores: ["drive", "drives"] },
+        { inicio: "Shhh! I ", fin: " the Grand Prix on TV <span class='marcador-tiempo'>at the moment</span>.", epocaCorrecta: "PRESENT", respuestaCorrecta: "am watching", distractores: ["watch", "watches"] },
+        { inicio: "<span class='marcador-tiempo'>Look!</span> The referee ", fin: " a red card to the player!", epocaCorrecta: "PRESENT", respuestaCorrecta: "is showing", distractores: ["shows", "show"] },
+        { inicio: "We can't talk <span class='marcador-tiempo'>right now</span>, we ", fin: " dinner.", epocaCorrecta: "PRESENT", respuestaCorrecta: "are eating", distractores: ["eat", "eats"] },
+        { inicio: "Where is Dibu Martínez? He ", fin: " with the team <span class='marcador-tiempo'>right now</span>.", epocaCorrecta: "PRESENT", respuestaCorrecta: "is training", distractores: ["trains", "train"] },
+        { inicio: "I ", fin: " for an exam <span class='marcador-tiempo'>right now</span>.", epocaCorrecta: "PRESENT", respuestaCorrecta: "am studying", distractores: ["study", "studies"] },
+        { inicio: "She ", fin: " a great book <span class='marcador-tiempo'>at the moment</span>.", epocaCorrecta: "PRESENT", respuestaCorrecta: "is reading", distractores: ["reads", "read"] },
+        { inicio: "They ", fin: " TV <span class='marcador-tiempo'>right now</span>.", epocaCorrecta: "PRESENT", respuestaCorrecta: "aren't watching", distractores: ["don't watch", "doesn't watch"] },
+        { inicio: "We ", fin: " on a new project <span class='marcador-tiempo'>these days</span>.", epocaCorrecta: "PRESENT", respuestaCorrecta: "are working", distractores: ["work", "works"] },
+        { inicio: "He ", fin: " dinner <span class='marcador-tiempo'>at the moment</span>.", epocaCorrecta: "PRESENT", respuestaCorrecta: "is cooking", distractores: ["cooks", "cook"] },
+        { inicio: "The kids ", fin: " outside <span class='marcador-tiempo'>right now</span>.", epocaCorrecta: "PRESENT", respuestaCorrecta: "are playing", distractores: ["play", "plays"] },
+        { inicio: "She ", fin: " with her friend <span class='marcador-tiempo'>this week</span>.", epocaCorrecta: "PRESENT", respuestaCorrecta: "is staying", distractores: ["stays", "stay"] },
+        { inicio: "We ", fin: " lunch <span class='marcador-tiempo'>at the moment</span>.", epocaCorrecta: "PRESENT", respuestaCorrecta: "are having", distractores: ["have", "has"] },
+        { inicio: "My dog ", fin: " on the sofa <span class='marcador-tiempo'>right now</span>.", epocaCorrecta: "PRESENT", respuestaCorrecta: "is sleeping", distractores: ["sleeps", "sleep"] },
+        
+        // --- PRESENT SIMPLE vs PRESENT CONTINUOUS ---
+        { inicio: "David <span class='marcador-tiempo'>usually</span> ", fin: " a cup of green tea for breakfast.", epocaCorrecta: "PRESENT", respuestaCorrecta: "has", distractores: ["is having", "have"] },
+        { inicio: "A football match <span class='marcador-tiempo'>normally</span> ", fin: " 90 minutes.", epocaCorrecta: "PRESENT", respuestaCorrecta: "lasts", distractores: ["is lasting", "last"] },
+        { inicio: "I <span class='marcador-tiempo'>always</span> ", fin: " a round-trip ticket when I travel.", epocaCorrecta: "PRESENT", respuestaCorrecta: "buy", distractores: ["am buying", "buys"] },
+        { inicio: "They <span class='marcador-tiempo'>never</span> ", fin: " spicy food. They hate it.", epocaCorrecta: "PRESENT", respuestaCorrecta: "eat", distractores: ["are eating", "eats"] },
+        { inicio: "My sister ", fin: " biology at university <span class='marcador-tiempo'>every day</span>.", epocaCorrecta: "PRESENT", respuestaCorrecta: "studies", distractores: ["is studying", "study"] },
+        { inicio: "The train to London ", fin: " from platform 3 <span class='marcador-tiempo'>at 08:30 AM</span>.", epocaCorrecta: "PRESENT", respuestaCorrecta: "leaves", distractores: ["is leaving", "leave"] },
+        { inicio: "We <span class='marcador-tiempo'>sometimes</span> ", fin: " to podcasts on the bus.", epocaCorrecta: "PRESENT", respuestaCorrecta: "listen", distractores: ["are listening", "listens"] },
+        { inicio: "I <span class='marcador-tiempo'>always</span> ", fin: " coffee in the morning.", epocaCorrecta: "PRESENT", respuestaCorrecta: "drink", distractores: ["am drinking", "drinks"] },
+        { inicio: "She <span class='marcador-tiempo'>usually</span> ", fin: " the bus to work.", epocaCorrecta: "PRESENT", respuestaCorrecta: "takes", distractores: ["is taking", "take"] },
+        { inicio: "We <span class='marcador-tiempo'>often</span> ", fin: " movies on Friday nights.", epocaCorrecta: "PRESENT", respuestaCorrecta: "watch", distractores: ["are watching", "watches"] },
+        { inicio: "He <span class='marcador-tiempo'>sometimes</span> ", fin: " his keys.", epocaCorrecta: "PRESENT", respuestaCorrecta: "forgets", distractores: ["is forgetting", "forget"] },
+        { inicio: "I <span class='marcador-tiempo'>never</span> ", fin: " up early on Sundays.", epocaCorrecta: "PRESENT", respuestaCorrecta: "wake", distractores: ["am waking", "wakes"] },
+        { inicio: "My brother ", fin: " soccer <span class='marcador-tiempo'>once a week</span>.", epocaCorrecta: "PRESENT", respuestaCorrecta: "plays", distractores: ["is playing", "play"] },
+        { inicio: "She ", fin: " <span class='marcador-tiempo'>on weekends</span>.", epocaCorrecta: "PRESENT", respuestaCorrecta: "doesn't work", distractores: ["isn't working", "don't work"] },
+        { inicio: "We ", fin: " our grandparents <span class='marcador-tiempo'>every month</span>.", epocaCorrecta: "PRESENT", respuestaCorrecta: "visit", distractores: ["are visiting", "visits"] },
+        { inicio: "He <span class='marcador-tiempo'>normally</span> ", fin: " work at 5:00 PM.", epocaCorrecta: "PRESENT", respuestaCorrecta: "finishes", distractores: ["is finishing", "finish"] },
+
+        // --- PAST SIMPLE vs PAST CONTINUOUS & ERRORES COMUNES ---
+        { inicio: "I ", fin: " my parents <span class='marcador-tiempo'>last weekend</span>.", epocaCorrecta: "PAST", respuestaCorrecta: "visited", distractores: ["was visiting", "visit"] },
+        { inicio: "She ", fin: " her homework <span class='marcador-tiempo'>two hours ago</span>.", epocaCorrecta: "PAST", respuestaCorrecta: "finished", distractores: ["was finishing", "finish"] },
+        { inicio: "They ", fin: " to the beach <span class='marcador-tiempo'>yesterday</span>.", epocaCorrecta: "PAST", respuestaCorrecta: "went", distractores: ["were going", "goed"] },
+        { inicio: "We ", fin: " a horror movie <span class='marcador-tiempo'>last night</span>.", epocaCorrecta: "PAST", respuestaCorrecta: "watched", distractores: ["were watching", "didn't watched"] },
+        { inicio: "He ", fin: " to the gym <span class='marcador-tiempo'>yesterday</span>.", epocaCorrecta: "PAST", respuestaCorrecta: "didn't go", distractores: ["wasn't going", "didn't went"] },
+        { inicio: "I ", fin: " a new phone <span class='marcador-tiempo'>last month</span>.", epocaCorrecta: "PAST", respuestaCorrecta: "bought", distractores: ["was buying", "buyed"] },
+        { inicio: "They ", fin: " to Spain <span class='marcador-tiempo'>in 2022</span>.", epocaCorrecta: "PAST", respuestaCorrecta: "moved", distractores: ["were moving", "move"] },
+        { inicio: "She ", fin: " her lost keys <span class='marcador-tiempo'>a few minutes ago</span>.", epocaCorrecta: "PAST", respuestaCorrecta: "found", distractores: ["was finding", "finded"] },
+        { inicio: "The store ", fin: " <span class='marcador-tiempo'>last year</span>.", epocaCorrecta: "PAST", respuestaCorrecta: "opened", distractores: ["was opening", "open"] },
+        { inicio: "We ", fin: " pizza for dinner <span class='marcador-tiempo'>last night</span>.", epocaCorrecta: "PAST", respuestaCorrecta: "had", distractores: ["were having", "have"] },
+        { inicio: "He ", fin: " the office <span class='marcador-tiempo'>an hour ago</span>.", epocaCorrecta: "PAST", respuestaCorrecta: "left", distractores: ["was leaving", "leaved"] },
+        { inicio: "I ", fin: " my friend on the phone <span class='marcador-tiempo'>yesterday</span>.", epocaCorrecta: "PAST", respuestaCorrecta: "called", distractores: ["was calling", "call"] },
+        { inicio: "They ", fin: " the movie <span class='marcador-tiempo'>last night</span>. It was very boring.", epocaCorrecta: "PAST", respuestaCorrecta: "didn't enjoy", distractores: ["wasn't enjoying", "didn't enjoyed"] },
+        { inicio: "We ", fin: " to Canada <span class='marcador-tiempo'>two years ago</span>.", epocaCorrecta: "PAST", respuestaCorrecta: "traveled", distractores: ["were traveling", "travel"] },
+        { inicio: "She ", fin: " to the train station <span class='marcador-tiempo'>yesterday morning</span>, but she missed it.", epocaCorrecta: "PAST", respuestaCorrecta: "hurried", distractores: ["was hurrying", "hurry"] },
+        { inicio: "The mechanic ", fin: " my car <span class='marcador-tiempo'>last weekend</span>.", epocaCorrecta: "PAST", respuestaCorrecta: "fixed", distractores: ["was fixing", "fix"] },
+        { inicio: "I ", fin: " television <span class='marcador-tiempo'>last night</span> because I was tired.", epocaCorrecta: "PAST", respuestaCorrecta: "didn't watch", distractores: ["wasn't watching", "didn't watched"] },
+        { inicio: "My family ", fin: " the entire summer trip in one afternoon <span class='marcador-tiempo'>last week</span>.", epocaCorrecta: "PAST", respuestaCorrecta: "planned", distractores: ["were planning", "planed"] },
+        { inicio: "Ross and Rachel ", fin: " a break <span class='marcador-tiempo'>a long time ago</span>.", epocaCorrecta: "PAST", respuestaCorrecta: "took", distractores: ["were taking", "taked"] },
+
+        // --- FUTURE: WILL vs GOING TO ---
+        { inicio: "We ", fin: " to Bariloche <span class='marcador-tiempo'>next month</span>! We already bought the tickets.", epocaCorrecta: "FUTURE", respuestaCorrecta: "are going to travel", distractores: ["will travel", "travel"] },
+        { inicio: "The phone is ringing! I ", fin: " it <span class='marcador-tiempo'>in a second</span>.", epocaCorrecta: "FUTURE", respuestaCorrecta: "will answer", distractores: ["am going to answer", "answers"] },
+        { inicio: "Look at those dark black clouds! It ", fin: " in a minute.", epocaCorrecta: "FUTURE", respuestaCorrecta: "is going to rain", distractores: ["will rain", "rains"] },
+        { inicio: "In my opinion, self-driving cars ", fin: " very common <span class='marcador-tiempo'>in 2040</span>.", epocaCorrecta: "FUTURE", respuestaCorrecta: "will be", distractores: ["are going to be", "is"] },
+        { inicio: "Your suitcase <span class='marcador-tiempo'>looks very heavy!</span> I ", fin: " it for you.", epocaCorrecta: "FUTURE", respuestaCorrecta: "will carry", distractores: ["am going to carry", "carries"] },
+        { inicio: "I ", fin: " a new laptop <span class='marcador-tiempo'>tomorrow</span>. I saved enough money.", epocaCorrecta: "FUTURE", respuestaCorrecta: "am going to buy", distractores: ["will buy", "bought"] },
+        { inicio: "Don't worry about the secret, I <span class='marcador-tiempo'>promise</span> I ", fin: " anyone.", epocaCorrecta: "FUTURE", respuestaCorrecta: "won't tell", distractores: ["am not going to tell", "don't tell"] },        
+        { inicio: "<span class='marcador-tiempo'>Watch out!</span> The child is running to the road, he ", fin: "!", epocaCorrecta: "FUTURE", respuestaCorrecta: "is going to fall", distractores: ["will fall", "falls"] },
+        { inicio: "I think humans ", fin: " houses on Mars <span class='marcador-tiempo'>one day</span>.", epocaCorrecta: "FUTURE", respuestaCorrecta: "will build", distractores: ["are going to build", "built"] },
+        { inicio: "She ", fin: " medicine <span class='marcador-tiempo'>next year</span>. It's her dream.", epocaCorrecta: "FUTURE", respuestaCorrecta: "is going to study", distractores: ["will study", "studies"] },
+        { inicio: "I ", fin: " you <span class='marcador-tiempo'>tomorrow morning</span>.", epocaCorrecta: "FUTURE", respuestaCorrecta: "will call", distractores: ["am going to call", "calls"] },
+        { inicio: "She ", fin: " her new job <span class='marcador-tiempo'>next week</span>.", epocaCorrecta: "FUTURE", respuestaCorrecta: "will start", distractores: ["is going to start", "starts"] },
+        { inicio: "They ", fin: " to Japan <span class='marcador-tiempo'>next year</span>.", epocaCorrecta: "FUTURE", respuestaCorrecta: "will travel", distractores: ["are going to travel", "travels"] },
+        { inicio: "We probably ", fin: " <span class='marcador-tiempo'>later</span>.", epocaCorrecta: "FUTURE", respuestaCorrecta: "will arrive", distractores: ["are going to arrive", "arrives"] },
+        { inicio: "He ", fin: " the meeting <span class='marcador-tiempo'>next Monday</span>.", epocaCorrecta: "FUTURE", respuestaCorrecta: "won't attend", distractores: ["isn't going to attend", "doesn't attend"] },
+        { inicio: "I think it ", fin: " <span class='marcador-tiempo'>soon</span>.", epocaCorrecta: "FUTURE", respuestaCorrecta: "will rain", distractores: ["is going to rain", "rains"] },
+        { inicio: "We ", fin: " a house <span class='marcador-tiempo'>next year</span>.", epocaCorrecta: "FUTURE", respuestaCorrecta: "will buy", distractores: ["are going to buy", "buy"] },
+        { inicio: "She ", fin: " the email <span class='marcador-tiempo'>later today</span>.", epocaCorrecta: "FUTURE", respuestaCorrecta: "will send", distractores: ["is going to send", "sends"] },
+        { inicio: "They ", fin: " here in <span class='marcador-tiempo'>a few minutes</span>.", epocaCorrecta: "FUTURE", respuestaCorrecta: "will be", distractores: ["are going to be", "are"] },
+        { inicio: "I ", fin: " the report by <span class='marcador-tiempo'>tomorrow</span>.", epocaCorrecta: "FUTURE", respuestaCorrecta: "will finish", distractores: ["am going to finish", "finishes"] }
+    ];
+
+    let misionesJuego = [];
+    let misionActual = 0;
+    let energia = 0;
+    const maxRondas = 10; 
+    const incrementoEnergia = 100 / maxRondas; 
+    let esperandoSiguiente = false; 
+    let juegoActivo = false; 
+
+    function mezclarArray(array) {
+        return array.sort(() => Math.random() - 0.5);
+    }
+
+    // --- FLUJO DEL JUEGO ---
+    function arrancarArcade() {
+        if (juegoActivo) return;
+        reproducirSonido('coin');
+        document.getElementById("pantalla-inicio").classList.add("hidden");
+        document.getElementById("panel-epocas").classList.remove("hidden");
+        juegoActivo = true;
+        
+        misionesJuego = mezclarArray([...bancoMisiones]).slice(0, maxRondas);
+        misionActual = 0;
+        energia = 0;
+        document.getElementById("energy-bar").style.width = "0%";
+        document.getElementById("texto-energia").innerText = "0";
+        cargarMision();
+    }
+
+    document.addEventListener('keydown', function(event) {
+        if (!juegoActivo) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                arrancarArcade();
+            }
+            return;
+        }
+
+        if (esperandoSiguiente) return; 
+
+        if (misionActual >= maxRondas) {
+            if (event.key === 'Enter') {
+                event.preventDefault(); 
+                location.reload(); 
+            }
+            return; 
+        }
+
+        const panelEpocas = document.getElementById("panel-epocas");
+        const panelVerbos = document.getElementById("panel-verbos");
+
+        if (!panelEpocas.classList.contains("hidden")) {
+            if (event.key === 'ArrowLeft') elegirEpoca('PAST');
+            if (event.key === 'Enter') {
+                event.preventDefault(); 
+                elegirEpoca('PRESENT');
+            }
+            if (event.key === 'ArrowRight') elegirEpoca('FUTURE');
+        }
+        else if (!panelVerbos.classList.contains("hidden")) {
+            const botonesVerbos = document.querySelectorAll(".btn-verbo");
+            if (event.key === '1' && botonesVerbos.length >= 1) botonesVerbos[0].click();
+            if (event.key === '2' && botonesVerbos.length >= 2) botonesVerbos[1].click();
+            if (event.key === '3' && botonesVerbos.length >= 3) botonesVerbos[2].click();
+        }
+    });
+
+    function cargarMision() {
+        esperandoSiguiente = false; 
+
+        if (misionActual < maxRondas) {
+            const mision = misionesJuego[misionActual];
+            
+            document.getElementById("contador-misiones").innerText = misionActual + 1;
+            document.getElementById("texto-inicio").innerHTML = mision.inicio;
+            document.getElementById("hueco").innerText = "_____";
+            document.getElementById("texto-fin").innerHTML = mision.fin;
+
+            document.getElementById("panel-epocas").classList.remove("hidden");
+            document.getElementById("panel-verbos").classList.add("hidden");
+            document.getElementById("mensaje-feedback").innerText = "";
+            document.getElementById("maquina").classList.remove("glitch-error");
+            
+            document.getElementById("indicador-tiempo").className = "indicador-tiempo hidden";
+
+        } else {
+            document.getElementById("contador-misiones").innerText = maxRondas;
+            document.getElementById("pantalla").innerHTML = "<span style='color:#66fcf1'>¡LÍNEA TEMPORAL RESTAURADA AL 100%! 🚀</span>";
+            document.getElementById("panel-epocas").classList.add("hidden");
+            document.getElementById("panel-verbos").classList.add("hidden");
+            document.getElementById("indicador-tiempo").classList.add("hidden");
+            document.getElementById("mensaje-feedback").innerText = "";
+            
+            document.getElementById("contenedor-reinicio").innerHTML = `
+                <button class='btn-reiniciar' onclick='location.reload()'>VOLVER A JUGAR 🔄</button>
+                <button class='btn-reiniciar btn-menu' onclick='window.location.href="teoria-nivel1.html"'>MENÚ PRINCIPAL 🏠</button>
+            `;
+        }
+    }
+
+    function elegirEpoca(epocaSeleccionada) {
+        const mision = misionesJuego[misionActual];
+        const feedback = document.getElementById("mensaje-feedback");
+        const maquina = document.getElementById("maquina");
+        const indicador = document.getElementById("indicador-tiempo");
+
+        if (epocaSeleccionada === mision.epocaCorrecta) {
+            reproducirSonido('acierto');
+            feedback.innerText = "¡Dimensión correcta! Ahora seleccioná la estructura precisa (1, 2 o 3).";
+            feedback.style.color = "#66fcf1";
+            document.getElementById("panel-epocas").classList.add("hidden");
+            
+            indicador.innerText = `MODO: ${epocaSeleccionada}`;
+            indicador.className = "indicador-tiempo"; 
+            if (epocaSeleccionada === "PAST") indicador.classList.add("bg-sepia");
+            else if (epocaSeleccionada === "PRESENT") indicador.classList.add("bg-verde");
+            else if (epocaSeleccionada === "FUTURE") indicador.classList.add("bg-violeta");
+            
+            const panelVerbos = document.getElementById("panel-verbos");
+            panelVerbos.innerHTML = ""; 
+            
+            let opcionesMezcladas = mezclarArray([mision.respuestaCorrecta, ...mision.distractores]);
+            
+            opcionesMezcladas.forEach((opcion, index) => {
+                const btn = document.createElement("button");
+                btn.className = "btn-verbo";
+                btn.innerText = `[${index + 1}] ${opcion}`;
+                btn.onclick = () => verificarVerbo(opcion, mision.respuestaCorrecta);
+                panelVerbos.appendChild(btn);
+            });
+            
+            panelVerbos.classList.remove("hidden");
+
+        } else {
+            reproducirSonido('error');
+            feedback.innerText = "¡GLITCH! Dimensión equivocada. Revisá la señal en amarillo.";
+            feedback.style.color = "#f00";
+            maquina.classList.remove("glitch-error");
+            void maquina.offsetWidth; 
+            maquina.classList.add("glitch-error");
+        }
+    }
+
+    function verificarVerbo(textoElegido, textoCorrecto) {
+        const feedback = document.getElementById("mensaje-feedback");
+
+        if (textoElegido === textoCorrecto) {
+            reproducirSonido('acierto');
+            esperandoSiguiente = true; 
+            document.getElementById("hueco").innerText = textoElegido;
+            feedback.innerText = "¡Sincronización perfecta! ⚡";
+            feedback.style.color = "#f0f";
+
+            energia += incrementoEnergia;
+            document.getElementById("energy-bar").style.width = Math.round(energia) + "%";
+            document.getElementById("texto-energia").innerText = Math.round(energia);
+
+            document.getElementById("panel-verbos").classList.add("hidden");
+
+            setTimeout(() => {
+                misionActual++;
+                cargarMision();
+            }, 1800);
+
+        } else {
+            reproducirSonido('error');
+            feedback.innerText = "¡Cuidado! Falló la conjugación.";
+            feedback.style.color = "#f00";
+            
+            const maquina = document.getElementById("maquina");
+            maquina.classList.remove("glitch-error");
+            void maquina.offsetWidth;
+            maquina.classList.add("glitch-error");
+        }
+    }
+</script>
+
+</body>
+</html>

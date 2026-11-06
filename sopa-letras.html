@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Word Search: Dynamic Pro</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; text-align: center; padding: 20px; user-select: none; }
+        .game-container { background-color: white; padding: 20px; border-radius: 10px; max-width: 800px; margin: 0 auto; box-shadow: 0px 4px 10px rgba(0,0,0,0.1); }
+        
+        .lista-palabras { display: flex; justify-content: center; gap: 15px; margin-bottom: 20px; font-weight: bold; color: #555; flex-wrap: wrap; font-size: 16px; }
+        .palabra-tachada { text-decoration: line-through; color: #28a745; }
+
+        /* Grilla dinámica adaptada a 15x15 */
+        .grilla {
+            display: grid;
+            grid-template-columns: repeat(15, 1fr);
+            gap: 2px;
+            margin: 0 auto 20px auto;
+            max-width: 600px; /* Más ancha para que entren 15 columnas */
+            background-color: #dee2e6;
+            border: 2px solid #dee2e6;
+            padding: 2px;
+            border-radius: 5px;
+        }
+
+        .letra {
+            background-color: white; 
+            font-size: 18px; font-weight: bold; padding: 8px 0; /* Padding más chico */
+            cursor: pointer; text-align: center;
+            user-select: none; 
+        }
+
+        /* ESTADOS DE COLORES */
+        .arrastrando { background-color: #ffd54f !important; color: black; } 
+        .pendiente { background-color: #fff59d; color: black; } 
+        .encontrada { background-color: #28a745; color: white; border-radius: 3px; } 
+        .pista-fila { background-color: #ffc0cb; transition: background-color 0.5s; } 
+
+        .botones-accion { display: flex; gap: 10px; justify-content: center; margin-top: 10px; }
+        button { border: none; padding: 12px 20px; font-size: 16px; border-radius: 5px; cursor: pointer; font-weight: bold; color: white; width: 40%; }
+        .btn-comprobar { background-color: #7b2cbf; }
+        .btn-comprobar:hover { background-color: #5a189a; }
+        .btn-pista { background-color: #17a2b8; }
+        .btn-pista:hover { background-color: #138496; }
+        
+        #resultado { margin-top: 15px; font-weight: bold; font-size: 16px; min-height: 25px; }
+        .instruccion-teclado { font-size: 13px; color: #6c757d; margin-top: 5px; }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <h2>Sopa de Letras Dinámica 🔍</h2>
+    <p>Arrastrá el mouse sobre las letras para marcarlas. Podés marcar varias y comprobarlas al final.</p>
+
+    <div class="lista-palabras" id="lista-palabras"></div>
+    <div class="grilla" id="grilla-sopa"></div>
+
+    <div class="botones-accion">
+        <button class="btn-pista" onclick="darPista()">💡 Dar Pista</button>
+        <button class="btn-comprobar" onclick="comprobarTodo()">✅ Comprobar</button>
+    </div>
+    <div class="instruccion-teclado">También podés presionar "Enter" en tu teclado para comprobar.</div>
+    
+    <div id="resultado"></div>
+</div>
+
+<script>
+    // 1. EL DICCIONARIO ACTUALIZADO
+    const diccionario = [
+        "HELLO", "BYE", "MORNING", "AFTERNOON", "PLEASE", "THANKS", "RED", "PINK", 
+        "PURPLE", "YELLOW", "BLUE", "GREEN", "ORANGE", "WHITE", "BLACK", "BROWN", 
+        "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY",
+        "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", 
+        "NINE", "TEN", "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", 
+        "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER", "HOTEL", 
+        "COFFEE", "TICKET"
+    ];
+
+    const size = 15; // Grilla ampliada a 15x15
+    const cantidadPalabras = 8; // Buscamos 8 palabras por ronda para favorecer cruces
+    
+    let grid = [];
+    let palabrasObjetivo = []; 
+    let datosPalabras = []; 
+
+    let isDragging = false;
+    let celdaInicio = null;
+    let seleccionActual = []; 
+    let trazosPendientes = []; 
+
+    // DETECTAR LA TECLA ENTER
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            comprobarTodo();
+        }
+    });
+
+    function generarSopa() {
+        palabrasObjetivo = diccionario.sort(() => 0.5 - Math.random()).slice(0, cantidadPalabras);
+        
+        const divLista = document.getElementById("lista-palabras");
+        divLista.innerHTML = "";
+        palabrasObjetivo.forEach(palabra => {
+            divLista.innerHTML += `<span id="word-${palabra}">${palabra}</span>`;
+        });
+
+        grid = Array(size).fill(null).map(() => Array(size).fill(''));
+
+        // Lógica de colocación (permite cruces si la letra coincide)
+        palabrasObjetivo.forEach(word => {
+            let colocada = false;
+            let intentos = 0;
+            
+            while (!colocada && intentos < 200) {
+                let dir = Math.floor(Math.random() * 3); 
+                let fila = Math.floor(Math.random() * size);
+                let col = Math.floor(Math.random() * size);
+                
+                let entra = true;
+
+                if (dir === 0 && col + word.length > size) entra = false;
+                if (dir === 1 && fila + word.length > size) entra = false;
+                if (dir === 2 && (fila + word.length > size || col + word.length > size)) entra = false;
+
+                if (entra) {
+                    for (let i = 0; i < word.length; i++) {
+                        let f = fila + (dir === 1 || dir === 2 ? i : 0);
+                        let c = col + (dir === 0 || dir === 2 ? i : 0);
+                        // ACÁ PERMITE EL CRUCE: Si no está vacío, pero la letra es igual a la que necesitamos, sigue adelante
+                        if (grid[f][c] !== '' && grid[f][c] !== word[i]) {
+                            entra = false; break;
+                        }
+                    }
+                }
+
+                if (entra) {
+                    for (let i = 0; i < word.length; i++) {
+                        let f = fila + (dir === 1 || dir === 2 ? i : 0);
+                        let c = col + (dir === 0 || dir === 2 ? i : 0);
+                        grid[f][c] = word[i];
+                    }
+                    datosPalabras.push({ palabra: word, filaPista: fila });
+                    colocada = true;
+                }
+                intentos++;
+            }
+        });
+
+        const abecedario = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const contenedorGrilla = document.getElementById("grilla-sopa");
+        contenedorGrilla.innerHTML = "";
+
+        for (let f = 0; f < size; f++) {
+            for (let c = 0; c < size; c++) {
+                if (grid[f][c] === '') {
+                    grid[f][c] = abecedario[Math.floor(Math.random() * abecedario.length)];
+                }
+                
+                let celda = document.createElement("div");
+                celda.className = "letra";
+                celda.innerText = grid[f][c];
+                celda.dataset.f = f; 
+                celda.dataset.c = c;
+
+                celda.addEventListener("mousedown", iniciarArrastre);
+                celda.addEventListener("mouseenter", arrastrar);
+                celda.addEventListener("mouseup", terminarArrastre);
+                
+                contenedorGrilla.appendChild(celda);
+            }
+        }
+        
+        document.body.addEventListener("mouseup", () => {
+            if (isDragging) terminarArrastre();
+        });
+    }
+
+    function iniciarArrastre(e) {
+        if (e.target.classList.contains("encontrada")) return;
+        isDragging = true;
+        celdaInicio = e.target;
+        seleccionActual = [celdaInicio];
+        celdaInicio.classList.add("arrastrando");
+    }
+
+    function arrastrar(e) {
+        if (!isDragging) return;
+        
+        seleccionActual.forEach(c => c.classList.remove("arrastrando"));
+        
+        let celdaFin = e.target;
+        let f1 = parseInt(celdaInicio.dataset.f);
+        let c1 = parseInt(celdaInicio.dataset.c);
+        let f2 = parseInt(celdaFin.dataset.f);
+        let c2 = parseInt(celdaFin.dataset.c);
+
+        seleccionActual = [];
+
+        let diffF = Math.abs(f2 - f1);
+        let diffC = Math.abs(c2 - c1);
+        
+        if (f1 === f2 || c1 === c2 || diffF === diffC) {
+            let pasoF = f1 === f2 ? 0 : (f2 > f1 ? 1 : -1);
+            let pasoC = c1 === c2 ? 0 : (c2 > c1 ? 1 : -1);
+            
+            let f = f1;
+            let c = c1;
+            let pasos = Math.max(diffF, diffC);
+            
+            for (let i = 0; i <= pasos; i++) {
+                let celdaMedia = document.querySelector(`.letra[data-f='${f}'][data-c='${c}']`);
+                if (celdaMedia) {
+                    seleccionActual.push(celdaMedia);
+                    celdaMedia.classList.add("arrastrando");
+                }
+                f += pasoF;
+                c += pasoC;
+            }
+        }
+    }
+
+    function terminarArrastre() {
+        if (!isDragging) return;
+        isDragging = false;
+        
+        if (seleccionActual.length > 1) {
+            trazosPendientes.push([...seleccionActual]);
+            seleccionActual.forEach(c => {
+                c.classList.remove("arrastrando");
+                c.classList.add("pendiente");
+            });
+        } else {
+            seleccionActual.forEach(c => c.classList.remove("arrastrando"));
+        }
+        seleccionActual = [];
+    }
+
+    function comprobarTodo() {
+        let aciertosEnEstaRonda = 0;
+
+        trazosPendientes.forEach(trazo => {
+            let palabraFormada = trazo.map(c => c.innerText).join("");
+            let palabraInvertida = palabraFormada.split("").reverse().join("");
+
+            let indexNormal = palabrasObjetivo.indexOf(palabraFormada);
+            let indexInvertida = palabrasObjetivo.indexOf(palabraInvertida);
+            
+            let coincidencia = indexNormal !== -1 ? palabraFormada : (indexInvertida !== -1 ? palabraInvertida : null);
+
+            if (coincidencia) {
+                trazo.forEach(c => {
+                    c.classList.remove("pendiente");
+                    c.classList.add("encontrada");
+                });
+                document.getElementById("word-" + coincidencia).classList.add("palabra-tachada");
+                palabrasObjetivo.splice(palabrasObjetivo.indexOf(coincidencia), 1);
+                aciertosEnEstaRonda++;
+            } else {
+                trazo.forEach(c => c.classList.remove("pendiente"));
+            }
+        });
+
+        trazosPendientes = [];
+
+        const resultadoDiv = document.getElementById("resultado");
+        if (palabrasObjetivo.length === 0) {
+            resultadoDiv.innerText = "¡Ganaste! Encontraste todas las palabras. 🎉";
+            resultadoDiv.style.color = "green";
+        } else if (aciertosEnEstaRonda > 0) {
+            resultadoDiv.innerText = `¡Bien! Comprobaste ${aciertosEnEstaRonda} correctas. Faltan ${palabrasObjetivo.length}.`;
+            resultadoDiv.style.color = "green";
+        } else {
+            resultadoDiv.innerText = "Ninguna de las marcas era correcta. ¡Seguí buscando!";
+            resultadoDiv.style.color = "red";
+        }
+    }
+
+    function darPista() {
+        if (palabrasObjetivo.length === 0) return;
+        
+        let palabraFaltante = palabrasObjetivo[0];
+        let infoPalabra = datosPalabras.find(d => d.palabra === palabraFaltante);
+        
+        let celdasFila = document.querySelectorAll(`.letra[data-f='${infoPalabra.filaPista}']`);
+        
+        celdasFila.forEach(c => {
+            if (!c.classList.contains("encontrada")) {
+                c.classList.add("pista-fila");
+            }
+        });
+
+        setTimeout(() => {
+            celdasFila.forEach(c => c.classList.remove("pista-fila"));
+        }, 2000);
+        
+        document.getElementById("resultado").innerText = "¡Pista! Buscá en la fila iluminada.";
+        document.getElementById("resultado").style.color = "#17a2b8";
+    }
+
+    generarSopa();
+</script>
+
+</body>
+</html>
