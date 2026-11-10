@@ -26,77 +26,107 @@
             min-height: 100vh;
         }
 
-        /* SIDEBAR (Theory Library) */
+        /* SIDEBAR CONTRAÍBLE */
         .sidebar {
-            width: 260px;
+            width: 70px;
             background-color: var(--white);
             border-right: 1px solid #e5e7eb;
             display: flex;
             flex-direction: column;
-            flex-shrink: 0;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
             box-shadow: 2px 0 10px rgba(0,0,0,0.05);
-            z-index: 10;
+            z-index: 50;
+            transition: width 0.3s ease;
+            overflow-x: hidden;
+            white-space: nowrap;
+        }
+
+        .sidebar:hover, .sidebar.pinned {
+            width: 280px;
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            background-color: var(--primary);
+            color: var(--white);
         }
 
         .sidebar-brand {
-            background-color: var(--primary);
+            display: flex;
+            align-items: center;
+            text-decoration: none;
             color: var(--white);
-            padding: 25px 20px;
-            text-align: left;
+            opacity: 0;
+            transition: opacity 0.2s;
         }
 
-        .sidebar-brand h2 {
-            margin: 0;
-            font-size: 1.5rem;
-            font-weight: 800;
+        .sidebar:hover .sidebar-brand, .sidebar.pinned .sidebar-brand {
+            opacity: 1;
         }
 
-        .sidebar-brand p {
-            margin: 5px 0 0 0;
-            font-size: 0.85rem;
-            opacity: 0.9;
-        }
+        .sidebar-brand h2 { margin: 0; font-size: 1.2rem; font-weight: 800; }
 
-        .sidebar-nav {
-            padding: 20px 0;
-            overflow-y: auto;
+        .pin-btn {
+            background: none;
+            border: none;
+            color: var(--white);
+            font-size: 1.2rem;
+            cursor: pointer;
+            opacity: 0.5;
+            transition: opacity 0.2s, transform 0.2s;
         }
+        .pin-btn:hover { opacity: 1; transform: scale(1.1); }
+        .sidebar.pinned .pin-btn { opacity: 1; transform: rotate(45deg); color: #fcd34d; }
 
+        .sidebar-nav { padding: 15px 0; overflow-y: auto; height: calc(100vh - 70px); }
+        
         .nav-category {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-light);
-            font-weight: 800;
-            margin: 20px 20px 10px;
+            font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px;
+            color: var(--text-light); font-weight: 800; margin: 20px 20px 10px;
+            opacity: 0; transition: opacity 0.2s;
+        }
+
+        .sidebar:hover .nav-category, .sidebar.pinned .nav-category {
+            opacity: 1;
         }
 
         .nav-item {
-            display: flex;
-            align-items: center;
-            padding: 12px 20px;
-            color: var(--text-dark);
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.95rem;
-            transition: all 0.2s;
+            display: flex; align-items: center; padding: 12px 25px;
+            color: var(--text-dark); text-decoration: none; font-weight: 600;
+            font-size: 0.95rem; transition: all 0.2s;
+        }
+        .nav-item:hover { background-color: #f5f3ff; color: var(--primary); }
+        
+        .nav-icon { margin-right: 20px; font-size: 1.3rem; min-width: 25px; text-align: center; }
+        .nav-text { opacity: 0; transition: opacity 0.2s; }
+        
+        .sidebar:hover .nav-text, .sidebar.pinned .nav-text {
+            opacity: 1;
         }
 
-        .nav-item:hover {
-            background-color: #f5f3ff;
-            color: var(--primary);
+        .btn-back { 
+            margin: 20px; background: var(--primary-dark); color: white; 
+            border-radius: 8px;
         }
-
-        .nav-icon {
-            margin-right: 12px;
-            font-size: 1.2rem;
-        }
+        .btn-back:hover { background: #111827; color: white; }
 
         /* MAIN CONTENT (Game Arcade) */
         .main-content {
             flex-grow: 1;
             padding: 40px;
+            margin-left: 70px;
+            transition: margin-left 0.3s ease;
             overflow-y: auto;
+        }
+
+        .sidebar.pinned ~ .main-content {
+            margin-left: 280px;
         }
 
         .header-title {
@@ -217,42 +247,51 @@
         /* Mobile Responsiveness */
         @media (max-width: 768px) {
             body { flex-direction: column; }
-            .sidebar { width: 100%; border-right: none; border-bottom: 1px solid #e5e7eb; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-            .sidebar-nav { display: flex; overflow-x: auto; padding: 10px; white-space: nowrap; }
+            .sidebar { width: 100%; height: auto; position: relative; flex-direction: column; transition: none; }
+            .sidebar:hover, .sidebar.pinned { width: 100%; }
+            .pin-btn { display: none; }
+            .sidebar-brand { opacity: 1; }
+            .sidebar-nav { display: flex; overflow-x: auto; padding: 10px; height: auto; }
             .nav-category { display: none; }
             .nav-item { padding: 8px 15px; background: var(--secondary); margin-right: 10px; border-radius: 20px; font-size: 0.85rem; }
-            .main-content { padding: 20px; }
+            .nav-text { opacity: 1; }
+            .btn-back { display: none; }
+            .main-content, .sidebar.pinned ~ .main-content { margin-left: 0; padding: 20px; }
             .header-title { font-size: 2rem; }
         }
     </style>
 </head>
 <body>
 
-    <!-- SIDEBAR: THEORY LIBRARY -->
-    <div class="sidebar">
-        <div class="sidebar-brand">
-            <h2>Theory Library 📚</h2>
-            <p>Tu enciclopedia de inglés</p>
+    <!-- SIDEBAR ÍNDICE -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="index.html" class="sidebar-brand">
+                <h2>Theory Library 📚</h2>
+            </a>
+            <button class="pin-btn" id="pin-btn" onclick="togglePin()" title="Fijar menú">📌</button>
         </div>
         
         <div class="sidebar-nav">
             <div class="nav-category">Bases y Vocabulario</div>
-            <a href="teoria-nivel1.html#survival" class="nav-item"><span class="nav-icon">🆘</span> Survival Chunks</a>
-            <a href="teoria-nivel1.html#health" class="nav-item"><span class="nav-icon">🚑</span> Health & Emergencies</a>
-            <a href="teoria-nivel1.html#places" class="nav-item"><span class="nav-icon">🗺️</span> Places & Directions</a>
-            <a href="teoria-nivel1.html#shopping" class="nav-item"><span class="nav-icon">🛍️</span> Shopping & Food</a>
+            <a href="teoria-nivel1.html#survival" class="nav-item"><span class="nav-icon">🆘</span> <span class="nav-text">Survival Chunks</span></a>
+            <a href="teoria-nivel1.html#health" class="nav-item"><span class="nav-icon">🚑</span> <span class="nav-text">Health & Emergencies</span></a>
+            <a href="teoria-nivel1.html#places" class="nav-item"><span class="nav-icon">🗺️</span> <span class="nav-text">Places & Directions</span></a>
+            <a href="teoria-nivel1.html#shopping" class="nav-item"><span class="nav-icon">🛍️</span> <span class="nav-text">Shopping & Food</span></a>
 
             <div class="nav-category">Gramática y Tiempos</div>
-            <a href="teoria-nivel1.html#present" class="nav-item"><span class="nav-icon">☕</span> Presente (Simple & Cont.)</a>
-            <a href="teoria-nivel1.html#past" class="nav-item"><span class="nav-icon">🕰️</span> Past Simple</a>
-            <a href="teoria-nivel1.html#future" class="nav-item"><span class="nav-icon">🚀</span> Future (Will / Going to)</a>
+            <a href="teoria-nivel1.html#present" class="nav-item"><span class="nav-icon">☕</span> <span class="nav-text">Presente Simple & Cont.</span></a>
+            <a href="teoria-nivel1.html#past" class="nav-item"><span class="nav-icon">🕰️</span> <span class="nav-text">Past Simple</span></a>
+            <a href="teoria-nivel1.html#future" class="nav-item"><span class="nav-icon">🚀</span> <span class="nav-text">Future (Will / Going to)</span></a>
 
             <div class="nav-category">Estructuras Clave</div>
-            <a href="teoria-nivel1.html#thereis" class="nav-item"><span class="nav-icon">📍</span> There is / There are</a>
-            <a href="teoria-nivel1.html#quantifiers" class="nav-item"><span class="nav-icon">🔢</span> Quantifiers</a>
-            <a href="teoria-nivel1.html#comparatives" class="nav-item"><span class="nav-icon">⚖️</span> Comparativos & Superlativos</a>
-            <a href="teoria-nivel1.html#modals" class="nav-item"><span class="nav-icon">🚦</span> Verbos Modales</a>
-            <a href="teoria-nivel1.html#pronouns" class="nav-item"><span class="nav-icon">👤</span> Pronombres & Posesivos</a>
+            <a href="teoria-nivel1.html#thereis" class="nav-item"><span class="nav-icon">📍</span> <span class="nav-text">There is / There are</span></a>
+            <a href="teoria-nivel1.html#quantifiers" class="nav-item"><span class="nav-icon">🔢</span> <span class="nav-text">Quantifiers</span></a>
+            <a href="teoria-nivel1.html#comparatives" class="nav-item"><span class="nav-icon">⚖️</span> <span class="nav-text">Comparatives & Superlatives</span></a>
+            <a href="teoria-nivel1.html#modals" class="nav-item"><span class="nav-icon">🚦</span> <span class="nav-text">Modal Verbs</span></a>
+            <a href="teoria-nivel1.html#pronouns" class="nav-item"><span class="nav-icon">👤</span> <span class="nav-text">Pronouns & Possessives</span></a>
+            
+            <a href="teoria-nivel1.html" class="nav-item btn-back"><span class="nav-icon">📘</span> <span class="nav-text">Ver Teoría Completa</span></a>
         </div>
     </div>
 
@@ -460,5 +499,19 @@
         </div>
     </div>
 
+    <script>
+        // Lógica para fijar/desfijar la barra lateral con el botón (pin)
+        const sidebar = document.getElementById('sidebar');
+        let isPinned = false;
+
+        function togglePin() {
+            isPinned = !isPinned;
+            if (isPinned) {
+                sidebar.classList.add('pinned');
+            } else {
+                sidebar.classList.remove('pinned');
+            }
+        }
+    </script>
 </body>
 </html>
