@@ -16,10 +16,8 @@
             --text-dark: #1f2937;
             --text-light: #6b7280;
             --white: #ffffff;
-            --accent: #f59e0b;
-            /* COLORES MÁS OSCUROS Y VISIBLES PARA EL FEEDBACK */
-            --success-dark: #059669; /* Verde esmeralda oscuro */
-            --danger-dark: #dc2626;  /* Rojo carmesí oscuro */
+            --success-dark: #059669; 
+            --danger-dark: #dc2626;  
         }
 
         body {
@@ -88,7 +86,7 @@
             flex-grow: 1; 
             padding: 40px 60px; 
             margin-left: 70px;
-            max-width: 900px;
+            max-width: 1000px;
             margin-right: auto;
             transition: margin-left 0.3s ease;
         }
@@ -117,12 +115,31 @@
         .progress-bar { width: 100%; height: 10px; background-color: var(--secondary); border-radius: 5px; margin-bottom: 20px; overflow: hidden; }
         .progress-fill { height: 100%; background-color: var(--primary); width: 0%; transition: width 0.3s ease; }
 
+        /* MAPA MEJORADO (Se estira a lo ancho de la card) */
+        .map-container {
+            margin-bottom: 25px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid #e5e7eb;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            width: 100%;
+        }
+        
+        .map-container img {
+            width: 100%;
+            height: auto;
+            max-height: 450px;
+            object-fit: cover;
+            display: block;
+            cursor: crosshair; /* Detalle inmersivo */
+        }
+
         .question-box {
             background-color: #f8fafc;
             border: 2px dashed #cbd5e1;
-            padding: 30px 20px;
+            padding: 25px 20px;
             border-radius: 12px;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             font-size: 1.4rem;
             font-weight: 600;
             line-height: 1.6;
@@ -139,9 +156,9 @@
 
         .options-grid {
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: 1fr 1fr; 
             gap: 15px;
-            max-width: 500px;
+            max-width: 600px;
             margin: 0 auto;
         }
 
@@ -149,8 +166,8 @@
             background-color: var(--white);
             border: 2px solid #e5e7eb;
             color: var(--text-dark);
-            padding: 16px 20px;
-            font-size: 1.1rem;
+            padding: 14px 15px;
+            font-size: 1.05rem;
             font-weight: 600;
             border-radius: 8px;
             cursor: pointer;
@@ -162,7 +179,6 @@
             background-color: #eef2ff;
         }
 
-        /* COLORES DE CORRECCIÓN INTENSIFICADOS */
         .btn-option.correct {
             background-color: var(--success-dark) !important;
             border-color: var(--success-dark) !important;
@@ -173,35 +189,17 @@
             background-color: var(--danger-dark) !important;
             border-color: var(--danger-dark) !important;
             color: var(--white) !important;
-            opacity: 0.8;
+            opacity: 0.9;
         }
 
-        .btn-primary {
-            background-color: var(--primary); color: var(--white); border: none;
-            padding: 15px 30px; font-size: 1.1rem; font-weight: 600; border-radius: 8px;
-            cursor: pointer; margin-top: 20px; transition: 0.2s;
-        }
+        .btn-primary { background-color: var(--primary); color: var(--white); border: none; padding: 15px 30px; font-size: 1.1rem; font-weight: 600; border-radius: 8px; cursor: pointer; margin-top: 20px; transition: 0.2s; }
         .btn-primary:hover { background-color: var(--primary-dark); }
-        .btn-secondary {
-            background-color: var(--text-dark); color: var(--white); border: none;
-            padding: 15px 30px; font-size: 1.1rem; font-weight: 600; border-radius: 8px;
-            cursor: pointer; margin-top: 20px; margin-left: 10px; transition: 0.2s; text-decoration: none; display: inline-block;
-        }
+        .btn-secondary { background-color: var(--text-dark); color: var(--white); border: none; padding: 15px 30px; font-size: 1.1rem; font-weight: 600; border-radius: 8px; cursor: pointer; margin-top: 20px; margin-left: 10px; transition: 0.2s; text-decoration: none; display: inline-block; }
         .btn-secondary:hover { background-color: #111827; }
 
         /* RESUMEN DE ERRORES */
-        .mistakes-container {
-            margin-top: 30px;
-            text-align: left;
-            display: none;
-        }
-        .mistake-card {
-            background-color: #fef2f2;
-            border-left: 4px solid var(--danger-dark);
-            padding: 15px 20px;
-            border-radius: 0 8px 8px 0;
-            margin-bottom: 15px;
-        }
+        .mistakes-container { margin-top: 30px; text-align: left; display: none; }
+        .mistake-card { background-color: #fef2f2; border-left: 4px solid var(--danger-dark); padding: 15px 20px; border-radius: 0 8px 8px 0; margin-bottom: 15px; }
         .mistake-q { font-weight: 600; font-size: 1.05rem; margin-bottom: 8px; }
         .mistake-user { color: var(--danger-dark); text-decoration: line-through; margin-right: 10px; font-weight: 600;}
         .mistake-correct { color: var(--success-dark); font-weight: 800; }
@@ -220,7 +218,9 @@
             .nav-text { opacity: 1; }
             .btn-back { display: none; }
             .main-content, .sidebar.pinned ~ .main-content { margin-left: 0; padding: 20px; }
-            .question-box { font-size: 1.1rem; padding: 20px 15px; }
+            .options-grid { grid-template-columns: 1fr; }
+            .question-box { font-size: 1.1rem; padding: 15px; }
+            .map-container img { max-height: 250px; }
         }
     </style>
 </head>
@@ -240,7 +240,7 @@
             <button class="nav-item active" onclick="location.reload()">
                 <span class="nav-icon">🔄</span> <span class="nav-text">Reiniciar Misión</span>
             </button>
-            <a href="teoria-nivel1.html#places" class="nav-item">
+            <a href="teoria-nivel1.html#thereis" class="nav-item">
                 <span class="nav-icon">📖</span> <span class="nav-text">Repasar Teoría</span>
             </a>
             
@@ -256,7 +256,7 @@
             <div class="game-container">
                 <div style="font-size: 4rem; margin-bottom: 10px;">🕵️</div>
                 <h1 class="game-title">Spot the Object</h1>
-                <p class="game-desc">Agudiza la vista y completa las oraciones usando las preposiciones de lugar correctas y la estructura <em>There is / There are</em>.</p>
+                <p class="game-desc">Observa detalladamente el mapa isométrico de la ciudad. Completa las oraciones usando las preposiciones de lugar y las estructuras correctas de <em>There is / There are</em>.</p>
                 <button class="btn-primary" onclick="startGame()">Comenzar Misión</button>
             </div>
         </div>
@@ -271,6 +271,12 @@
                     Misión <span id="q-current" style="font-weight:bold; color:var(--primary);">1</span> de <span id="q-total">10</span>
                 </div>
                 
+                <!-- LA IMAGEN DEL MAPA CREADO -->
+                <div class="map-container">
+                    <!-- Si tu imagen se llama distinto o está en otra carpeta, modificá el atributo 'src' -->
+                    <img src="imagenes/mapa-ciudad-Gemini.jpg" alt="Mapa Isométrico de la ciudad" id="city-map">
+                </div>
+
                 <div class="question-box">
                     <span id="q-start">...</span>
                     <span class="blank-space" id="q-blank">_____</span>
@@ -307,7 +313,6 @@
     </div>
 
     <script>
-        // Lógica de la barra lateral
         const sidebar = document.getElementById('sidebar');
         let isPinned = false;
         function togglePin() {
@@ -316,44 +321,44 @@
             else { sidebar.classList.remove('pinned'); }
         }
 
-        // --- BANCO DE PREGUNTAS (20 Opciones) ---
+        // --- BANCO DE PREGUNTAS (Basadas 100% en tu mapa-ciudad-Gemini.jpg) ---
         const gameDataMaster = [
-            // There is / There are
-            { start: "Excuse me, ", end: " a pharmacy near here?", correct: "is there", distractors: ["are there", "there is"], hint: "Es una pregunta singular (a pharmacy), el verbo 'is' va adelante." },
-            { start: "I can't see anything. ", end: " any good restaurants in this street?", correct: "Are there", distractors: ["Is there", "There are"], hint: "Es una pregunta en plural (restaurants), se usa 'Are there'." },
-            { start: "Look! ", end: " a lot of traffic today.", correct: "There is", distractors: ["There are", "Is there"], hint: "'Traffic' es una palabra incontable. Siempre usa el singular 'There is'." },
-            { start: "", end: " some people waiting at the bus stop.", correct: "There are", distractors: ["There is", "Are there"], hint: "La palabra 'people' (gente) es plural en inglés, por lo que requiere 'There are'." },
-            { start: "I'm sorry, ", end: " an amusement park in my city. It's very boring.", correct: "there isn't", distractors: ["there aren't", "is there"], hint: "Oración negativa y singular ('an' amusement park)." },
-            { start: "", end: " a police station on this corner.", correct: "There is", distractors: ["There are", "Is there"], hint: "Afirmación singular ('a' police station)." },
-            { start: "", end: " two large windows in my hotel room.", correct: "There are", distractors: ["There is", "They are"], hint: "Es una afirmación plural ('two windows'), se usa 'There are'." },
-            { start: "Are there ", end: " ATMs in this shopping mall?", correct: "any", distractors: ["some", "a"], hint: "Para preguntar por la existencia de algo en plural usamos 'any'." },
-            { start: "We can make sandwiches, there is ", end: " bread in the kitchen.", correct: "some", distractors: ["any", "a"], hint: "En oraciones afirmativas con sustantivos incontables (bread) se usa 'some'." },
-            
-            // Prepositions of Place
-            { start: "The hospital is ", end: " to the police station.", correct: "next", distractors: ["near", "opposite"], hint: "La única preposición de la lista que va acompañada de la palabra 'to' es 'next'." },
-            { start: "The cinema is ", end: " the bank and the supermarket.", correct: "between", distractors: ["next", "opposite"], hint: "Cuando hay dos lugares separados por 'and', el objeto está 'en el medio' (between)." },
-            { start: "I can't see the car because it is parked ", end: " the building.", correct: "behind", distractors: ["in front of", "between"], hint: "Si el edificio tapa al auto y no podés verlo, es porque está 'detrás' (behind)." },
-            { start: "The park is ", end: " of the school.", correct: "in front", distractors: ["opposite", "behind"], hint: "De estas opciones, la única preposición que va seguida de 'of' es 'in front'." },
-            { start: "You don't need to cross the street; the ATM is ", end: " this side.", correct: "on", distractors: ["in", "at"], hint: "Para hablar de lados (side), calles o superficies, usamos la preposición 'on'." },
-            { start: "My house is ", end: " the hospital, just across the street.", correct: "opposite", distractors: ["in front of", "next to"], hint: "Cuando dos lugares están cara a cara cruzando una calle, se usa 'opposite'." },
-            { start: "Look! There is a cat sleeping ", end: " the table.", correct: "under", distractors: ["between", "in"], hint: "El gato está 'debajo' de la mesa (under)." },
-            { start: "Is the coffee shop ", end: " here?", correct: "near", distractors: ["next", "between"], hint: "'Near' significa 'cerca'. Si usabas 'next' te faltaba la palabra 'to'." },
-            { start: "The grocery store is ", end: " the corner of Oak Street.", correct: "on", distractors: ["in", "at"], hint: "Para indicar que algo está 'en la esquina', la preposición correcta es 'on' the corner." },
-            { start: "She is waiting for you ", end: " the bus stop.", correct: "at", distractors: ["in", "on"], hint: "Para puntos de encuentro específicos y precisos (como la parada de bus o la puerta), usamos 'at'." },
-            { start: "The pharmacy is next ", end: " the hospital.", correct: "to", distractors: ["of", "at"], hint: "La preposición 'next' (al lado) siempre va acompañada de 'to'." }
+            // PARTE 1: THERE IS / THERE ARE (10 oraciones)
+            { start: "Look at the map. ", end: " a large stadium on the left side of the city.", correct: "There is", distractors: ["There are", "Is there"], hint: "Es una afirmación sobre 1 estadio (a stadium). Se usa el singular 'There is'." },
+            { start: "According to the image, ", end: " two food trucks (yellow and red) in the city.", correct: "there are", distractors: ["there is", "they are"], hint: "Es una afirmación sobre más de una cosa (two food trucks). Se usa el plural 'There are'." },
+            { start: "Look closely at the river. ", end: " any boats near the Riverwalk?", correct: "Are there", distractors: ["Is there", "There are"], hint: "Es una pregunta en plural (boats), por lo que se usa 'Are there'." },
+            { start: "True or False: ", end: " an airport in this city.", correct: "False (There isn't)", distractors: ["True (There is)", "True (There are)"], hint: "Falso. Hay un Helipuerto (Heliport), pero no un aeropuerto." },
+            { start: "Look at the top right corner. ", end: " an Observatory on the hill.", correct: "There is", distractors: ["There are", "Is there"], hint: "Afirmación singular ('an' observatory) en la esquina superior derecha." },
+            { start: "I can't see it well. ", end: " a bridge crossing the river?", correct: "Is there", distractors: ["Are there", "There is"], hint: "Es una pregunta singular (a bridge), por lo que 'is' va al principio." },
+            { start: "True or False: ", end: " two parks in this city.", correct: "False (There is only one)", distractors: ["True (There are two)", "False (There aren't any)"], hint: "Solo hay un parque para niños a la izquierda (con hamacas y tobogán)." },
+            { start: "Check the buildings. ", end: " a supermarket in this image.", correct: "There isn't", distractors: ["There aren't", "There is"], hint: "La oración es negativa singular. En la imagen hay un 'Market' al aire libre, no un supermercado." },
+            { start: "True or False: ", end: " some animals in the zoo.", correct: "True (There are)", distractors: ["False (There aren't)", "True (There is)"], hint: "Es cierto, se pueden ver animales en el Zoo en la esquina inferior derecha. Al ser plural, se usa 'There are'." },
+            { start: "", end: " a large Plaza with a statue in the center of the city.", correct: "There is", distractors: ["There are", "Is there"], hint: "Es una oración afirmativa describiendo un solo lugar ('a' Plaza). Usa 'There is'." },
+
+            // PARTE 2: LOCATION & PREPOSITIONS (10 oraciones)
+            { start: "The Art Gallery is located ", end: " the Plaza and the Stadium.", correct: "between", distractors: ["next to", "opposite"], hint: "El edificio de la galería está en el medio de esos dos lugares (between)." },
+            { start: "The Aquarium is ", end: " the Botanical Garden.", correct: "next to", distractors: ["opposite", "behind"], hint: "Ambos edificios están en la esquina inferior izquierda, uno al lado del otro." },
+            { start: "The large river is ", end: " the main city center.", correct: "in front of", distractors: ["behind", "between"], hint: "El río atraviesa la ciudad por la parte delantera (abajo en la perspectiva)." },
+            { start: "The Heliport is directly ", end: " the Plaza, just across the crosswalk.", correct: "opposite", distractors: ["next to", "behind"], hint: "Están enfrentados cruzando la calle o senda peatonal (opposite)." },
+            { start: "The Observatory is situated ", end: " the hill, surrounded by trees.", correct: "on", distractors: ["in", "at"], hint: "Para superficies o montañas/colinas (hill), usamos la preposición 'on'." },
+            { start: "The small red car is driving ", end: " the University and the Courthouse.", correct: "between", distractors: ["behind", "opposite"], hint: "El auto rojo (arriba) está pasando por el medio de los dos edificios." },
+            { start: "The statue of a person is standing ", end: " the center of the Plaza.", correct: "in", distractors: ["on", "at"], hint: "Para referirnos a estar dentro del centro de un lugar cerrado o delimitado, usamos 'in the center'." },
+            { start: "The Skate Park is ", end: " the Convention Center.", correct: "in front of", distractors: ["behind", "opposite"], hint: "Si miramos la perspectiva, el Skate Park está adelante (in front of) del centro de convenciones." },
+            { start: "There is a blue ambulance parked ", end: " the Aquarium.", correct: "next to", distractors: ["between", "behind"], hint: "La ambulancia (abajo a la izquierda) está estacionada justo al lado del acuario." },
+            { start: "The Veterinary Clinic is ", end: " the Bookstore.", correct: "next to", distractors: ["opposite", "behind"], hint: "Ambos comercios comparten la misma cuadra y están pegados uno al otro (next to)." }
         ];
 
         let playingData = [];
         let currentQuestion = 0;
         let score = 0;
-        let mistakes = []; // Array para guardar los errores
+        let mistakes = []; 
 
         function shuffle(array) {
             return array.sort(() => Math.random() - 0.5);
         }
 
         function startGame() {
-            // Seleccionar 10 preguntas al azar
+            // Se seleccionan 10 preguntas al azar de las 20 disponibles
             playingData = shuffle([...gameDataMaster]).slice(0, 10);
             currentQuestion = 0;
             score = 0;
@@ -370,18 +375,15 @@
         function loadQuestion() {
             const q = playingData[currentQuestion];
             
-            // Progress Bar
             const progressPct = (currentQuestion / playingData.length) * 100;
             document.getElementById('progress').style.width = progressPct + '%';
             document.getElementById('q-current').innerText = currentQuestion + 1;
             
-            // Text
             document.getElementById('q-start').innerText = q.start;
             document.getElementById('q-blank').innerText = "_____";
             document.getElementById('q-end').innerText = q.end;
             document.getElementById('q-blank').style.color = "var(--primary)";
             
-            // Buttons
             const optionsContainer = document.getElementById('options-container');
             optionsContainer.innerHTML = '';
             
@@ -398,28 +400,24 @@
 
         function checkAnswer(btnClicked, selectedText, questionData) {
             const allBtns = document.querySelectorAll('.btn-option');
-            allBtns.forEach(btn => btn.disabled = true); // Deshabilitar clics
+            allBtns.forEach(btn => btn.disabled = true); 
 
             if (selectedText === questionData.correct) {
-                // Correcto
                 btnClicked.classList.add('correct');
                 document.getElementById('q-blank').innerText = selectedText;
                 document.getElementById('q-blank').style.color = "var(--success-dark)";
                 score++;
             } else {
-                // Incorrecto
                 btnClicked.classList.add('wrong');
                 document.getElementById('q-blank').innerText = selectedText;
                 document.getElementById('q-blank').style.color = "var(--danger-dark)";
                 
-                // Resaltar la correcta
                 allBtns.forEach(btn => {
                     if (btn.innerText === questionData.correct) {
                         btn.classList.add('correct');
                     }
                 });
 
-                // Registrar el error para el resumen final
                 mistakes.push({
                     fullSentence: questionData.start + "___" + questionData.end,
                     userAnswer: selectedText,
@@ -428,7 +426,6 @@
                 });
             }
 
-            // Siguiente pregunta
             setTimeout(() => {
                 currentQuestion++;
                 if (currentQuestion < playingData.length) {
@@ -443,7 +440,6 @@
             document.getElementById('game-play').classList.remove('active');
             document.getElementById('game-end').classList.add('active');
             
-            // Score rendering
             const scoreEl = document.getElementById('final-score');
             scoreEl.innerText = score;
             
@@ -458,7 +454,6 @@
                 document.getElementById('end-icon').innerText = "📚";
             }
 
-            // Render mistakes
             const mistakesSection = document.getElementById('mistakes-section');
             const mistakesList = document.getElementById('mistakes-list');
             mistakesList.innerHTML = '';
