@@ -233,6 +233,16 @@
                 padding: 10px 12px;
             }
         }
+
+        /* REPASO DE ERRORES AL FINAL */
+        .repaso { text-align: left; margin: 20px 0; }
+        .repaso h3 { color: #f0f; text-align: center; margin-bottom: 12px; }
+        .repaso-ok { text-align: center; color: #66fcf1; font-size: 1.1rem; }
+        .repaso-card { border: 1px solid #45a29e; border-radius: 10px; padding: 12px; margin-bottom: 12px; background: rgba(0,0,0,0.35); font-size: 0.95rem; line-height: 1.5; }
+        .repaso-frase { color: #fff; margin-bottom: 8px; }
+        .repaso-linea { display: flex; flex-direction: column; gap: 2px; margin-bottom: 8px; font-size: 0.9rem; }
+        .r-mal { color: #ff6b6b; } .r-bien { color: #66fcf1; }
+        .repaso-expl { color: #ffd166; font-size: 0.9rem; }
     </style>
 </head>
 <body>
@@ -487,11 +497,86 @@
             document.getElementById("indicador-tiempo").classList.add("hidden");
             document.getElementById("mensaje-feedback").innerText = "";
             
-            document.getElementById("contenedor-reinicio").innerHTML = `
+            document.getElementById("contenedor-reinicio").innerHTML = htmlRepasoErrores() + `
                 <button class='btn-reiniciar' onclick='location.reload()'>VOLVER A JUGAR 🔄</button>
-                <button class='btn-reiniciar btn-menu' onclick='window.location.href="teoria-nivel1.html"'>MENÚ PRINCIPAL 🏠</button>
+                <button class='btn-reiniciar btn-menu' onclick='window.location.href="index.html"'>MENÚ PRINCIPAL 🏠</button>
             `;
         }
+    }
+
+
+    // --- REPASO DE ERRORES (se muestran todos juntos al terminar la partida) ---
+    const erroresDeLaPartida = [];
+    const NOMBRE_EPOCA = { PAST: "PASADO", PRESENT: "PRESENTE", FUTURE: "FUTURO" };
+    const REGLA_EPOCA = {
+        PAST: "El pasado se usa para hechos que ya terminaron.",
+        PRESENT: "El presente se usa para lo que pasa ahora o para rutinas y hechos habituales.",
+        FUTURE: "El futuro se usa para planes, predicciones y promesas."
+    };
+
+    function senalDeTiempo(mision) {
+        const m = (mision.inicio + mision.fin).match(/<span class='marcador-tiempo'>(.*?)<\/span>/);
+        return m ? m[1] : null;
+    }
+
+    function categoriaForma(f) {
+        if (/going to/.test(f)) return "gt";
+        if (/^(will|won't)\b/.test(f)) return "will";
+        if (/^(was|were|wasn't|weren't)\b/.test(f)) return "pastcont";
+        if (/^(am|is|are|isn't|aren't)\b/.test(f)) return "prescont";
+        if (/^didn't\b/.test(f)) return "didnt";
+        if (/^(don't|doesn't)\b/.test(f)) return "dont";
+        return "simple";
+    }
+
+    function explicarErrorEpoca(mision, elegida) {
+        const m = senalDeTiempo(mision);
+        const base = m
+            ? `La señal «${m}» apunta a ${NOMBRE_EPOCA[mision.epocaCorrecta]}, no a ${NOMBRE_EPOCA[elegida]}.`
+            : `El contexto de la oración corresponde a ${NOMBRE_EPOCA[mision.epocaCorrecta]}, no a ${NOMBRE_EPOCA[elegida]}.`;
+        return base + " " + REGLA_EPOCA[mision.epocaCorrecta];
+    }
+
+    function explicarErrorVerbo(mision, elegido) {
+        const c = mision.respuestaCorrecta, cc = categoriaForma(c), ch = categoriaForma(elegido);
+        const m = senalDeTiempo(mision);
+        const senal = m ? `La señal «${m}»` : "El contexto";
+
+        if (mision.epocaCorrecta === "PRESENT") {
+            if (cc === "prescont") return `${senal} indica una acción en desarrollo (ahora mismo o durante un período temporal). Para eso se usa Present Continuous: am/is/are + verbo con -ing (en negativo: isn't/aren't + -ing).`;
+            if (ch === "prescont" || ch === "pastcont") return `${senal} habla de una rutina o un hecho habitual, no de algo que pasa en este momento. Para eso se usa Present Simple, no Present Continuous.`;
+            if (cc === "dont") return "En negativo del Present Simple, con he/she/it se usa doesn't y con I/you/we/they se usa don't. Revisá el sujeto de la oración.";
+            return "En Present Simple, con he/she/it el verbo lleva -s o -es (she studies); con I/you/we/they va sin -s. Revisá el sujeto de la oración.";
+        }
+        if (mision.epocaCorrecta === "PAST") {
+            if (ch === "pastcont") return `${senal} presenta la acción como algo terminado en el pasado. Para eso se usa Past Simple; el Past Continuous se reserva para acciones que estaban en progreso.`;
+            if (ch === "didnt" && cc === "didnt") return `Después de didn't el verbo va en forma base, sin -ed ni pasado irregular: ${c}.`;
+            if (ch === "didnt") return "Didn't se usa solo en oraciones negativas. En afirmativo va directamente el verbo en pasado, sin didn't.";
+            if (/ed$/.test(elegido) && !/ed$/.test(c)) return `«${elegido}» no existe: ese verbo es irregular y su pasado es «${c}».`;
+            if (/ed$/.test(elegido)) return `«${elegido}» está mal escrito. La forma correcta del Past Simple es «${c}».`;
+            return `${senal} ubica la acción en el pasado, así que el verbo va en Past Simple (-ed o forma irregular), no en presente.`;
+        }
+        if (cc === "will" && ch === "gt") return "Acá hace falta will: se usa para decisiones del momento, promesas y predicciones basadas en opinión. Going to es para planes ya decididos o evidencia que ves ahora.";
+        if (cc === "gt" && ch === "will") return "Acá hace falta going to: se usa para planes ya decididos o predicciones basadas en evidencia que ves ahora. Will es para decisiones del momento, promesas y opiniones.";
+        return "Para hablar del futuro en este tipo de oración se necesita will o going to, no el presente simple ni el pasado.";
+    }
+
+    function registrarError(mision, tipo, elegido, correcta, explicacion) {
+        const clave = misionActual + "|" + tipo + "|" + elegido;
+        if (erroresDeLaPartida.some(e => e.clave === clave)) return;
+        erroresDeLaPartida.push({
+            clave, elegido, correcta, explicacion,
+            frase: mision.inicio + "<b style='color:#66fcf1'>" + mision.respuestaCorrecta + "</b>" + mision.fin
+        });
+    }
+
+    function htmlRepasoErrores() {
+        if (erroresDeLaPartida.length === 0) return "<div class='repaso repaso-ok'>🎯 ¡Sin errores! Partida perfecta.</div>";
+        const tarjetas = erroresDeLaPartida.map(e =>
+            `<div class='repaso-card'><div class='repaso-frase'>${e.frase}</div>` +
+            `<div class='repaso-linea'><span class='r-mal'>✗ Elegiste: ${e.elegido}</span><span class='r-bien'>✓ Correcta: ${e.correcta}</span></div>` +
+            `<div class='repaso-expl'>💡 ${e.explicacion}</div></div>`).join("");
+        return `<div class='repaso'><h3>📋 Repaso de errores (${erroresDeLaPartida.length})</h3>${tarjetas}</div>`;
     }
 
     function elegirEpoca(epocaSeleccionada) {
@@ -529,6 +614,7 @@
 
         } else {
             reproducirSonido('error');
+            registrarError(mision, "epoca", NOMBRE_EPOCA[epocaSeleccionada], NOMBRE_EPOCA[mision.epocaCorrecta], explicarErrorEpoca(mision, epocaSeleccionada));
             feedback.innerText = "¡GLITCH! Dimensión equivocada. Revisá la señal en amarillo.";
             feedback.style.color = "#f00";
             maquina.classList.remove("glitch-error");
@@ -560,6 +646,7 @@
 
         } else {
             reproducirSonido('error');
+            registrarError(misionesJuego[misionActual], "verbo", textoElegido, textoCorrecto, explicarErrorVerbo(misionesJuego[misionActual], textoElegido));
             feedback.innerText = "¡Cuidado! Falló la conjugación.";
             feedback.style.color = "#f00";
             

@@ -61,8 +61,9 @@
 <body>
 
 <div class="game-container">
+    <div style="text-align:left; margin-bottom:10px;"><a class="btn-home" href="index.html">🏠 Menú principal</a></div>
     <h2>Sopa de Letras Dinámica 🔍</h2>
-    <p>Arrastrá el dedo (o el mouse) sobre las letras para marcarlas. Podés marcar varias y comprobarlas al final.</p>
+    <p>Arrastrá el dedo (o el mouse) sobre las letras para marcarlas. Podés marcar varias y comprobarlas al final. <strong>Para desmarcar una letra, tocala de nuevo.</strong></p>
 
     <div class="lista-palabras" id="lista-palabras"></div>
     <div class="grilla" id="grilla-sopa"></div>
@@ -97,6 +98,7 @@
 
     let isDragging = false;
     let celdaInicio = null;
+    let celdaInicioEraPendiente = false;
     let seleccionActual = []; 
     let trazosPendientes = []; 
 
@@ -201,6 +203,7 @@
         if (e.target.classList.contains("encontrada")) return;
         isDragging = true;
         celdaInicio = e.target;
+        celdaInicioEraPendiente = celdaInicio.classList.contains("pendiente");
         seleccionActual = [celdaInicio];
         celdaInicio.classList.add("arrastrando");
     }
@@ -253,8 +256,18 @@
             });
         } else {
             seleccionActual.forEach(c => c.classList.remove("arrastrando"));
+            // Un toque (sin arrastrar) sobre una letra ya marcada la desmarca
+            if (celdaInicioEraPendiente && celdaInicio) desmarcarLetra(celdaInicio);
         }
         seleccionActual = [];
+    }
+
+    function desmarcarLetra(celda) {
+        const antes = new Set(trazosPendientes.flat());
+        trazosPendientes = trazosPendientes.map(t => t.filter(c => c !== celda)).filter(t => t.length > 1);
+        const despues = new Set(trazosPendientes.flat());
+        // Si de un trazo quedó una sola letra suelta, también se desmarca
+        antes.forEach(c => { if (!despues.has(c)) c.classList.remove("pendiente"); });
     }
 
     function comprobarTodo() {

@@ -6,138 +6,176 @@
     <title>Get By · Hotel Check-in</title>
     <link rel="stylesheet" href="assets/css/base.css">
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f4f9; text-align: center; padding: 20px; }
-        .game-container { background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0px 4px 10px rgba(0,0,0,0.1); max-width: 600px; margin: 0 auto; }
-        
-        /* Estilos para que las imágenes y videos no se salgan de la caja */
-        .escena { font-size: 56px; line-height: 1.2; text-align: center; padding: 18px 8px; background: #f3f4f6; border-radius: 8px; margin-bottom: 15px; }
-        .media-container img { width: 100%; max-height: 250px; object-fit: cover; border-radius: 8px; margin-bottom: 15px; }
-        
-        button { background-color: #7b2cbf; color: white; border: none; padding: 10px 20px; margin: 10px; border-radius: 5px; cursor: pointer; font-size: 16px; width: 90%; }
-        button:hover { background-color: #5a189a; }
-        #resultado { margin-top: 20px; font-weight: bold; font-size: 18px; }
-        #progreso { color: #666; font-size: 14px; margin-bottom: 15px; }
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; text-align: center; padding: 20px 12px; }
+        .game-container { background-color: white; padding: 24px 18px; border-radius: 10px; box-shadow: 0px 4px 10px rgba(0,0,0,0.1); max-width: 600px; margin: 0 auto; }
+        .escena { font-size: 56px; line-height: 1.2; padding: 18px 8px; background: #f3f4f6; border-radius: 8px; margin-bottom: 15px; }
+        button { background-color: #7b2cbf; color: white; border: none; padding: 12px 16px; margin: 6px 0; border-radius: 8px; cursor: pointer; font-size: 16px; width: 100%; }
+        button:hover:not(:disabled) { background-color: #5a189a; }
+        button.mal { background-color: #c0392b; }
+        button.bien { background-color: #2e9e5b; }
+        button:disabled { opacity: 0.85; cursor: default; }
+        #resultado { margin-top: 14px; font-weight: bold; font-size: 17px; }
+        #explicacion { margin-top: 8px; font-size: 15px; color: #333; text-align: left; background: #eef7f0; border-radius: 8px; padding: 10px 12px; }
+        #progreso { color: #666; font-size: 14px; margin-bottom: 12px; }
+        .repaso { text-align: left; margin-top: 16px; }
+        .repaso h3 { text-align: center; color: #7b2cbf; }
+        .repaso-card { border: 1px solid #ddd; border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; font-size: 15px; line-height: 1.45; }
+        .r-mal { color: #c0392b; } .r-bien { color: #2e9e5b; } .r-expl { color: #444; margin-top: 6px; }
     </style>
 </head>
 <body>
 
 <div class="game-container">
+    <div style="text-align:left; margin-bottom:10px;"><a class="btn-home" href="index.html">🏠 Menú principal</a></div>
     <h2>Escena: Check-in en el hotel 🏨</h2>
-    <div id="progreso">Pregunta 1 de 3</div>
-    
-    <!-- Ilustración de la escena hecha con emojis (sin imágenes externas) -->
-    <div class="media-container">
-        <div id="imagen-personaje" class="escena" role="img" aria-label="Ilustración de la escena"></div>
-    </div>
-
+    <div id="progreso"></div>
+    <div id="imagen-personaje" class="escena" role="img" aria-label="Ilustración de la escena"></div>
     <p id="escenario">Cargando escenario...</p>
-
     <div id="opciones"></div>
     <div id="resultado"></div>
+    <div id="explicacion" hidden></div>
+    <div id="acciones"></div>
+    <div id="repaso"></div>
 </div>
 
 <script>
-    // 1. EL ARRAY DE PREGUNTAS AHORA INCLUYE IMÁGENES Y CLIPS
-    const preguntas = [
-        {
-            escenario: "Laura y Diego llegan a la recepción. Laura quiere pedir una habitación con cama matrimonial. ¿Qué debería decir?",
-            opciones: [
-                "Can I have breakfast in my room?",
-                "Can I get a room with a double bed?",
-                "Is the elevator working?"
-            ],
-            respuestaCorrecta: 1,
-            // Imagen que se ve al pensar la respuesta
-            escena: "🛎️🧳🛏️",
-            escenaExito: "🎉🔑🛏️" 
-        },
-        {
-            escenario: "A la mañana siguiente, Diego tiene mucha hambre y quiere saber a qué hora puede ir a comer. ¿Qué pregunta?",
-            opciones: [
-                "Is breakfast included?",
-                "Where is breakfast served?",
-                "What time is breakfast served?"
-            ],
-            respuestaCorrecta: 2,
-            escena: "🥐☕🍳",
-            escenaExito: "🎉🍽️😋"
-        },
-        {
-            escenario: "Marta y Pablo están cansados de subir por la escalera con las valijas. Necesitan ayuda.",
-            opciones: [
-                "Where is the elevator?",
-                "Which floor is my room on?",
-                "Is there a quiet room available?"
-            ],
-            respuestaCorrecta: 0,
-            escena: "🧳🪜😓",
-            escenaExito: "🎉🛗😌"
-        }
+    // Cada situación: s = escena (emojis), e = escenario, o = [frase en inglés, explicación], c = índice de la correcta
+    const BANCO = [
+        { s: "🛎️🧳🛏️", e: "Laura y Diego llegan a la recepción. Laura quiere pedir una habitación con cama matrimonial. ¿Qué debería decir?", c: 1, o: [
+            ["Can I have breakfast in my room?", "Es un pedido válido, pero habla del desayuno, no de la cama."],
+            ["Can I get a room with a double bed?", "Pide una habitación con cama doble (double bed = cama matrimonial)."],
+            ["Is the elevator working?", "Pregunta si el ascensor funciona; no pide la habitación."] ] },
+        { s: "🥐☕🍳", e: "A la mañana siguiente, Diego tiene mucha hambre y quiere saber a qué hora puede ir a comer. ¿Qué pregunta?", c: 2, o: [
+            ["Is breakfast included?", "Pregunta si el desayuno está incluido en el precio, no el horario."],
+            ["Where is breakfast served?", "Pregunta dónde se sirve, no a qué hora."],
+            ["What time is breakfast served?", "«What time» pregunta la hora: es justo lo que Diego necesita."] ] },
+        { s: "🧳🪜😓", e: "Marta y Pablo están cansados de subir por la escalera con las valijas. Necesitan ayuda.", c: 0, o: [
+            ["Where is the elevator?", "Pregunta dónde está el ascensor, justo lo que necesitan."],
+            ["Which floor is my room on?", "Pregunta en qué piso está la habitación; no resuelve el problema de las valijas."],
+            ["Is there a quiet room available?", "Pide una habitación tranquila; no tiene que ver con el ascensor."] ] },
+        { s: "📋🔑🏨", e: "Llegás al hotel con una reserva a nombre de Gómez. ¿Qué decís en recepción?", c: 1, o: [
+            ["I have a reserve under Gómez.", "«Reserve» es el verbo. El sustantivo «reserva» es «reservation»."],
+            ["I have a reservation under Gómez.", "«Reservation» es la reserva, y «under + apellido» indica a nombre de quién está."],
+            ["I am reserving under Gómez.", "Suena a que estás haciendo la reserva ahora, no a que ya la tenés."] ] },
+        { s: "📶💻🛋️", e: "Querés conectarte a internet desde tu habitación y no sabés la clave.", c: 0, o: [
+            ["What's the Wi-Fi password?", "Es la forma natural y directa de pedir la contraseña del Wi-Fi."],
+            ["Where is the Wi-Fi?", "Pregunta por la ubicación del Wi-Fi, no por la clave."],
+            ["Which is the key of internet?", "«Key» no se usa para contraseñas: se dice «password»."] ] },
+        { s: "🛁🧴🚿", e: "En tu habitación no hay suficientes toallas. Llamás a recepción.", c: 1, o: [
+            ["I want towels.", "Se entiende, pero suena brusco. Mejor «Could I have... please?»."],
+            ["Could I have some extra towels, please?", "Pedido cortés: «could» + «please», y «extra» indica que querés más."],
+            ["Where is my towel?", "Pregunta dónde está tu toalla, como si ya te la hubieran dado."] ] },
+        { s: "🥵❄️🔧", e: "El aire acondicionado de tu habitación no funciona. Vas a recepción a avisar.", c: 2, o: [
+            ["The air conditioning doesn't working.", "Después de «doesn't» el verbo va en forma base (doesn't work), sin -ing."],
+            ["I have a problem of air conditioning.", "En inglés se dice «a problem with», no «of»."],
+            ["The air conditioning isn't working.", "Es la forma natural de contar que algo no funciona en este momento."] ] },
+        { s: "🕑🧳🚪", e: "Tu vuelo sale a la noche y querés quedarte en la habitación hasta las 2 de la tarde el día de salida.", c: 0, o: [
+            ["Is it possible to have a late checkout?", "«Late checkout» es salir más tarde de lo habitual: es justo lo que pedís."],
+            ["Can I leave later the room?", "El orden de las palabras no es natural; en inglés se dice «late checkout»."],
+            ["What time is the check-in?", "Pregunta la hora de entrada, no de salida."] ] },
+        { s: "🧳🕓✈️", e: "Ya hiciste el check-out, pero tu vuelo es a la noche y querés dejar tus valijas guardadas.", c: 2, o: [
+            ["Can you carry my luggage to my room?", "Pide que lleven las valijas a la habitación, pero ya hiciste el check-out."],
+            ["I lost my luggage.", "Dice que perdiste el equipaje, y no es lo que pasó."],
+            ["Could you keep my luggage until this evening?", "Pide que te guarden el equipaje hasta la noche (keep = guardar)."] ] },
+        { s: "🍽️📍🙂", e: "Querés cenar bien y no conocés la zona. Le pedís una recomendación al recepcionista.", c: 2, o: [
+            ["Can you recommend me a restaurant good?", "El adjetivo va antes del sustantivo: «a good restaurant»."],
+            ["Is there a restaurant in the hotel?", "Pregunta si hay restaurante en el hotel; no pide una recomendación."],
+            ["Can you recommend a good restaurant nearby?", "Pide una recomendación (recommend) de un buen restaurante cercano (nearby)."] ] },
+        { s: "🔑🚫😕", e: "Intentás abrir la puerta de tu habitación y la tarjeta no funciona.", c: 2, o: [
+            ["My key card is broke.", "«Broke» es el pasado de «break»; el adjetivo es «broken». Mejor: «isn't working»."],
+            ["I lost my key card.", "Dice que perdiste la tarjeta, pero vos la tenés en la mano."],
+            ["My key card isn't working.", "Es la forma natural de decir que la tarjeta no funciona."] ] },
+        { s: "🔊😴🛏️", e: "No podés dormir por el ruido de la calle. Querés pedir otra habitación.", c: 1, o: [
+            ["My room is very noise. I want other room.", "«Noise» es sustantivo; el adjetivo es «noisy». Además falta «another» o «a different»."],
+            ["My room is very noisy. Could I change rooms?", "«Noisy» es el adjetivo correcto y «Could I...?» es un pedido cortés."],
+            ["My room is very quiet. Could I change rooms?", "«Quiet» significa tranquila: dice lo contrario de lo que pasa."] ] },
+        { s: "📞🚕🧳", e: "Tenés que ir al aeropuerto y querés que te llamen un taxi.", c: 1, o: [
+            ["Can you call to a taxi?", "Con «call» no se usa «to» acá: se dice «call a taxi»."],
+            ["Could you call a taxi for me, please?", "Pedido cortés y completo: «call a taxi» + «for me»."],
+            ["Can I take a taxi in the hotel?", "Pregunta si podés tomar un taxi dentro del hotel; no pide que lo llamen."] ] }
     ];
+    const PREGUNTAS_POR_RONDA = 8;
 
-    let preguntaActual = 0;
+    let preguntas = [], actual = 0, errores = [], bloqueado = false;
+    const $ = (id) => document.getElementById(id);
 
-    function cargarPregunta() {
-        document.getElementById('resultado').innerHTML = ""; 
-        const pregunta = preguntas[preguntaActual];
-        
-        document.getElementById('progreso').innerText = "Pregunta " + (preguntaActual + 1) + " de " + preguntas.length;
-        document.getElementById('escenario').innerText = pregunta.escenario;
-        
-        // Muestra la ilustración (emojis) de la pregunta
-        document.getElementById('imagen-personaje').textContent = pregunta.escena;
-
-        const divOpciones = document.getElementById('opciones');
-        divOpciones.innerHTML = ""; 
-
-        for (let i = 0; i < pregunta.opciones.length; i++) {
-            const boton = document.createElement("button");
-            boton.innerText = pregunta.opciones[i];
-            boton.onclick = function() { verificarRespuesta(i) };
-            divOpciones.appendChild(boton);
-        }
+    function mezclar(a) {
+        const r = [...a];
+        for (let i = r.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [r[i], r[j]] = [r[j], r[i]]; }
+        return r;
     }
 
-    function verificarRespuesta(indiceElegido) {
-        const pregunta = preguntas[preguntaActual];
-        const resultadoDiv = document.getElementById('resultado');
+    function iniciar() {
+        preguntas = mezclar(BANCO).slice(0, PREGUNTAS_POR_RONDA).map(q => ({
+            s: q.s, e: q.e,
+            ops: mezclar(q.o.map((x, i) => ({ t: x[0], x: x[1], ok: i === q.c })))
+        }));
+        actual = 0; errores = [];
+        $("repaso").innerHTML = ""; $("acciones").innerHTML = "";
+        mostrar();
+    }
 
-        if (indiceElegido === pregunta.respuestaCorrecta) {
-            resultadoDiv.innerHTML = "¡Excelente! 🎉";
-            resultadoDiv.style.color = "green";
-            
-            // Al acertar, cambia la ilustración por la de festejo
-            document.getElementById('imagen-personaje').textContent = pregunta.escenaExito;
+    function mostrar() {
+        bloqueado = false;
+        const p = preguntas[actual];
+        $("progreso").innerText = "Pregunta " + (actual + 1) + " de " + preguntas.length;
+        $("imagen-personaje").textContent = p.s;
+        $("escenario").innerText = p.e;
+        $("resultado").innerText = ""; $("explicacion").hidden = true; $("acciones").innerHTML = "";
+        const cont = $("opciones"); cont.innerHTML = "";
+        p.ops.forEach(op => {
+            const b = document.createElement("button");
+            b.innerText = op.t;
+            b.onclick = () => elegir(op, b);
+            cont.appendChild(b);
+        });
+    }
 
-            // Desactivamos los botones para evitar doble toque mientras se ve el festejo
-            const botones = document.getElementById('opciones').getElementsByTagName('button');
-            for (let boton of botones) {
-                boton.disabled = true; 
+    function elegir(op, boton) {
+        if (bloqueado) return;
+        const p = preguntas[actual];
+        if (!op.ok) {
+            boton.classList.add("mal"); boton.disabled = true;
+            $("resultado").innerText = "Mmm... esa no es la frase ideal. ¡Intentá de nuevo!";
+            $("resultado").style.color = "#c0392b";
+            if (!errores.some(e => e.escenario === p.e && e.elegido === op.t)) {
+                errores.push({ escenario: p.e, elegido: op.t, correcta: p.ops.find(o => o.ok).t, explicacion: op.x, porque: p.ops.find(o => o.ok).x });
             }
-
-            // Esperamos 2 segundos para ver el festejo antes de avanzar
-            setTimeout(function() {
-                preguntaActual++;
-                
-                if (preguntaActual < preguntas.length) {
-                    cargarPregunta();
-                } else {
-                    document.getElementById('escenario').innerText = "¡Completaste el módulo del Hotel!";
-                    document.getElementById('opciones').innerHTML = "<button onclick='location.reload()'>Jugar de nuevo</button>";
-                    resultadoDiv.innerHTML = "";
-                    document.getElementById('imagen-personaje').textContent = "🏆🎉";
-                    document.getElementById('progreso').innerText = "¡Módulo completado!";
-                }
-            }, 2000); 
-
-        } else {
-            resultadoDiv.innerHTML = "Mmm... esa no es la frase ideal. ¡Intentá de nuevo!";
-            resultadoDiv.style.color = "red";
+            return;
         }
+        bloqueado = true;
+        boton.classList.add("bien");
+        document.querySelectorAll("#opciones button").forEach(b => b.disabled = true);
+        $("imagen-personaje").textContent = "🎉 " + p.s;
+        $("resultado").innerText = "¡Excelente! 🎉"; $("resultado").style.color = "#2e9e5b";
+        $("explicacion").innerText = "💡 " + op.x; $("explicacion").hidden = false;
+        const sig = document.createElement("button");
+        const esUltima = actual === preguntas.length - 1;
+        sig.innerText = esUltima ? "Ver resultado ➜" : "Siguiente ➜";
+        sig.onclick = () => { if (esUltima) terminar(); else { actual++; mostrar(); } };
+        $("acciones").appendChild(sig);
     }
 
-    cargarPregunta();
-</script>
+    function terminar() {
+        $("progreso").innerText = "¡Módulo completado!";
+        $("imagen-personaje").textContent = "🏆🎉";
+        $("escenario").innerText = "¡Completaste el módulo del Hotel!";
+        $("opciones").innerHTML = ""; $("resultado").innerText = ""; $("explicacion").hidden = true;
+        $("acciones").innerHTML = "<button onclick='iniciar()'>🔄 Jugar de nuevo (nuevas situaciones)</button>";
+        if (errores.length === 0) {
+            $("repaso").innerHTML = "<div class='repaso'><h3>🎯 ¡Sin errores!</h3></div>";
+            return;
+        }
+        const esc = (t) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+        $("repaso").innerHTML = "<div class='repaso'><h3>📋 Repaso de errores (" + errores.length + ")</h3>" +
+            errores.map(e => "<div class='repaso-card'><div>" + esc(e.escenario) + "</div>" +
+                "<div class='r-mal'>✗ Elegiste: " + esc(e.elegido) + "</div>" +
+                "<div class='r-expl'>💡 " + esc(e.explicacion) + "</div>" +
+                "<div class='r-bien'>✓ Correcta: " + esc(e.correcta) + "</div>" +
+                "<div class='r-expl'>" + esc(e.porque) + "</div></div>").join("") + "</div>";
+    }
 
+    iniciar();
+</script>
 </body>
 </html>
