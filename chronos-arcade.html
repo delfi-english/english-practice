@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <!-- CLAVE: Esta etiqueta le dice al celular que adapte el zoom al ancho de la pantalla -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Chronos Arcade: The Timeline Glitch</title>
+    <link rel="stylesheet" href="assets/css/base.css">
     <style>
         body { 
             font-family: 'Courier New', Courier, monospace; 
@@ -29,6 +30,7 @@
             box-sizing: border-box; /* Asegura que el padding no desborde el ancho */
             margin: 0 auto; 
             position: relative; 
+            min-height: 540px; /* la pantalla de inicio (overlay) necesita este alto para no recortarse en celular */
         }
 
         /* Usamos font-size adaptativo para el título */
@@ -52,7 +54,8 @@
             z-index: 100; 
             display: flex; 
             flex-direction: column; 
-            justify-content: center; 
+            justify-content: safe center; /* si el contenido es más alto, empieza desde arriba en vez de recortarse */
+            overflow-y: auto; 
             align-items: center; 
             border-radius: 11px; 
             padding: 20px;
@@ -243,7 +246,7 @@
         <p style="color: #66fcf1;">Misión: Identificá la pista temporal y ajustá el verbo para restaurar la línea de tiempo.</p>
         <div class="insert-coin" onclick="arrancarArcade()">
             INSERT COIN<br>
-            <span style="font-size: 13px; color: #c5c6c7; font-weight: normal; text-shadow: none;">(Hacé clic o presioná ENTER para comenzar)</span>
+            <span style="font-size: 13px; color: #c5c6c7; font-weight: normal; text-shadow: none;">(Tocá acá o presioná ENTER para comenzar)</span>
         </div>
     </div>
 
@@ -367,7 +370,7 @@
         { inicio: "The mechanic ", fin: " my car <span class='marcador-tiempo'>last weekend</span>.", epocaCorrecta: "PAST", respuestaCorrecta: "fixed", distractores: ["was fixing", "fix"] },
         { inicio: "I ", fin: " television <span class='marcador-tiempo'>last night</span> because I was tired.", epocaCorrecta: "PAST", respuestaCorrecta: "didn't watch", distractores: ["wasn't watching", "didn't watched"] },
         { inicio: "My family ", fin: " the entire summer trip in one afternoon <span class='marcador-tiempo'>last week</span>.", epocaCorrecta: "PAST", respuestaCorrecta: "planned", distractores: ["were planning", "planed"] },
-        { inicio: "Ross and Rachel ", fin: " a break <span class='marcador-tiempo'>a long time ago</span>.", epocaCorrecta: "PAST", respuestaCorrecta: "took", distractores: ["were taking", "taked"] },
+        { inicio: "Tom and Anna ", fin: " a break <span class='marcador-tiempo'>a long time ago</span>.", epocaCorrecta: "PAST", respuestaCorrecta: "took", distractores: ["were taking", "taked"] },
 
         // --- FUTURE: WILL vs GOING TO ---
         { inicio: "We ", fin: " to Bariloche <span class='marcador-tiempo'>next month</span>! We already bought the tickets.", epocaCorrecta: "FUTURE", respuestaCorrecta: "are going to travel", distractores: ["will travel", "travel"] },

@@ -2,8 +2,9 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Spot the Object - Mi Plataforma</title>
+    <link rel="stylesheet" href="assets/css/base.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
 
@@ -274,7 +275,7 @@
                 <!-- LA IMAGEN DEL MAPA CREADO -->
                 <div class="map-container">
                     <!-- Si tu imagen se llama distinto o está en otra carpeta, modificá el atributo 'src' -->
-                    <img src="imagenes/mapa-ciudad-Gemini.jpg" alt="Mapa Isométrico de la ciudad" id="city-map">
+                    <img src="imagenes/mapa-ciudad-optimizado.jpg" alt="Mapa Isométrico de la ciudad" id="city-map">
                 </div>
 
                 <div class="question-box">
@@ -321,7 +322,7 @@
             else { sidebar.classList.remove('pinned'); }
         }
 
-        // --- BANCO DE PREGUNTAS (Basadas 100% en tu mapa-ciudad-Gemini.jpg) ---
+        // --- BANCO DE PREGUNTAS (Basadas 100% en el mapa imagenes/mapa-ciudad-optimizado.jpg) ---
         const gameDataMaster = [
             // PARTE 1: THERE IS / THERE ARE (10 oraciones)
             { start: "Look at the map. ", end: " a large stadium on the left side of the city.", correct: "There is", distractors: ["There are", "Is there"], hint: "Es una afirmación sobre 1 estadio (a stadium). Se usa el singular 'There is'." },

@@ -1,0 +1,17 @@
+/* Get By · reglas base compartidas por todas las páginas.
+   Se carga ANTES del CSS propio de cada juego, así cada juego puede
+   sobreescribir lo que necesite. Mantener este archivo chico y seguro. */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+/* Imágenes y medios nunca más anchos que la pantalla */
+img, svg, video, canvas { max-width: 100%; height: auto; }
+
+/* Quita el retraso y el zoom accidental por doble toque en botones y enlaces,
+   sin bloquear el zoom con dos dedos (importante para accesibilidad) */
+a, button, input, select, textarea, label, [role="button"] { touch-action: manipulation; }
+
+/* Texto largo no rompe el ancho de la pantalla */
+body { overflow-wrap: break-word; }

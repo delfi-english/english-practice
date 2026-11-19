@@ -2,7 +2,9 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Word Search: Dynamic Pro</title>
+    <link rel="stylesheet" href="assets/css/base.css">
     <style>
         body { font-family: Arial, sans-serif; background-color: #f4f4f9; text-align: center; padding: 20px; user-select: none; }
         .game-container { background-color: white; padding: 20px; border-radius: 10px; max-width: 800px; margin: 0 auto; box-shadow: 0px 4px 10px rgba(0,0,0,0.1); }
@@ -21,13 +23,22 @@
             border: 2px solid #dee2e6;
             padding: 2px;
             border-radius: 5px;
+            touch-action: none;
         }
 
         .letra {
+            touch-action: none; /* el dedo marca letras en vez de desplazar la página */
             background-color: white; 
             font-size: 18px; font-weight: bold; padding: 8px 0; /* Padding más chico */
             cursor: pointer; text-align: center;
             user-select: none; 
+        }
+
+        /* Celular: menos margen para que la grilla de 15x15 use todo el ancho */
+        @media (max-width: 480px) {
+            body { padding: 8px !important; }
+            .game-container { padding: 14px 8px; }
+            .letra { font-size: 16px; padding: 7px 0; }
         }
 
         /* ESTADOS DE COLORES */
@@ -51,7 +62,7 @@
 
 <div class="game-container">
     <h2>Sopa de Letras Dinámica 🔍</h2>
-    <p>Arrastrá el mouse sobre las letras para marcarlas. Podés marcar varias y comprobarlas al final.</p>
+    <p>Arrastrá el dedo (o el mouse) sobre las letras para marcarlas. Podés marcar varias y comprobarlas al final.</p>
 
     <div class="lista-palabras" id="lista-palabras"></div>
     <div class="grilla" id="grilla-sopa"></div>
@@ -163,17 +174,27 @@
                 celda.dataset.f = f; 
                 celda.dataset.c = c;
 
-                celda.addEventListener("mousedown", iniciarArrastre);
-                celda.addEventListener("mouseenter", arrastrar);
-                celda.addEventListener("mouseup", terminarArrastre);
+                // Pointer Events: funcionan igual con mouse y con el dedo en el celular
+                celda.addEventListener("pointerdown", iniciarArrastre);
                 
                 contenedorGrilla.appendChild(celda);
             }
         }
         
-        document.body.addEventListener("mouseup", () => {
-            if (isDragging) terminarArrastre();
-        });
+        // Los listeners globales se registran una sola vez (aunque la sopa se regenere)
+        if (!window.__sopaPointerListeners) {
+            window.__sopaPointerListeners = true;
+            document.addEventListener("pointermove", (ev) => {
+                if (!isDragging) return;
+                // Con el dedo, el evento sigue en la celda inicial: buscamos la celda que está bajo el dedo
+                const bajoElDedo = document.elementFromPoint(ev.clientX, ev.clientY);
+                if (bajoElDedo && bajoElDedo.classList && bajoElDedo.classList.contains("letra")) {
+                    arrastrar({ target: bajoElDedo });
+                }
+            });
+            document.addEventListener("pointerup", () => { if (isDragging) terminarArrastre(); });
+            document.addEventListener("pointercancel", () => { if (isDragging) terminarArrastre(); });
+        }
     }
 
     function iniciarArrastre(e) {

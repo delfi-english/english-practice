@@ -2,8 +2,9 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Starter Module - Mi Plataforma</title>
+    <link rel="stylesheet" href="assets/css/base.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
 
@@ -543,7 +544,14 @@
         function filterCards(category) {
             // Actualizar botones UI
             document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-            event.currentTarget.classList.add('active');
+            // Al cargar la página no hay clic (event no existe): se activa el botón de la categoría pedida
+            const clicked = (typeof event !== 'undefined' && event && event.currentTarget && event.currentTarget.classList) ? event.currentTarget : null;
+            if (clicked) {
+                clicked.classList.add('active');
+            } else {
+                const first = document.querySelector('.filter-btn');
+                if (first) first.classList.add('active');
+            }
 
             // Renderizar cartas
             container.innerHTML = '';
