@@ -63,7 +63,7 @@
 <div class="game-container">
     <div style="text-align:left; margin-bottom:10px;"><a class="btn-home" href="index.html">🏠 Menú principal</a></div>
     <h2>Sopa de Letras Dinámica 🔍</h2>
-    <p>Arrastrá el dedo (o el mouse) sobre las letras para marcarlas. Podés marcar varias y comprobarlas al final. <strong>Para desmarcar una letra, tocala de nuevo.</strong></p>
+    <p>Arrastrá el dedo (o el mouse) sobre las letras para marcarlas. Podés marcar varias y comprobarlas al final. <strong>Podés marcar una palabra en partes, tocar una letra suelta para marcarla y tocarla de nuevo para desmarcarla.</strong></p>
 
     <div class="lista-palabras" id="lista-palabras"></div>
     <div class="grilla" id="grilla-sopa"></div>
@@ -111,6 +111,7 @@
 
     function generarSopa() {
         palabrasObjetivo = diccionario.sort(() => 0.5 - Math.random()).slice(0, cantidadPalabras);
+        datosPalabras = [];
         
         const divLista = document.getElementById("lista-palabras");
         divLista.innerHTML = "";
@@ -153,12 +154,21 @@
                         let c = col + (dir === 0 || dir === 2 ? i : 0);
                         grid[f][c] = word[i];
                     }
-                    datosPalabras.push({ palabra: word, filaPista: fila });
+                    const celdas = [];
+                    for (let i = 0; i < word.length; i++) {
+                        celdas.push([fila + (dir === 1 || dir === 2 ? i : 0), col + (dir === 0 || dir === 2 ? i : 0)]);
+                    }
+                    datosPalabras.push({ palabra: word, filaPista: fila, celdas: celdas });
                     colocada = true;
                 }
                 intentos++;
             }
         });
+
+        // Si alguna palabra no pudo colocarse, se saca de la lista para que siempre se pueda ganar
+        const noColocadas = palabrasObjetivo.filter(w => !datosPalabras.some(d => d.palabra === w));
+        noColocadas.forEach(w => { const sp = document.getElementById("word-" + w); if (sp) sp.remove(); });
+        palabrasObjetivo = palabrasObjetivo.filter(w => !noColocadas.includes(w));
 
         const abecedario = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         const contenedorGrilla = document.getElementById("grilla-sopa");
@@ -257,44 +267,55 @@
         } else {
             seleccionActual.forEach(c => c.classList.remove("arrastrando"));
             // Un toque (sin arrastrar) sobre una letra ya marcada la desmarca
-            if (celdaInicioEraPendiente && celdaInicio) desmarcarLetra(celdaInicio);
+            if (celdaInicio) {
+                if (celdaInicioEraPendiente) desmarcarLetra(celdaInicio);
+                else if (!celdaInicio.classList.contains("encontrada")) celdaInicio.classList.add("pendiente");
+            }
         }
         seleccionActual = [];
     }
 
     function desmarcarLetra(celda) {
-        const antes = new Set(trazosPendientes.flat());
-        trazosPendientes = trazosPendientes.map(t => t.filter(c => c !== celda)).filter(t => t.length > 1);
-        const despues = new Set(trazosPendientes.flat());
-        // Si de un trazo quedó una sola letra suelta, también se desmarca
-        antes.forEach(c => { if (!despues.has(c)) c.classList.remove("pendiente"); });
+        celda.classList.remove("pendiente");
     }
 
     function comprobarTodo() {
         let aciertosEnEstaRonda = 0;
+        const marcadas = new Set([...document.querySelectorAll(".letra.pendiente")].map(c => c.dataset.f + "," + c.dataset.c));
+        const totalLetras = palabrasObjetivo.reduce((n, w) => n + w.length, 0);
 
-        trazosPendientes.forEach(trazo => {
-            let palabraFormada = trazo.map(c => c.innerText).join("");
-            let palabraInvertida = palabraFormada.split("").reverse().join("");
+        // Evita ganar marcando casi toda la grilla
+        if (marcadas.size > totalLetras * 2) {
+            document.querySelectorAll(".letra.pendiente").forEach(c => c.classList.remove("pendiente"));
+            trazosPendientes = [];
+            const rd = document.getElementById("resultado");
+            rd.innerText = "Marcaste demasiadas letras. Marcá solo las palabras que encontraste.";
+            rd.style.color = "red";
+            return;
+        }
 
-            let indexNormal = palabrasObjetivo.indexOf(palabraFormada);
-            let indexInvertida = palabrasObjetivo.indexOf(palabraInvertida);
-            
-            let coincidencia = indexNormal !== -1 ? palabraFormada : (indexInvertida !== -1 ? palabraInvertida : null);
-
-            if (coincidencia) {
-                trazo.forEach(c => {
-                    c.classList.remove("pendiente");
-                    c.classList.add("encontrada");
+        // Una palabra cuenta si TODAS sus letras están marcadas (o ya encontradas en un cruce),
+        // sin importar en cuántos arrastres o toques se marcó
+        [...palabrasObjetivo].forEach(word => {
+            const info = datosPalabras.find(d => d.palabra === word);
+            if (!info) return;
+            const celdaDe = ([f, c]) => document.querySelector(`.letra[data-f='${f}'][data-c='${c}']`);
+            const completa = info.celdas.every(([f, c]) => marcadas.has(f + "," + c) || celdaDe([f, c]).classList.contains("encontrada"));
+            const algunaMarcada = info.celdas.some(([f, c]) => marcadas.has(f + "," + c));
+            if (completa && algunaMarcada) {
+                info.celdas.forEach(par => {
+                    const cel = celdaDe(par);
+                    cel.classList.remove("pendiente");
+                    cel.classList.add("encontrada");
                 });
-                document.getElementById("word-" + coincidencia).classList.add("palabra-tachada");
-                palabrasObjetivo.splice(palabrasObjetivo.indexOf(coincidencia), 1);
+                document.getElementById("word-" + word).classList.add("palabra-tachada");
+                palabrasObjetivo.splice(palabrasObjetivo.indexOf(word), 1);
                 aciertosEnEstaRonda++;
-            } else {
-                trazo.forEach(c => c.classList.remove("pendiente"));
             }
         });
 
+        // Las marcas que no formaron ninguna palabra se limpian
+        document.querySelectorAll(".letra.pendiente").forEach(c => c.classList.remove("pendiente"));
         trazosPendientes = [];
 
         const resultadoDiv = document.getElementById("resultado");
