@@ -58,24 +58,63 @@
 </div>
 
 <script>
-    // Banco de términos (de la planificación de clases). Cada partida usa algunos al azar.
-    const BANCO = [
-        { id: 1,  en: "Painkillers (Ibuprofen)", es: "Medicina para calmar dolores leves" },
-        { id: 2,  en: "Motion sickness pills",   es: "Pastillas para mareos en auto o avión" },
-        { id: 3,  en: "Band-aids",               es: "Curitas para cortes o heridas" },
-        { id: 4,  en: "Prescription",            es: "Receta médica firmada por un doctor" },
-        { id: 5,  en: "Over the counter",        es: "Se compra sin receta médica" },
-        { id: 6,  en: "Cough drops",             es: "Pastillas para la garganta" },
-        { id: 7,  en: "Eye drops",               es: "Gotas para los ojos" },
-        { id: 8,  en: "Antihistamines",          es: "Pastillas para alergias leves" },
-        { id: 9,  en: "Antibiotics",             es: "Medicina que se compra solo con receta" },
-        { id: 10, en: "Fever",                   es: "Temperatura alta del cuerpo" },
-        { id: 11, en: "Headache",                es: "Dolor de cabeza" },
-        { id: 12, en: "Sore throat",             es: "Dolor de garganta" }
-    ];
+    // Dos bancos: vocabulario y frases útiles (de la planificación de clases y situaciones de farmacia).
+    // Cada partida elige UN banco al azar y usa 5 pares, para que nunca haya dos significados parecidos mezclados.
+    const BANCOS = {
+        vocabulario: { titulo: "Vocabulario de farmacia", pares: [
+            { id: 1,  en: "Painkillers (Ibuprofen)", es: "Medicina para calmar dolores leves" },
+            { id: 2,  en: "Motion sickness pills",   es: "Pastillas para mareos en auto o avión" },
+            { id: 3,  en: "Band-aids",               es: "Curitas para cortes o heridas" },
+            { id: 4,  en: "Prescription",            es: "Receta médica firmada por un doctor" },
+            { id: 5,  en: "Over the counter",        es: "Se compra sin receta médica" },
+            { id: 6,  en: "Cough drops",             es: "Pastillas para la garganta" },
+            { id: 7,  en: "Eye drops",               es: "Gotas para los ojos" },
+            { id: 8,  en: "Antihistamines",          es: "Pastillas para alergias leves" },
+            { id: 9,  en: "Antibiotics",             es: "Medicina que se compra solo con receta" },
+            { id: 10, en: "Fever",                   es: "Temperatura alta del cuerpo" },
+            { id: 11, en: "Headache",                es: "Dolor de cabeza" },
+            { id: 12, en: "Sore throat",             es: "Dolor de garganta" },
+            { id: 13, en: "Stomachache",             es: "Dolor de estómago" },
+            { id: 14, en: "Toothache",               es: "Dolor de muelas" },
+            { id: 15, en: "Backache",                es: "Dolor de espalda" },
+            { id: 16, en: "Runny nose",              es: "Nariz que gotea (moqueo)" },
+            { id: 17, en: "Rash",                    es: "Granitos o enrojecimiento en la piel" },
+            { id: 18, en: "Sunburn",                 es: "Piel quemada por tomar mucho sol" },
+            { id: 19, en: "Heartburn",               es: "Sensación de ardor después de comer" },
+            { id: 20, en: "Cough syrup",             es: "Jarabe para la tos" },
+            { id: 21, en: "Cold and flu relief",     es: "Medicina para el resfrío y la gripe" },
+            { id: 22, en: "Nasal spray",             es: "Aerosol para destapar la nariz" },
+            { id: 23, en: "Ear drops",               es: "Gotas para los oídos" },
+            { id: 24, en: "Sunscreen",               es: "Protector solar" },
+            { id: 25, en: "Insect repellent",        es: "Repelente contra mosquitos" },
+            { id: 26, en: "Thermometer",             es: "Aparato para medir la temperatura" },
+            { id: 27, en: "Hand sanitizer",          es: "Alcohol en gel para las manos" },
+            { id: 28, en: "First-aid kit",           es: "Botiquín de primeros auxilios" },
+            { id: 29, en: "Burn gel",                es: "Gel para aliviar quemaduras" },
+            { id: 30, en: "Dose",                    es: "Cantidad de medicina que hay que tomar" },
+            { id: 31, en: "Side effects",            es: "Efectos no deseados de un medicamento" },
+            { id: 32, en: "Expiration date",         es: "Fecha hasta la que se puede usar" },
+            { id: 33, en: "Pharmacist",              es: "Persona que te atiende y aconseja en la farmacia" },
+            { id: 34, en: "24-hour pharmacy",        es: "Farmacia abierta todo el día y toda la noche" }
+        ]},
+        frases: { titulo: "Frases útiles en la farmacia", pares: [
+            { id: 101, en: "Do you have anything for a cold?",                es: "¿Tenés algo para el resfrío?" },
+            { id: 102, en: "How often should I take it?",                     es: "¿Cada cuánto tengo que tomarlo?" },
+            { id: 103, en: "Is it safe for children?",                        es: "¿Es seguro para los chicos?" },
+            { id: 104, en: "I'm allergic to penicillin.",                     es: "Soy alérgico/a a la penicilina." },
+            { id: 105, en: "Where is the nearest pharmacy?",                  es: "¿Dónde queda la farmacia más cercana?" },
+            { id: 106, en: "Can you recommend something for a sore throat?",  es: "¿Me podés recomendar algo para el dolor de garganta?" },
+            { id: 107, en: "Take one pill twice a day.",                      es: "Tomá una pastilla dos veces por día." },
+            { id: 108, en: "Take it after meals.",                            es: "Tomalo después de las comidas." },
+            { id: 109, en: "Do I need a prescription?",                       es: "¿Necesito una receta?" },
+            { id: 110, en: "I'm looking for painkillers.",                    es: "Estoy buscando analgésicos." },
+            { id: 111, en: "Does it have any side effects?",                  es: "¿Tiene efectos secundarios?" },
+            { id: 112, en: "I have a high fever.",                            es: "Tengo mucha fiebre." }
+        ]}
+    };
     const POR_PARTIDA = 5;
 
-    let pares = [], selIng = null, selEsp = null, completados = 0, errores = [], paresConError = new Set();
+    let pares = [], tituloBanco = "", selIng = null, selEsp = null, completados = 0, errores = [], paresConError = new Set();
     const $ = (id) => document.getElementById(id);
 
     function mezclar(a) {
@@ -85,7 +124,9 @@
     }
 
     function iniciar() {
-        pares = mezclar(BANCO).slice(0, POR_PARTIDA);
+        const banco = BANCOS[Math.random() < 0.5 ? "vocabulario" : "frases"];
+        tituloBanco = banco.titulo;
+        pares = mezclar(banco.pares).slice(0, POR_PARTIDA);
         selIng = selEsp = null; completados = 0; errores = []; paresConError = new Set();
         $("tablero").hidden = false; $("repaso").innerHTML = ""; $("acciones").innerHTML = ""; $("resultado").innerText = "";
         const colI = $("columna-ingles"), colE = $("columna-espanol");
@@ -102,7 +143,7 @@
         return b;
     }
 
-    function actualizarProgreso() { $("progreso").innerText = "Parejas encontradas: " + completados + " de " + pares.length; }
+    function actualizarProgreso() { $("progreso").innerText = tituloBanco + " · Parejas encontradas: " + completados + " de " + pares.length; }
 
     function seleccionar(boton, par, lado) {
         if (boton.classList.contains("correcto")) return;
@@ -139,7 +180,7 @@
     function terminar() {
         if (window.GB) GB.progress.record("pharmacy-match", { score: pares.length - paresConError.size, total: pares.length, errors: errores.length });
         $("resultado").innerText = "¡Misión completada! Tu botiquín está listo. 🚑"; $("resultado").style.color = "green";
-        $("acciones").innerHTML = '<button class="btn-accion" onclick="iniciar()">🔄 Jugar de nuevo (otros términos)</button>';
+        $("acciones").innerHTML = '<button class="btn-accion" onclick="iniciar()">🔄 Jugar de nuevo (otras parejas)</button>';
         if (window.GB) GB.review.render($("repaso"), errores);
     }
 

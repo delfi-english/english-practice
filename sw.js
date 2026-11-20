@@ -3,7 +3,7 @@
    - Páginas, CSS y JS: primero busca en internet (así ves las actualizaciones) y, si no hay conexión, usa lo guardado.
    - Imágenes, íconos y fuentes: primero lo guardado (más rápido, ahorra datos).
    IMPORTANTE: cada vez que publiques cambios, subí el número de VERSION para que los celulares actualicen. */
-const VERSION = "2026-11-20-1";
+const VERSION = "2026-11-20-2";
 const CACHE = "getby-" + VERSION;
 
 const PRECACHE = [
@@ -11,7 +11,7 @@ const PRECACHE = [
   "starter-module.html", "phonetics-studio.html", "chronos-arcade.html", "comparatives-module.html",
   "airport-scramble.html", "hotel-checkin.html", "hotel-friends.html", "cafe-dialogue.html",
   "pharmacy-match.html", "gps-navigator.html", "spot-object.html", "fill-blanks.html", "sopa-letras.html",
-  "assets/css/base.css", "assets/js/gb.js",
+  "assets/css/base.css", "assets/js/gb.js", "assets/js/curso.js", "assets/js/inicio.js",
   "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png",
   "imagenes/mapa-ciudad-optimizado.jpg"
 ];

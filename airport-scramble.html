@@ -85,14 +85,14 @@
         { es: "¿De qué puerta sale mi vuelo?", en: "Which gate is my flight leaving from?", nota: "Con «which» + sustantivo el orden es: Which gate + is + sujeto + verbo con -ing, y la preposición «from» queda al final." },
         { es: "¿Dónde está la zona de retiro de equipaje?", en: "Where is the baggage reclaim?", nota: "En preguntas con «where», el verbo to be va antes del sujeto: Where + is + the baggage reclaim." },
         { es: "¿Puedo llevar esto como equipaje de mano?", en: "Can I take this as carry-on luggage?", nota: "Con «can» el orden es: Can + sujeto + verbo base + lo demás. «As carry-on luggage» indica el uso: como equipaje de mano." },
-        { es: "No tengo nada que declarar.", en: "I have nothing to declare.", nota: "Es una oración afirmativa: sujeto + verbo + nothing + to declare («nada que declarar»)." },
-        { es: "Acá está mi pasaporte y mi tarjeta de embarque.", en: "Here is my passport and boarding pass.", nota: "«Here is» se usa al entregar algo: Here is + lo que mostrás." },
+        { es: "No tengo nada que declarar.", en: "I have nothing to declare", nota: "Es una oración afirmativa: sujeto + verbo + nothing + to declare («nada que declarar»)." },
+        { es: "Acá está mi pasaporte y mi tarjeta de embarque.", en: "Here is my passport and boarding pass", nota: "«Here is» se usa al entregar algo: Here is + lo que mostrás." },
         { es: "¿Necesito mostrar mi pasaporte acá?", en: "Do I need to show my passport here?", nota: "Pregunta con «need»: Do + sujeto + need + to + verbo base." },
-        { es: "No encuentro mi tarjeta de embarque.", en: "I can't find my boarding pass.", nota: "Sujeto + can't + verbo base (find) + objeto." },
+        { es: "No encuentro mi tarjeta de embarque.", en: "I can't find my boarding pass", nota: "Sujeto + can't + verbo base (find) + objeto." },
         { es: "¿Puedo tener una tarjeta de embarque digital?", en: "Can I have a digital boarding pass?", nota: "Para pedir algo se usa Can + sujeto + have + lo que pedís." },
         { es: "¿Mi vuelo está en horario o demorado?", en: "Is my flight on time or delayed?", nota: "Pregunta de sí/no con to be: el verbo va primero (Is) y después el sujeto (my flight)." },
-        { es: "Perdí mi vuelo.", en: "I missed my flight.", nota: "Pasado simple afirmativo: sujeto + verbo en pasado (missed) + objeto." },
-        { es: "Mi equipaje no llegó.", en: "My luggage didn't arrive.", nota: "En pasado negativo se usa didn't + verbo base (arrive), no «arrived»." },
+        { es: "Perdí mi vuelo.", en: "I missed my flight", nota: "Pasado simple afirmativo: sujeto + verbo en pasado (missed) + objeto." },
+        { es: "Mi equipaje no llegó.", en: "My luggage didn't arrive", nota: "En pasado negativo se usa didn't + verbo base (arrive), no «arrived»." },
         { es: "¿Dónde está el control de aduana?", en: "Where is the customs inspection?", nota: "Igual que otras preguntas con «where»: Where + is + sujeto." },
         { es: "¿Tengo que pasar por la aduana acá?", en: "Do I have to go through customs here?", nota: "Do + sujeto + have to + verbo base: expresa obligación («tener que»)." }
     ];
@@ -106,8 +106,8 @@
         for (let i = r.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [r[i], r[j]] = [r[j], r[i]]; }
         return r;
     }
-    function tokens(frase) { return frase.replace(/([?.])/g, " $1").split(" "); }
-    function mostrarFrase(arr) { return arr.join(" ").replace(/ ([?.])/g, "$1"); }
+    function tokens(frase) { return frase.replace(/\?/g, " ?").split(" "); } // solo el signo de pregunta es una palabra aparte
+    function mostrarFrase(arr) { return arr.join(" ").replace(/ \?/g, "?"); }
 
     function iniciar() {
         ronda = mezclar(BANCO).slice(0, POR_PARTIDA);
@@ -180,7 +180,7 @@
             const clave = actual + "|" + armado.join(" ");
             if (!errores.some(e => e.clave === clave)) {
                 errores.push({ clave, prompt: "Querías decir: «" + p.es + "»", elegido: mostrarFrase(armado),
-                    correcta: p.en.replace(/ ([?.])/g, "$1"), explicacion: explicarOrden(armado, correcto, p.nota) });
+                    correcta: p.en, explicacion: explicarOrden(armado, correcto, p.nota) });
             }
         }
     }

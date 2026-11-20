@@ -53,3 +53,22 @@ body { overflow-wrap: break-word; }
 .gb-review-mal { color: #c0392b; }
 .gb-review-bien { color: #2e9e5b; }
 .gb-review-expl { color: #444; margin-top: 6px; }
+
+/* ===== Ruta de aprendizaje del inicio (assets/js/inicio.js) ===== */
+.ruta-ayuda { color: #555; margin: 0 0 8px; }
+.modulo { margin: 34px 0 10px; }
+.modulo-cab { display: flex; align-items: center; gap: 12px; }
+.modulo-emoji { font-size: 2.2rem; line-height: 1; }
+.modulo-info { flex: 1; min-width: 0; }
+.modulo-titulo { margin: 0; font-size: 1.35rem; line-height: 1.2; color: #1e1b4b; }
+.modulo-num { display: block; font-size: .75rem; letter-spacing: .06em; text-transform: uppercase; color: #6366f1; font-weight: 700; }
+.modulo-desc { margin: 4px 0 0; color: #555; font-size: .95rem; }
+.nivel { flex: none; padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: .8rem; background: #e0e7ff; color: #3730a3; }
+.nivel-A2 { background: #fef3c7; color: #92400e; }
+.nivel-Todos { background: #f3e8ff; color: #6b21a8; }
+.modulo-teoria { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 4px; }
+.modulo-teoria a { text-decoration: none; font-size: .9rem; font-weight: 600; color: #4f46e5; background: #fff; border: 2px solid #c7d2fe; border-radius: 999px; padding: 6px 12px; }
+.modulo-teoria a:hover { background: #4f46e5; color: #fff; border-color: #4f46e5; }
+.modulo-prog { font-size: .85rem; color: #6b7280; margin: 10px 0 0; }
+.modulo-pronto { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 14px 0 0; font-size: .9rem; color: #6b7280; }
+.chip-pronto { border: 2px dashed #c7d2fe; border-radius: 999px; padding: 3px 10px; color: #6366f1; background: #fff; cursor: help; }
