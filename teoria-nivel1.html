@@ -189,27 +189,7 @@
             <button class="pin-btn" id="pin-btn" onclick="togglePin()" title="Fijar menú">📌</button>
         </div>
         
-        <div class="sidebar-nav">
-            <div class="nav-category">Bases y Vocabulario</div>
-            <a href="#survival" class="nav-item"><span class="nav-icon">🆘</span> <span class="nav-text">Survival Chunks</span></a>
-            <a href="#health" class="nav-item"><span class="nav-icon">🚑</span> <span class="nav-text">Health & Emergencies</span></a>
-            <a href="#places" class="nav-item"><span class="nav-icon">🗺️</span> <span class="nav-text">Places & Directions</span></a>
-            <a href="#shopping" class="nav-item"><span class="nav-icon">🛍️</span> <span class="nav-text">Shopping & Food</span></a>
-
-            <div class="nav-category">Gramática y Tiempos</div>
-            <a href="#present" class="nav-item"><span class="nav-icon">☕</span> <span class="nav-text">Presente Simple & Cont.</span></a>
-            <a href="#past" class="nav-item"><span class="nav-icon">🕰️</span> <span class="nav-text">Past Simple</span></a>
-            <a href="#future" class="nav-item"><span class="nav-icon">🚀</span> <span class="nav-text">Future (Will / Going to)</span></a>
-
-            <div class="nav-category">Estructuras Clave</div>
-            <a href="#thereis" class="nav-item"><span class="nav-icon">📍</span> <span class="nav-text">There is / There are</span></a>
-            <a href="#quantifiers" class="nav-item"><span class="nav-icon">🔢</span> <span class="nav-text">Quantifiers</span></a>
-            <a href="#comparatives" class="nav-item"><span class="nav-icon">⚖️</span> <span class="nav-text">Comparatives & Superlatives</span></a>
-            <a href="#modals" class="nav-item"><span class="nav-icon">🚦</span> <span class="nav-text">Modal Verbs</span></a>
-            <a href="#pronouns" class="nav-item"><span class="nav-icon">👤</span> <span class="nav-text">Pronouns & Possessives</span></a>
-            
-            <a href="index.html" class="nav-item btn-back"><span class="nav-icon">◀</span> <span class="nav-text">Volver al Arcade</span></a>
-        </div>
+        <div class="sidebar-nav" id="nav-teoria"></div>
     </div>
 
     <!-- MAIN CONTENT -->
@@ -232,25 +212,71 @@
             </ul>
         </div>
 
-        <!-- HEALTH & EMERGENCIES -->
-        <div id="health" class="theory-section">
-            <h2>🚑 Health & Emergencies</h2>
-            <p>Una misión fundamental para la tranquilidad del viajero ante cualquier imprevisto de salud.</p>
-            
+        <div id="pronouns" class="theory-section">
+            <h2>👤 Pronouns and Possessives</h2>
+            <p>El inglés es muy estricto con el orden: el verbo funciona como una frontera divisoria. El sujeto va antes, y el objeto después.</p>
+
+            <div class="table-container">
+                <table>
+                    <tr>
+                        <th>Sujeto<br><em>(Antes del verbo)</em></th>
+                        <th>Objeto<br><em>(Después del verbo o preposición)</em></th>
+                        <th>Adjetivo Posesivo<br><em>(Va pegado a la cosa)</em></th>
+                        <th>Pronombre Posesivo<br><em>(Reemplaza a la cosa)</em></th>
+                    </tr>
+                    <tr>
+                        <td><strong>I</strong> (I saw Lucas)</td>
+                        <td><strong>me</strong> (Lucas saw me)</td>
+                        <td><strong>my</strong> (This is my phone)</td>
+                        <td><strong>mine</strong> (It's mine)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>You</strong> (You know Sofia)</td>
+                        <td><strong>you</strong> (Sofia knows you)</td>
+                        <td><strong>your</strong> (Is this your bag?)</td>
+                        <td><strong>yours</strong> (Is it yours?)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>He</strong> (He called my mom)</td>
+                        <td><strong>him</strong> (She called him back)</td>
+                        <td><strong>his</strong> (He is driving his car)</td>
+                        <td><strong>his</strong> (That wallet is his)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>She</strong> (She invited us)</td>
+                        <td><strong>her</strong> (We invited her)</td>
+                        <td><strong>her</strong> (She loves her job)</td>
+                        <td><strong>hers</strong> (She has hers)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>It</strong> (It is a good film)</td>
+                        <td><strong>it</strong> (I watched it)</td>
+                        <td><strong>its</strong> (The dog ate its food)</td>
+                        <td><strong>its</strong> (N/A)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>We</strong> (We like them)</td>
+                        <td><strong>us</strong> (They like us)</td>
+                        <td><strong>our</strong> (We love our home)</td>
+                        <td><strong>ours</strong> (The decision is ours)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>They</strong> (They need help)</td>
+                        <td><strong>them</strong> (I helped them)</td>
+                        <td><strong>their</strong> (They sold their house)</td>
+                        <td><strong>theirs</strong> (That dog is theirs)</td>
+                    </tr>
+                </table>
+            </div>
+
+            <h3>Genitivo Sajón ('s)</h3>
+            <p>En inglés la posesión con nombres de personas se piensa al revés: primero va el dueño con <strong>'s</strong>, y después la cosa poseída.</p>
             <ul>
-                <li><span class="chunk">I need a doctor / an ambulance.</span>: Necesito un médico / una ambulancia.</li>
-                <li><span class="chunk">Where is the nearest 24-hour pharmacy?</span>: ¿Dónde está la farmacia de turno más cercana?</li>
-                <li><span class="chunk">I have a severe headache.</span>: Tengo un dolor de cabeza muy fuerte.</li>
-                <li><span class="chunk">I have a fever and a sore throat.</span>: Tengo fiebre y dolor de garganta.</li>
-                <li><span class="chunk">Do you have painkillers for...?</span>: ¿Tienen analgésicos para...?</li>
-                <li><span class="chunk">I'm allergic to...</span>: Soy alérgico/a a...</li>
-                <li><span class="chunk">Do I need a prescription for this medicine?</span>: ¿Necesito receta para este remedio?</li>
-                <li><span class="chunk">Can I buy this over the counter?</span>: ¿Puedo comprar esto sin receta / de venta libre?</li>
-                <li><span class="chunk">How many times a day should I take this?</span>: ¿Cuántas veces al día tengo que tomar esto?</li>
+                <li><em>The jacket of Lucas</em> → <strong>Lucas's jacket</strong> (La campera de Lucas).</li>
+                <li><em>The car of my mother</em> → <strong>My mother's car</strong> (El auto de mi mamá).</li>
             </ul>
         </div>
 
-        <!-- PLACES & DIRECTIONS -->
         <div id="places" class="theory-section">
             <h2>🗺️ Places and Directions</h2>
             
@@ -311,7 +337,95 @@
             </ul>
         </div>
 
-        <!-- SHOPPING & FOOD -->
+        <div id="thereis" class="theory-section">
+            <h2>📍 There is / There are (Hay)</h2>
+            <p>Se utiliza para indicar la existencia de algo en un lugar específico.</p>
+
+            <div class="table-container">
+                <table>
+                    <tr>
+                        <th>Estructura</th>
+                        <th>Uso</th>
+                        <th>Ejemplo</th>
+                    </tr>
+                    <tr>
+                        <td><strong>There is a / an...</strong></td>
+                        <td>Singular (1 sola cosa)</td>
+                        <td><em>"<strong>There is a</strong> swimming pool on the rooftop."</em></td>
+                    </tr>
+                    <tr>
+                        <td><strong>There are (two / some)...</strong></td>
+                        <td>Plural (2 o más cosas)</td>
+                        <td><em>"<strong>There are two</strong> restaurants across the street."</em></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Is there a...?</strong></td>
+                        <td>Pregunta singular</td>
+                        <td><em>"<strong>Is there an</strong> ATM near here?"</em></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Are there any...?</strong></td>
+                        <td>Pregunta plural</td>
+                        <td><em>"<strong>Are there any</strong> good coffee shops nearby?"</em></td>
+                    </tr>
+                    <tr>
+                        <td><strong>There isn't / aren't</strong></td>
+                        <td>Negativo</td>
+                        <td><em>"<strong>There isn't a</strong> gym." / "<strong>There aren't any</strong> towels."</em></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div id="airport" class="theory-section">
+            <h2>✈️ Airport & Customs (Aeropuerto y Aduana)</h2>
+            <p>Frases clave para moverte por el aeropuerto, mostrar tus documentos y pasar por la aduana.</p>
+            
+            <ul>
+                <li><span class="chunk">Where is gate [number] / the baggage reclaim?</span>: ¿Dónde está la puerta [número] / la zona de retiro de equipaje?</li>
+                <li><span class="chunk">Here is my passport and boarding pass.</span>: Acá está mi pasaporte y mi tarjeta de embarque.</li>
+                <li><span class="chunk">Do I need to show my passport here?</span>: ¿Necesito mostrar mi pasaporte acá?</li>
+                <li><span class="chunk">I can't find my boarding pass.</span>: No encuentro mi tarjeta de embarque.</li>
+                <li><span class="chunk">Can I have a digital boarding pass?</span>: ¿Puedo tener una tarjeta de embarque digital?</li>
+                <li><span class="chunk">Which gate is my flight leaving from?</span>: ¿De qué puerta sale mi vuelo?</li>
+                <li><span class="chunk">Is my flight on time or delayed?</span>: ¿Mi vuelo está en horario o demorado?</li>
+                <li><span class="chunk">I missed my flight.</span>: Perdí mi vuelo.</li>
+                <li><span class="chunk">Can I take this as carry-on luggage?</span>: ¿Puedo llevar esto como equipaje de mano?</li>
+                <li><span class="chunk">My luggage didn't arrive / is missing.</span>: Mi equipaje no llegó / está perdido.</li>
+                <li><span class="chunk">Where is the customs inspection?</span>: ¿Dónde está el control de aduana?</li>
+                <li><span class="chunk">I have nothing to declare.</span>: No tengo nada que declarar.</li>
+                <li><span class="chunk">Do I have to go through customs here?</span>: ¿Tengo que pasar por la aduana acá?</li>
+            </ul>
+            <p><strong>💡 Tip:</strong> «Luggage» y «baggage» significan lo mismo. En EE.UU. se usa más <em>baggage</em> y en el Reino Unido, <em>luggage</em>.</p>
+        </div>
+
+        <div id="hotel" class="theory-section">
+            <h2>🏨 Hotel & Check-in</h2>
+            <p>Lo que necesitás para registrarte, pedir lo que falta y resolver problemas en tu habitación.</p>
+            
+            <ul>
+                <li><span class="chunk">Hi, I have a reservation under [your name].</span>: Hola, tengo una reserva a nombre de...</li>
+                <li><span class="chunk">I have a reservation for two nights.</span>: Tengo una reserva por dos noches.</li>
+                <li><span class="chunk">Can I get a room with a double bed?</span>: ¿Puedo tener una habitación con cama matrimonial?</li>
+                <li><span class="chunk">Is there a quiet room available?</span>: ¿Hay alguna habitación silenciosa disponible?</li>
+                <li><span class="chunk">Here is your keycard.</span>: Aquí tiene su tarjeta magnética (lo que dice el recepcionista).</li>
+                <li><span class="chunk">My keycard isn't working.</span>: Mi tarjeta magnética no funciona.</li>
+                <li><span class="chunk">Can I have an extra keycard, please?</span>: ¿Me da una tarjeta magnética extra, por favor?</li>
+                <li><span class="chunk">Which floor is my room on?</span>: ¿En qué piso está mi habitación?</li>
+                <li><span class="chunk">Where is the elevator? / Is the elevator working?</span>: ¿Dónde está el ascensor? / ¿Funciona el ascensor?</li>
+                <li><span class="chunk">What's the Wi-Fi password?</span>: ¿Cuál es la contraseña del Wi-Fi?</li>
+                <li><span class="chunk">Is breakfast included?</span>: ¿El desayuno está incluido?</li>
+                <li><span class="chunk">What time is breakfast served?</span>: ¿A qué hora se sirve el desayuno?</li>
+                <li><span class="chunk">Can I have breakfast in my room?</span>: ¿Puedo desayunar en mi habitación?</li>
+                <li><span class="chunk">There is a problem with my room. / The air conditioning isn't working.</span>: Hay un problema con mi habitación. / El aire acondicionado no funciona.</li>
+                <li><span class="chunk">Could I have some extra towels, please?</span>: ¿Me podría dar toallas extra, por favor?</li>
+                <li><span class="chunk">Is it possible to have a late checkout?</span>: ¿Es posible salir más tarde (late checkout)?</li>
+                <li><span class="chunk">Could you keep my luggage until this evening?</span>: ¿Podría guardarme el equipaje hasta la tarde-noche?</li>
+                <li><span class="chunk">Could you call a taxi for me, please?</span>: ¿Podría llamarme un taxi, por favor?</li>
+            </ul>
+            <p><strong>💡 Tip:</strong> <em>Elevator</em> es el término más usado en EE.UU.; en el Reino Unido se dice <em>lift</em>.</p>
+        </div>
+
         <div id="shopping" class="theory-section">
             <h2>🛍️ Shopping and Food</h2>
             
@@ -350,7 +464,87 @@
             </ul>
         </div>
 
-        <!-- PRESENT SIMPLE & CONTINUOUS -->
+        <div id="quantifiers" class="theory-section">
+            <h2>🔢 Quantifiers (Cuantificadores)</h2>
+            <p>Indican la cantidad o grado de algo de forma aproximada. Responden a la pregunta <em>how much?</em> o <em>how many?</em>.</p>
+
+            <div class="table-container">
+                <table>
+                    <tr>
+                        <th>Cuantificador</th>
+                        <th>Significado</th>
+                        <th>¿Con qué se usa?</th>
+                        <th>Contexto y Ejemplo</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Some</strong></td>
+                        <td>Algunos / Un poco de</td>
+                        <td>Plurales e Incontables</td>
+                        <td>Afirmativo (o al pedir amablemente).<br><em>"There are <strong>some</strong> clean towels."</em></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Any</strong></td>
+                        <td>¿Algún? / Ninguno</td>
+                        <td>Plurales e Incontables</td>
+                        <td>Preguntas y Negativo.<br><em>"Are there <strong>any</strong> free tables?"</em></td>
+                    </tr>
+                    <tr>
+                        <td><strong>No</strong></td>
+                        <td>Ningún / Nada de</td>
+                        <td>Plurales e Incontables</td>
+                        <td>Oraciones con verbo afirmativo.<br><em>"There is <strong>no</strong> Wi-Fi here."</em></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Much</strong></td>
+                        <td>Mucho / Mucha</td>
+                        <td>Solo Incontables</td>
+                        <td>Negativo y Preguntas.<br><em>"There isn't <strong>much</strong> luggage."</em></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Many</strong></td>
+                        <td>Muchos / Muchas</td>
+                        <td>Solo Plurales (Contables)</td>
+                        <td>Negativo y Preguntas.<br><em>"Are there <strong>many</strong> tourists today?"</em></td>
+                    </tr>
+                    <tr>
+                        <td><strong>A lot of</strong></td>
+                        <td>Un montón de</td>
+                        <td>Plurales e Incontables</td>
+                        <td>Afirmativo (el comodín diario).<br><em>"There is <strong>a lot of</strong> traffic today."</em></td>
+                    </tr>
+                    <tr>
+                        <td><strong>A few</strong></td>
+                        <td>Unos pocos / Algunos</td>
+                        <td>Solo Plurales (Contables)</td>
+                        <td>Cantidad suficiente (positivo).<br><em>"There are <strong>a few</strong> cafes."</em></td>
+                    </tr>
+                    <tr>
+                        <td><strong>A little</strong></td>
+                        <td>Un poco de</td>
+                        <td>Solo Incontables</td>
+                        <td>Cantidad suficiente (positivo).<br><em>"I have <strong>a little</strong> cash."</em></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div id="health" class="theory-section">
+            <h2>🚑 Health & Emergencies</h2>
+            <p>Una misión fundamental para la tranquilidad del viajero ante cualquier imprevisto de salud.</p>
+            
+            <ul>
+                <li><span class="chunk">I need a doctor / an ambulance.</span>: Necesito un médico / una ambulancia.</li>
+                <li><span class="chunk">Where is the nearest 24-hour pharmacy?</span>: ¿Dónde está la farmacia de turno más cercana?</li>
+                <li><span class="chunk">I have a severe headache.</span>: Tengo un dolor de cabeza muy fuerte.</li>
+                <li><span class="chunk">I have a fever and a sore throat.</span>: Tengo fiebre y dolor de garganta.</li>
+                <li><span class="chunk">Do you have painkillers for...?</span>: ¿Tienen analgésicos para...?</li>
+                <li><span class="chunk">I'm allergic to...</span>: Soy alérgico/a a...</li>
+                <li><span class="chunk">Do I need a prescription for this medicine?</span>: ¿Necesito receta para este remedio?</li>
+                <li><span class="chunk">Can I buy this over the counter?</span>: ¿Puedo comprar esto sin receta / de venta libre?</li>
+                <li><span class="chunk">How many times a day should I take this?</span>: ¿Cuántas veces al día tengo que tomar esto?</li>
+            </ul>
+        </div>
+
         <div id="present" class="theory-section">
             <h2>☕ Present Simple and Continuous</h2>
             
@@ -423,7 +617,6 @@
             </div>
         </div>
 
-        <!-- PAST SIMPLE -->
         <div id="past" class="theory-section">
             <h2>🕰️ Past Simple</h2>
             <p>Sirve para hablar de acciones que empezaron y terminaron en el pasado.<br>
@@ -480,7 +673,6 @@
             </div>
         </div>
 
-        <!-- FUTURE -->
         <div id="future" class="theory-section">
             <h2>🚀 Future (Will vs. Be Going To)</h2>
             <p>Para hablar del futuro, usamos distintas estructuras según si lo decidimos ahora mismo, si ya teníamos un plan, o si tenemos evidencia.</p>
@@ -516,113 +708,6 @@
             </div>
         </div>
 
-        <!-- THERE IS / THERE ARE -->
-        <div id="thereis" class="theory-section">
-            <h2>📍 There is / There are (Hay)</h2>
-            <p>Se utiliza para indicar la existencia de algo en un lugar específico.</p>
-
-            <div class="table-container">
-                <table>
-                    <tr>
-                        <th>Estructura</th>
-                        <th>Uso</th>
-                        <th>Ejemplo</th>
-                    </tr>
-                    <tr>
-                        <td><strong>There is a / an...</strong></td>
-                        <td>Singular (1 sola cosa)</td>
-                        <td><em>"<strong>There is a</strong> swimming pool on the rooftop."</em></td>
-                    </tr>
-                    <tr>
-                        <td><strong>There are (two / some)...</strong></td>
-                        <td>Plural (2 o más cosas)</td>
-                        <td><em>"<strong>There are two</strong> restaurants across the street."</em></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Is there a...?</strong></td>
-                        <td>Pregunta singular</td>
-                        <td><em>"<strong>Is there an</strong> ATM near here?"</em></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Are there any...?</strong></td>
-                        <td>Pregunta plural</td>
-                        <td><em>"<strong>Are there any</strong> good coffee shops nearby?"</em></td>
-                    </tr>
-                    <tr>
-                        <td><strong>There isn't / aren't</strong></td>
-                        <td>Negativo</td>
-                        <td><em>"<strong>There isn't a</strong> gym." / "<strong>There aren't any</strong> towels."</em></td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-
-        <!-- QUANTIFIERS -->
-        <div id="quantifiers" class="theory-section">
-            <h2>🔢 Quantifiers (Cuantificadores)</h2>
-            <p>Indican la cantidad o grado de algo de forma aproximada. Responden a la pregunta <em>how much?</em> o <em>how many?</em>.</p>
-
-            <div class="table-container">
-                <table>
-                    <tr>
-                        <th>Cuantificador</th>
-                        <th>Significado</th>
-                        <th>¿Con qué se usa?</th>
-                        <th>Contexto y Ejemplo</th>
-                    </tr>
-                    <tr>
-                        <td><strong>Some</strong></td>
-                        <td>Algunos / Un poco de</td>
-                        <td>Plurales e Incontables</td>
-                        <td>Afirmativo (o al pedir amablemente).<br><em>"There are <strong>some</strong> clean towels."</em></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Any</strong></td>
-                        <td>¿Algún? / Ninguno</td>
-                        <td>Plurales e Incontables</td>
-                        <td>Preguntas y Negativo.<br><em>"Are there <strong>any</strong> free tables?"</em></td>
-                    </tr>
-                    <tr>
-                        <td><strong>No</strong></td>
-                        <td>Ningún / Nada de</td>
-                        <td>Plurales e Incontables</td>
-                        <td>Oraciones con verbo afirmativo.<br><em>"There is <strong>no</strong> Wi-Fi here."</em></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Much</strong></td>
-                        <td>Mucho / Mucha</td>
-                        <td>Solo Incontables</td>
-                        <td>Negativo y Preguntas.<br><em>"There isn't <strong>much</strong> luggage."</em></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Many</strong></td>
-                        <td>Muchos / Muchas</td>
-                        <td>Solo Plurales (Contables)</td>
-                        <td>Negativo y Preguntas.<br><em>"Are there <strong>many</strong> tourists today?"</em></td>
-                    </tr>
-                    <tr>
-                        <td><strong>A lot of</strong></td>
-                        <td>Un montón de</td>
-                        <td>Plurales e Incontables</td>
-                        <td>Afirmativo (el comodín diario).<br><em>"There is <strong>a lot of</strong> traffic today."</em></td>
-                    </tr>
-                    <tr>
-                        <td><strong>A few</strong></td>
-                        <td>Unos pocos / Algunos</td>
-                        <td>Solo Plurales (Contables)</td>
-                        <td>Cantidad suficiente (positivo).<br><em>"There are <strong>a few</strong> cafes."</em></td>
-                    </tr>
-                    <tr>
-                        <td><strong>A little</strong></td>
-                        <td>Un poco de</td>
-                        <td>Solo Incontables</td>
-                        <td>Cantidad suficiente (positivo).<br><em>"I have <strong>a little</strong> cash."</em></td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-
-        <!-- COMPARATIVES & SUPERLATIVES -->
         <div id="comparatives" class="theory-section">
             <h2>⚖️ Comparatives and Superlatives</h2>
             
@@ -686,8 +771,7 @@
             </div>
         </div>
 
-        <!-- MODAL VERBS -->
-        <div id="modals" class="theory-section">
+        <div id="modals" class="theory-section" style="margin-bottom: 80px;">
             <h2>🚦 Modal Verbs</h2>
             <p>Los verbos modales son auxiliares que indican el modo, la intención o actitud (habilidad, obligación, permiso, consejo o deducción).</p>
             
@@ -823,72 +907,6 @@
             </div>
         </div>
 
-        <!-- PRONOUNS AND POSSESSIVES -->
-        <div id="pronouns" class="theory-section" style="margin-bottom: 80px;">
-            <h2>👤 Pronouns and Possessives</h2>
-            <p>El inglés es muy estricto con el orden: el verbo funciona como una frontera divisoria. El sujeto va antes, y el objeto después.</p>
-
-            <div class="table-container">
-                <table>
-                    <tr>
-                        <th>Sujeto<br><em>(Antes del verbo)</em></th>
-                        <th>Objeto<br><em>(Después del verbo o preposición)</em></th>
-                        <th>Adjetivo Posesivo<br><em>(Va pegado a la cosa)</em></th>
-                        <th>Pronombre Posesivo<br><em>(Reemplaza a la cosa)</em></th>
-                    </tr>
-                    <tr>
-                        <td><strong>I</strong> (I saw Lucas)</td>
-                        <td><strong>me</strong> (Lucas saw me)</td>
-                        <td><strong>my</strong> (This is my phone)</td>
-                        <td><strong>mine</strong> (It's mine)</td>
-                    </tr>
-                    <tr>
-                        <td><strong>You</strong> (You know Sofia)</td>
-                        <td><strong>you</strong> (Sofia knows you)</td>
-                        <td><strong>your</strong> (Is this your bag?)</td>
-                        <td><strong>yours</strong> (Is it yours?)</td>
-                    </tr>
-                    <tr>
-                        <td><strong>He</strong> (He called my mom)</td>
-                        <td><strong>him</strong> (She called him back)</td>
-                        <td><strong>his</strong> (He is driving his car)</td>
-                        <td><strong>his</strong> (That wallet is his)</td>
-                    </tr>
-                    <tr>
-                        <td><strong>She</strong> (She invited us)</td>
-                        <td><strong>her</strong> (We invited her)</td>
-                        <td><strong>her</strong> (She loves her job)</td>
-                        <td><strong>hers</strong> (She has hers)</td>
-                    </tr>
-                    <tr>
-                        <td><strong>It</strong> (It is a good film)</td>
-                        <td><strong>it</strong> (I watched it)</td>
-                        <td><strong>its</strong> (The dog ate its food)</td>
-                        <td><strong>its</strong> (N/A)</td>
-                    </tr>
-                    <tr>
-                        <td><strong>We</strong> (We like them)</td>
-                        <td><strong>us</strong> (They like us)</td>
-                        <td><strong>our</strong> (We love our home)</td>
-                        <td><strong>ours</strong> (The decision is ours)</td>
-                    </tr>
-                    <tr>
-                        <td><strong>They</strong> (They need help)</td>
-                        <td><strong>them</strong> (I helped them)</td>
-                        <td><strong>their</strong> (They sold their house)</td>
-                        <td><strong>theirs</strong> (That dog is theirs)</td>
-                    </tr>
-                </table>
-            </div>
-
-            <h3>Genitivo Sajón ('s)</h3>
-            <p>En inglés la posesión con nombres de personas se piensa al revés: primero va el dueño con <strong>'s</strong>, y después la cosa poseída.</p>
-            <ul>
-                <li><em>The jacket of Lucas</em> → <strong>Lucas's jacket</strong> (La campera de Lucas).</li>
-                <li><em>The car of my mother</em> → <strong>My mother's car</strong> (El auto de mi mamá).</li>
-            </ul>
-        </div>
-
     </div>
 
     <script>
@@ -904,5 +922,7 @@
             }
         }
     </script>
+    <script src="assets/js/curso.js"></script>
+    <script src="assets/js/nav.js"></script>
 </body>
 </html>

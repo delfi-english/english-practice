@@ -1,17 +1,26 @@
-/* Get By · Mapa del curso. Para agregar un juego: sumá su ficha en 'juegos' y su id en el módulo que corresponda.
-   'proximamente' son ideas del backlog: se muestran como próximos juegos del módulo. El nivel es una propuesta (A1/A2) para revisar. */
+/* Get By · Mapa del curso (fuente única).
+   - El ORDEN de 'modulos' es el orden de estudio sugerido, y también el de la teoría y el menú lateral.
+   - Para agregar un juego: sumá su ficha en 'juegos' y su id en 'juegos' del módulo.
+   - 'proximamente' son ideas del backlog.
+   - 'nivel' es una propuesta (A1/A2) a revisar. */
 window.CURSO = {
   "modulos": [
     {
-      "id": "frases-salvavidas",
+      "id": "primeros-pasos",
       "emoji": "🆘",
-      "titulo": "Frases salvavidas",
+      "titulo": "Primeros pasos",
       "nivel": "A1",
-      "desc": "Lo mínimo para arrancar: saludos, pedidos básicos y vocabulario esencial.",
+      "desc": "Saludos, frases salvavidas, vocabulario básico y a quién se refiere cada palabra (yo, vos, mi, tu).",
       "teoria": [
         {
+          "id": "survival",
           "label": "Survival Chunks",
-          "href": "teoria-nivel1.html#survival"
+          "emoji": "🆘"
+        },
+        {
+          "id": "pronouns",
+          "label": "Pronouns & Possessives",
+          "emoji": "👤"
         }
       ],
       "juegos": [
@@ -22,26 +31,12 @@ window.CURSO = {
         {
           "titulo": "Chat Reply",
           "idea": "Elegí la respuesta que suena natural en un saludo o charla corta, no la de manual."
+        },
+        {
+          "titulo": "Whose is it?",
+          "idea": "Asigná objetos a personas con his, hers, theirs y mine."
         }
       ]
-    },
-    {
-      "id": "viajar",
-      "emoji": "✈️",
-      "titulo": "Viajar: aeropuerto y hotel",
-      "nivel": "A1",
-      "desc": "Frases para moverte por un aeropuerto, pasar la aduana y hacer el check-in.",
-      "teoria": [
-        {
-          "label": "Survival Chunks",
-          "href": "teoria-nivel1.html#survival"
-        }
-      ],
-      "juegos": [
-        "airport-scramble",
-        "hotel-checkin"
-      ],
-      "proximamente": []
     },
     {
       "id": "ciudad",
@@ -51,12 +46,14 @@ window.CURSO = {
       "desc": "Preguntar y entender direcciones, y describir dónde está cada cosa.",
       "teoria": [
         {
+          "id": "places",
           "label": "Places & Directions",
-          "href": "teoria-nivel1.html#places"
+          "emoji": "🗺️"
         },
         {
+          "id": "thereis",
           "label": "There is / There are",
-          "href": "teoria-nivel1.html#thereis"
+          "emoji": "📍"
         }
       ],
       "juegos": [
@@ -66,15 +63,45 @@ window.CURSO = {
       "proximamente": []
     },
     {
+      "id": "viajar",
+      "emoji": "✈️",
+      "titulo": "Viajar: aeropuerto y hotel",
+      "nivel": "A1",
+      "desc": "Moverte por un aeropuerto, pasar la aduana, hacer el check-in y resolver problemas en el hotel.",
+      "teoria": [
+        {
+          "id": "airport",
+          "label": "Airport & Customs",
+          "emoji": "✈️"
+        },
+        {
+          "id": "hotel",
+          "label": "Hotel & Check-in",
+          "emoji": "🏨"
+        }
+      ],
+      "juegos": [
+        "airport-scramble",
+        "hotel-checkin"
+      ],
+      "proximamente": []
+    },
+    {
       "id": "comer-comprar",
       "emoji": "🛍️",
       "titulo": "Comer y comprar",
       "nivel": "A1",
-      "desc": "Pedir en un café, preguntar precios y pagar.",
+      "desc": "Pedir en un café, preguntar precios, cantidades y pagar.",
       "teoria": [
         {
+          "id": "shopping",
           "label": "Shopping & Food",
-          "href": "teoria-nivel1.html#shopping"
+          "emoji": "🛍️"
+        },
+        {
+          "id": "quantifiers",
+          "label": "Quantifiers",
+          "emoji": "🔢"
         }
       ],
       "juegos": [
@@ -84,6 +111,10 @@ window.CURSO = {
         {
           "titulo": "Mystery Shopper",
           "idea": "Presupuesto de $100: elegí qué decirle al vendedor para comprar lo que necesitás."
+        },
+        {
+          "titulo": "Supermarket Run",
+          "idea": "Arrastrá productos al carrito y elegí some, any, much o many."
         }
       ]
     },
@@ -95,8 +126,9 @@ window.CURSO = {
       "desc": "Explicar cómo te sentís y pedir ayuda en una farmacia o con un médico.",
       "teoria": [
         {
+          "id": "health",
           "label": "Health & Emergencies",
-          "href": "teoria-nivel1.html#health"
+          "emoji": "🚑"
         }
       ],
       "juegos": [
@@ -112,8 +144,9 @@ window.CURSO = {
       "desc": "Hablar de lo que hacés todos los días y de lo que está pasando ahora.",
       "teoria": [
         {
+          "id": "present",
           "label": "Presente Simple & Continuo",
-          "href": "teoria-nivel1.html#present"
+          "emoji": "☕"
         }
       ],
       "juegos": [
@@ -138,12 +171,14 @@ window.CURSO = {
       "desc": "Contar lo que pasó y hablar de planes, promesas y predicciones.",
       "teoria": [
         {
+          "id": "past",
           "label": "Past Simple",
-          "href": "teoria-nivel1.html#past"
+          "emoji": "🕰️"
         },
         {
+          "id": "future",
           "label": "Future (Will / Going to)",
-          "href": "teoria-nivel1.html#future"
+          "emoji": "🚀"
         }
       ],
       "juegos": [
@@ -161,38 +196,22 @@ window.CURSO = {
       ]
     },
     {
-      "id": "describir",
+      "id": "comparar",
       "emoji": "⚖️",
-      "titulo": "Describir y cuantificar",
+      "titulo": "Comparar y describir",
       "nivel": "A2",
-      "desc": "Comparar, hablar de cantidades y decir de quién es cada cosa.",
+      "desc": "Comparar personas, lugares y cosas, y decir cuál es el mejor o el más…",
       "teoria": [
         {
+          "id": "comparatives",
           "label": "Comparatives & Superlatives",
-          "href": "teoria-nivel1.html#comparatives"
-        },
-        {
-          "label": "Quantifiers",
-          "href": "teoria-nivel1.html#quantifiers"
-        },
-        {
-          "label": "Pronouns & Possessives",
-          "href": "teoria-nivel1.html#pronouns"
+          "emoji": "⚖️"
         }
       ],
       "juegos": [
         "comparatives-module"
       ],
-      "proximamente": [
-        {
-          "titulo": "Supermarket Run",
-          "idea": "Arrastrá productos al carrito y elegí some, any, much o many."
-        },
-        {
-          "titulo": "Whose is it?",
-          "idea": "Asigná objetos a personas con his, hers, theirs y mine."
-        }
-      ]
+      "proximamente": []
     },
     {
       "id": "modales",
@@ -202,8 +221,9 @@ window.CURSO = {
       "desc": "Pedir cosas con educación, dar consejos y entender reglas y carteles.",
       "teoria": [
         {
+          "id": "modals",
           "label": "Modal Verbs",
-          "href": "teoria-nivel1.html#modals"
+          "emoji": "🚦"
         }
       ],
       "juegos": [],
@@ -227,7 +247,7 @@ window.CURSO = {
       "emoji": "🎙️",
       "titulo": "Pronunciación",
       "nivel": "Todos",
-      "desc": "Entrená el oído y los sonidos que más cuestan.",
+      "desc": "Entrená el oído y los sonidos que más cuestan. Se practica en paralelo a todos los módulos.",
       "teoria": [],
       "juegos": [
         "phonetics-studio"

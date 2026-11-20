@@ -54,21 +54,59 @@ body { overflow-wrap: break-word; }
 .gb-review-bien { color: #2e9e5b; }
 .gb-review-expl { color: #444; margin-top: 6px; }
 
-/* ===== Ruta de aprendizaje del inicio (assets/js/inicio.js) ===== */
-.ruta-ayuda { color: #555; margin: 0 0 8px; }
-.modulo { margin: 34px 0 10px; }
-.modulo-cab { display: flex; align-items: center; gap: 12px; }
-.modulo-emoji { font-size: 2.2rem; line-height: 1; }
-.modulo-info { flex: 1; min-width: 0; }
-.modulo-titulo { margin: 0; font-size: 1.35rem; line-height: 1.2; color: #1e1b4b; }
-.modulo-num { display: block; font-size: .75rem; letter-spacing: .06em; text-transform: uppercase; color: #6366f1; font-weight: 700; }
-.modulo-desc { margin: 4px 0 0; color: #555; font-size: .95rem; }
+/* ===== Inicio: ruta de módulos y vista de módulo (assets/js/inicio.js) ===== */
+.ruta-ayuda { color: #555; margin: 0 0 16px; }
+.ruta { list-style: none; margin: 0; padding: 0; position: relative; }
+.ruta::before { content: ""; position: absolute; left: 26px; top: 20px; bottom: 20px; width: 3px; background: #c7d2fe; border-radius: 2px; }
+.ruta li { position: relative; margin: 0 0 10px; }
+.tile { position: relative; display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: #fff; border-radius: 14px; text-decoration: none; color: #1e1b4b; box-shadow: 0 1px 4px rgba(30,27,75,.12); border: 2px solid transparent; }
+.tile:hover, .tile:active { border-color: #6366f1; }
+.tile-num { flex: none; width: 28px; height: 28px; border-radius: 50%; background: #4f46e5; color: #fff; font-weight: 700; font-size: .85rem; display: grid; place-items: center; z-index: 1; }
+.tile-ok .tile-num { background: #16a34a; }
+.tile-emoji { flex: none; font-size: 1.7rem; line-height: 1; }
+.tile-info { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.tile-info strong { font-size: 1.02rem; line-height: 1.25; }
+.tile-info small { color: #6b7280; font-size: .8rem; margin-top: 2px; }
+.tile-prog { flex: none; font-weight: 700; font-size: .85rem; color: #4f46e5; }
+
+.volver { display: inline-block; margin: 0 0 14px; font-weight: 600; color: #4f46e5; text-decoration: none; }
+.mod-cab { display: flex; align-items: center; gap: 12px; }
+.mod-emoji { font-size: 2.4rem; line-height: 1; }
+.mod-cab > div { flex: 1; min-width: 0; }
+.mod-num { font-size: .75rem; letter-spacing: .06em; text-transform: uppercase; color: #6366f1; font-weight: 700; }
+.mod-cab h2 { margin: 0; font-size: 1.5rem; line-height: 1.2; color: #1e1b4b; }
+.mod-desc { color: #555; margin: 10px 0 4px; }
 .nivel { flex: none; padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: .8rem; background: #e0e7ff; color: #3730a3; }
 .nivel-A2 { background: #fef3c7; color: #92400e; }
 .nivel-Todos { background: #f3e8ff; color: #6b21a8; }
-.modulo-teoria { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 4px; }
-.modulo-teoria a { text-decoration: none; font-size: .9rem; font-weight: 600; color: #4f46e5; background: #fff; border: 2px solid #c7d2fe; border-radius: 999px; padding: 6px 12px; }
-.modulo-teoria a:hover { background: #4f46e5; color: #fff; border-color: #4f46e5; }
-.modulo-prog { font-size: .85rem; color: #6b7280; margin: 10px 0 0; }
-.modulo-pronto { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 14px 0 0; font-size: .9rem; color: #6b7280; }
-.chip-pronto { border: 2px dashed #c7d2fe; border-radius: 999px; padding: 3px 10px; color: #6366f1; background: #fff; cursor: help; }
+.paso { display: flex; align-items: center; gap: 10px; margin: 26px 0 10px; font-size: 1.1rem; color: #1e1b4b; }
+.paso span { width: 26px; height: 26px; border-radius: 50%; background: #4f46e5; color: #fff; font-size: .85rem; display: grid; place-items: center; }
+.paso-pronto { color: #6b7280; }
+.mod-teoria { display: flex; flex-direction: column; gap: 8px; }
+.mod-teoria a { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: #fff; border: 2px solid #c7d2fe; border-radius: 12px; text-decoration: none; color: #3730a3; font-weight: 600; }
+.mod-teoria a em { margin-left: auto; font-style: normal; font-size: .85rem; color: #6366f1; white-space: nowrap; }
+.mod-teoria a:hover { border-color: #4f46e5; }
+.juegos { display: flex; flex-direction: column; gap: 10px; }
+.juego-fila { display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: #fff; border-radius: 14px; text-decoration: none; color: #1f2937; box-shadow: 0 1px 4px rgba(30,27,75,.12); }
+.juego-fila:hover { box-shadow: 0 2px 8px rgba(30,27,75,.25); }
+.juego-ico { flex: none; width: 54px; height: 54px; border-radius: 12px; display: grid; place-items: center; font-size: 1.8rem; }
+.juego-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.juego-info strong { font-size: 1.02rem; }
+.juego-info small { color: #6b7280; font-size: .82rem; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.juego-prog { font-style: normal; font-size: .78rem; font-weight: 600; color: #166534; }
+.juego-go { flex: none; width: 36px; height: 36px; border-radius: 50%; background: #111827; color: #fff; display: grid; place-items: center; font-size: .8rem; }
+.vacio { color: #6b7280; font-style: italic; }
+.pronto { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.pronto li { border: 2px dashed #c7d2fe; border-radius: 12px; padding: 8px 12px; display: flex; flex-direction: column; gap: 2px; background: rgba(255,255,255,.6); }
+.pronto strong { color: #4f46e5; }
+.pronto span { color: #6b7280; font-size: .85rem; }
+.mod-nav { display: flex; justify-content: space-between; gap: 12px; margin: 30px 0 10px; }
+.mod-nav a { flex: 1; text-align: center; padding: 10px 8px; border-radius: 12px; background: #fff; border: 2px solid #c7d2fe; text-decoration: none; color: #3730a3; font-weight: 600; font-size: .88rem; }
+.mod-nav span { flex: 1; }
+
+/* ===== Teoría: caja "Practicá este tema" ===== */
+.practica-box { margin-top: 22px; padding: 14px; border-radius: 12px; background: #eef2ff; border: 2px solid #c7d2fe; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.practica-box strong { flex-basis: 100%; color: #3730a3; }
+.practica-box a { text-decoration: none; padding: 6px 12px; border-radius: 999px; background: #4f46e5; color: #fff; font-weight: 600; font-size: .9rem; }
+.practica-box a.practica-mod { background: #fff; color: #4f46e5; border: 2px solid #c7d2fe; }
+.practica-pronto { color: #6b7280; font-size: .9rem; }

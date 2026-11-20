@@ -277,37 +277,19 @@
             <button class="pin-btn" id="pin-btn" onclick="togglePin()" title="Fijar menú">📌</button>
         </div>
         
-        <div class="sidebar-nav">
-            <div class="nav-category">Bases y Vocabulario</div>
-            <a href="teoria-nivel1.html#survival" class="nav-item"><span class="nav-icon">🆘</span> <span class="nav-text">Survival Chunks</span></a>
-            <a href="teoria-nivel1.html#health" class="nav-item"><span class="nav-icon">🚑</span> <span class="nav-text">Health & Emergencies</span></a>
-            <a href="teoria-nivel1.html#places" class="nav-item"><span class="nav-icon">🗺️</span> <span class="nav-text">Places & Directions</span></a>
-            <a href="teoria-nivel1.html#shopping" class="nav-item"><span class="nav-icon">🛍️</span> <span class="nav-text">Shopping & Food</span></a>
-
-            <div class="nav-category">Gramática y Tiempos</div>
-            <a href="teoria-nivel1.html#present" class="nav-item"><span class="nav-icon">☕</span> <span class="nav-text">Presente Simple & Cont.</span></a>
-            <a href="teoria-nivel1.html#past" class="nav-item"><span class="nav-icon">🕰️</span> <span class="nav-text">Past Simple</span></a>
-            <a href="teoria-nivel1.html#future" class="nav-item"><span class="nav-icon">🚀</span> <span class="nav-text">Future (Will / Going to)</span></a>
-
-            <div class="nav-category">Estructuras Clave</div>
-            <a href="teoria-nivel1.html#thereis" class="nav-item"><span class="nav-icon">📍</span> <span class="nav-text">There is / There are</span></a>
-            <a href="teoria-nivel1.html#quantifiers" class="nav-item"><span class="nav-icon">🔢</span> <span class="nav-text">Quantifiers</span></a>
-            <a href="teoria-nivel1.html#comparatives" class="nav-item"><span class="nav-icon">⚖️</span> <span class="nav-text">Comparatives & Superlatives</span></a>
-            <a href="teoria-nivel1.html#modals" class="nav-item"><span class="nav-icon">🚦</span> <span class="nav-text">Modal Verbs</span></a>
-            <a href="teoria-nivel1.html#pronouns" class="nav-item"><span class="nav-icon">👤</span> <span class="nav-text">Pronouns & Possessives</span></a>
-            
-            <a href="teoria-nivel1.html" class="nav-item btn-back"><span class="nav-icon">📘</span> <span class="nav-text">Ver Teoría Completa</span></a>
-        </div>
+        <div class="sidebar-nav" id="nav-teoria-inicio"></div>
     </div>
 
     <!-- MAIN CONTENT: GAME ARCADE -->
     <div class="main-content">
+        <div id="cabecera-inicio">
         <h1 class="header-title">Get By 🎮</h1>
         <p class="header-subtitle">Elegí una misión y practicá inglés para defenderte en el día a día.</p>
         <p id="gb-resumen"></p>
         <button id="gb-instalar" hidden>📲 Instalar app</button>
 
-        <p class="ruta-ayuda">Seguí los módulos en orden, o saltá directo al tema que necesites. Cada módulo tiene su teoría y sus juegos.</p>
+        <p class="ruta-ayuda">Seguí los módulos en orden, o elegí el tema que necesites. Cada módulo tiene su teoría y sus juegos.</p>
+        </div>
         <div id="ruta"></div>
         </div>
     </div>
@@ -327,6 +309,7 @@
         }
     </script>
     <script src="assets/js/curso.js"></script>
+    <script src="assets/js/nav.js"></script>
     <script src="assets/js/inicio.js"></script>
 </body>
 </html>
