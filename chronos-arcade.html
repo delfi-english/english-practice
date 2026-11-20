@@ -6,6 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Chronos Arcade: The Timeline Glitch</title>
     <link rel="stylesheet" href="assets/css/base.css">
+    <link rel="manifest" href="manifest.webmanifest">
+    <meta name="theme-color" content="#4f46e5">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+    <script src="assets/js/gb.js" data-title="Chronos Arcade"></script>
     <style>
         body { 
             font-family: 'Courier New', Courier, monospace; 
@@ -490,6 +494,8 @@
             document.getElementById("indicador-tiempo").className = "indicador-tiempo hidden";
 
         } else {
+            const misionesConError = new Set(erroresDeLaPartida.map(e => e.clave.split("|")[0])).size;
+            if (window.GB) GB.progress.record("chronos-arcade", { score: maxRondas - misionesConError, total: maxRondas, errors: erroresDeLaPartida.length });
             document.getElementById("contador-misiones").innerText = maxRondas;
             document.getElementById("pantalla").innerHTML = "<span style='color:#66fcf1'>¡LÍNEA TEMPORAL RESTAURADA AL 100%! 🚀</span>";
             document.getElementById("panel-epocas").classList.add("hidden");

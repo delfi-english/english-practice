@@ -26,3 +26,30 @@ body { overflow-wrap: break-word; }
     text-decoration: none; cursor: pointer;
 }
 .btn-home:hover { background: #4f46e5; color: #fff; }
+
+/* ===== Barra superior Get By (la crea assets/js/gb.js) ===== */
+.gb-bar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    display: flex; align-items: center; gap: 12px;
+    padding: 8px 14px; padding-top: calc(8px + env(safe-area-inset-top, 0px));
+    background: #4f46e5; color: #fff;
+    font: 600 15px/1.2 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    box-shadow: 0 2px 8px rgba(0,0,0,.2);
+}
+.gb-bar a { color: #fff; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; min-height: 36px; }
+.gb-bar-title { opacity: .85; font-weight: 500; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ===== Insignias de progreso en el inicio ===== */
+.gb-badge { font-size: 13px; font-weight: 600; color: #166534; background: #dcfce7; border-radius: 999px; padding: 4px 10px; margin: 0 0 10px; display: inline-block; }
+#gb-resumen { margin: 6px 0 14px; font-weight: 600; color: #4f46e5; }
+#gb-instalar { margin: 0 0 14px; padding: 10px 16px; border: 0; border-radius: 999px; background: #4f46e5; color: #fff; font: 600 15px system-ui, sans-serif; cursor: pointer; }
+
+/* ===== Repaso de errores compartido (assets/js/gb.js) ===== */
+.gb-review { text-align: left; margin: 18px 0 6px; }
+.gb-review h3 { text-align: center; color: #7b2cbf; margin: 0 0 12px; }
+.gb-review-ok { color: #2e9e5b !important; }
+.gb-review-card { border: 1px solid #dcdce6; border-radius: 10px; padding: 10px 12px; margin-bottom: 10px; background: #fff; color: #222; font: 15px/1.45 Arial, sans-serif; }
+.gb-review-prompt { font-weight: 600; margin-bottom: 6px; }
+.gb-review-mal { color: #c0392b; }
+.gb-review-bien { color: #2e9e5b; }
+.gb-review-expl { color: #444; margin-top: 6px; }

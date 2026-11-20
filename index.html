@@ -3,8 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Mi Plataforma de Inglés</title>
+    <title>Get By · Inglés para defenderte</title>
     <link rel="stylesheet" href="assets/css/base.css">
+    <link rel="manifest" href="manifest.webmanifest">
+    <meta name="theme-color" content="#4f46e5">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+    <script src="assets/js/gb.js" data-bar="off"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
 
@@ -268,7 +272,7 @@
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <a href="index.html" class="sidebar-brand">
-                <h2>Theory Library 📚</h2>
+                <h2>Teoría 📚</h2>
             </a>
             <button class="pin-btn" id="pin-btn" onclick="togglePin()" title="Fijar menú">📌</button>
         </div>
@@ -298,8 +302,10 @@
 
     <!-- MAIN CONTENT: GAME ARCADE -->
     <div class="main-content">
-        <h1 class="header-title">Game Center 🎮</h1>
-        <p class="header-subtitle">Selecciona una misión para poner a prueba tu conocimiento.</p>
+        <h1 class="header-title">Get By 🎮</h1>
+        <p class="header-subtitle">Elegí una misión y practicá inglés para defenderte en el día a día.</p>
+        <p id="gb-resumen"></p>
+        <button id="gb-instalar" hidden>📲 Instalar app</button>
 
         <div class="games-grid">
             

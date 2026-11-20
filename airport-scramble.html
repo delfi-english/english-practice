@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Airport Scramble</title>
     <link rel="stylesheet" href="assets/css/base.css">
+    <link rel="manifest" href="manifest.webmanifest">
+    <meta name="theme-color" content="#4f46e5">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+    <script src="assets/js/gb.js" data-title="Airport Scramble"></script>
     <style>
         body { font-family: Arial, sans-serif; background-color: #e9ecef; text-align: center; padding: 20px; }
         .game-container { background-color: white; padding: 30px; border-radius: 10px; max-width: 600px; margin: 0 auto; box-shadow: 0px 4px 10px rgba(0,0,0,0.1); }
@@ -46,72 +50,152 @@
             font-size: 18px; border-radius: 5px; cursor: pointer; margin-top: 15px;
         }
         #resultado { margin-top: 20px; font-weight: bold; font-size: 18px; }
+        .es-frase { font-size: 19px; font-weight: bold; color: #1d3557; margin: 6px 0 4px; }
+        #progreso { color: #666; font-size: 14px; margin-bottom: 8px; }
+        #explicacion { margin-top: 10px; font-size: 15px; text-align: left; background: #eef7f0; border-radius: 8px; padding: 10px 12px; }
+        .fila-botones { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
+        .btn-sec { background: #6c757d; color: #fff; border: 0; border-radius: 5px; padding: 12px 18px; font-size: 16px; cursor: pointer; margin-top: 15px; }
+        .btn-comprobar:disabled, .btn-sec:disabled { opacity: .5; cursor: default; }
     </style>
 </head>
 <body>
 
 <div class="game-container">
     <h2>Misión: The Airport Scramble ✈️</h2>
-    <p>Las palabras se mezclaron en la cinta de equipaje. Tocá cada palabra para armar la pregunta correcta.</p>
+    <p>Las palabras se mezclaron en la cinta de equipaje. Armá en inglés la frase que se pide tocando cada palabra.</p>
+    <div id="progreso"></div>
+    <div class="es-frase" id="frase-es"></div>
 
-    <!-- Zona superior donde el alumno construye su respuesta -->
     <div id="respuesta-armada" class="zona-palabras"></div>
+    <div id="banco-palabras" class="zona-palabras"></div>
 
-    <!-- Zona inferior con las palabras desordenadas (la "cinta de equipaje") -->
-    <div id="banco-palabras" class="zona-palabras">
-        <!-- Agregamos el onclick="moverPalabra(this)" a cada botón para que sepa qué palabra tocaron -->
-        <button class="palabra" onclick="moverPalabra(this)">leaving</button>
-        <button class="palabra" onclick="moverPalabra(this)">my</button>
-        <button class="palabra" onclick="moverPalabra(this)">gate</button>
-        <button class="palabra" onclick="moverPalabra(this)">?</button>
-        <button class="palabra" onclick="moverPalabra(this)">Which</button>
-        <button class="palabra" onclick="moverPalabra(this)">from</button>
-        <button class="palabra" onclick="moverPalabra(this)">is</button>
-        <button class="palabra" onclick="moverPalabra(this)">flight</button>
+    <div class="fila-botones" id="botones-juego">
+        <button class="btn-sec" id="btn-reiniciar" onclick="devolverTodas()">↺ Empezar de nuevo</button>
+        <button class="btn-comprobar" id="btn-comprobar" onclick="comprobarRespuesta()">Comprobar Oración</button>
     </div>
-
-    <button class="btn-comprobar" onclick="comprobarRespuesta()">Comprobar Oración</button>
     <div id="resultado"></div>
+    <div id="explicacion" hidden></div>
+    <div id="acciones"></div>
+    <div id="repaso"></div>
 </div>
 
 <script>
-    // Esta función mueve la palabra de arriba hacia abajo y viceversa
-    function moverPalabra(botonTocado) {
-        const banco = document.getElementById('banco-palabras');
-        const respuesta = document.getElementById('respuesta-armada');
+    // Frases de la planificación (es = lo que se quiere decir, en = frase correcta, nota = por qué se ordena así)
+    const BANCO = [
+        { es: "¿De qué puerta sale mi vuelo?", en: "Which gate is my flight leaving from?", nota: "Con «which» + sustantivo el orden es: Which gate + is + sujeto + verbo con -ing, y la preposición «from» queda al final." },
+        { es: "¿Dónde está la zona de retiro de equipaje?", en: "Where is the baggage reclaim?", nota: "En preguntas con «where», el verbo to be va antes del sujeto: Where + is + the baggage reclaim." },
+        { es: "¿Puedo llevar esto como equipaje de mano?", en: "Can I take this as carry-on luggage?", nota: "Con «can» el orden es: Can + sujeto + verbo base + lo demás. «As carry-on luggage» indica el uso: como equipaje de mano." },
+        { es: "No tengo nada que declarar.", en: "I have nothing to declare.", nota: "Es una oración afirmativa: sujeto + verbo + nothing + to declare («nada que declarar»)." },
+        { es: "Acá está mi pasaporte y mi tarjeta de embarque.", en: "Here is my passport and boarding pass.", nota: "«Here is» se usa al entregar algo: Here is + lo que mostrás." },
+        { es: "¿Necesito mostrar mi pasaporte acá?", en: "Do I need to show my passport here?", nota: "Pregunta con «need»: Do + sujeto + need + to + verbo base." },
+        { es: "No encuentro mi tarjeta de embarque.", en: "I can't find my boarding pass.", nota: "Sujeto + can't + verbo base (find) + objeto." },
+        { es: "¿Puedo tener una tarjeta de embarque digital?", en: "Can I have a digital boarding pass?", nota: "Para pedir algo se usa Can + sujeto + have + lo que pedís." },
+        { es: "¿Mi vuelo está en horario o demorado?", en: "Is my flight on time or delayed?", nota: "Pregunta de sí/no con to be: el verbo va primero (Is) y después el sujeto (my flight)." },
+        { es: "Perdí mi vuelo.", en: "I missed my flight.", nota: "Pasado simple afirmativo: sujeto + verbo en pasado (missed) + objeto." },
+        { es: "Mi equipaje no llegó.", en: "My luggage didn't arrive.", nota: "En pasado negativo se usa didn't + verbo base (arrive), no «arrived»." },
+        { es: "¿Dónde está el control de aduana?", en: "Where is the customs inspection?", nota: "Igual que otras preguntas con «where»: Where + is + sujeto." },
+        { es: "¿Tengo que pasar por la aduana acá?", en: "Do I have to go through customs here?", nota: "Do + sujeto + have to + verbo base: expresa obligación («tener que»)." }
+    ];
+    const POR_PARTIDA = 6;
 
-        // Si la palabra está en el banco negro, la mueve a la caja blanca
-        if (botonTocado.parentElement === banco) {
-            respuesta.appendChild(botonTocado);
-        } else {
-            // Si ya estaba en la caja blanca, la devuelve al banco negro
-            banco.appendChild(botonTocado);
-        }
+    let ronda = [], actual = 0, errores = [], conError = new Set(), resuelta = false;
+    const $ = (id) => document.getElementById(id);
+
+    function mezclar(a) {
+        const r = [...a];
+        for (let i = r.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [r[i], r[j]] = [r[j], r[i]]; }
+        return r;
+    }
+    function tokens(frase) { return frase.replace(/([?.])/g, " $1").split(" "); }
+    function mostrarFrase(arr) { return arr.join(" ").replace(/ ([?.])/g, "$1"); }
+
+    function iniciar() {
+        ronda = mezclar(BANCO).slice(0, POR_PARTIDA);
+        actual = 0; errores = []; conError = new Set();
+        $("repaso").innerHTML = ""; $("acciones").innerHTML = ""; $("botones-juego").hidden = false;
+        $("respuesta-armada").hidden = false; $("banco-palabras").hidden = false; $("frase-es").hidden = false;
+        mostrar();
     }
 
-    // Esta función lee el orden de las palabras en la caja blanca y verifica si ganaste
+    function mostrar() {
+        resuelta = false;
+        const p = ronda[actual];
+        $("progreso").innerText = "Frase " + (actual + 1) + " de " + ronda.length;
+        $("frase-es").innerText = "«" + p.es + "»";
+        $("resultado").innerText = ""; $("explicacion").hidden = true; $("acciones").innerHTML = "";
+        $("btn-comprobar").disabled = false; $("btn-reiniciar").disabled = false;
+        $("respuesta-armada").innerHTML = "";
+        const banco = $("banco-palabras"); banco.innerHTML = "";
+        const correctas = tokens(p.en);
+        let mezcla = mezclar(correctas), intentos = 0;
+        while (mezcla.join(" ") === correctas.join(" ") && intentos++ < 10) mezcla = mezclar(correctas);
+        mezcla.forEach(w => {
+            const b = document.createElement("button");
+            b.className = "palabra"; b.textContent = w; b.onclick = () => moverPalabra(b);
+            banco.appendChild(b);
+        });
+    }
+
+    function moverPalabra(boton) {
+        if (resuelta) return;
+        const banco = $("banco-palabras"), resp = $("respuesta-armada");
+        if (boton.parentElement === banco) resp.appendChild(boton); else banco.appendChild(boton);
+    }
+
+    function devolverTodas() {
+        if (resuelta) return;
+        const banco = $("banco-palabras");
+        [...$("respuesta-armada").children].forEach(b => banco.appendChild(b));
+        $("resultado").innerText = "";
+    }
+
+    function explicarOrden(armado, correcto, nota) {
+        let parte = "";
+        const i = armado.findIndex((w, k) => w !== correcto[k]);
+        if (armado.length < correcto.length && i === -1) parte = "Te faltan " + (correcto.length - armado.length) + " palabra(s) al final.";
+        else if (armado.length < correcto.length) parte = "Te faltaron palabras y el orden no coincide.";
+        else if (i === 0) parte = "La frase empieza con «" + correcto[0] + "», no con «" + armado[0] + "».";
+        else if (i > 0) parte = "Hasta «" + armado[i - 1] + "» vas bien; después iba «" + correcto[i] + "» y pusiste «" + armado[i] + "».";
+        return (parte + " " + nota).trim();
+    }
+
     function comprobarRespuesta() {
-        const respuesta = document.getElementById('respuesta-armada');
-        let oracionFinal = "";
-
-        // Unimos el texto de todos los botones que están en la caja de respuesta
-        for (let i = 0; i < respuesta.children.length; i++) {
-            oracionFinal += respuesta.children[i].innerText + " ";
-        }
-        
-        oracionFinal = oracionFinal.trim(); // Borra el espacio extra al final de la oración
-
-        const resultadoDiv = document.getElementById('resultado');
-
-        // Compara con la respuesta correcta exacta de tu planificación
-        if (oracionFinal === "Which gate is my flight leaving from ?") {
-            resultadoDiv.innerHTML = "¡Perfecto! Recuperaste tu equipaje. 🧳";
-            resultadoDiv.style.color = "green";
+        if (resuelta) return;
+        const p = ronda[actual], correcto = tokens(p.en);
+        const armado = [...$("respuesta-armada").children].map(b => b.textContent);
+        const res = $("resultado");
+        if (armado.length === 0) { res.innerText = "Tocá las palabras para armar la frase."; res.style.color = "#555"; return; }
+        if (armado.join(" ") === correcto.join(" ")) {
+            resuelta = true;
+            res.innerText = "¡Perfecto! Recuperaste tu equipaje. 🧳"; res.style.color = "green";
+            $("explicacion").innerText = "💡 " + p.nota; $("explicacion").hidden = false;
+            $("btn-comprobar").disabled = true; $("btn-reiniciar").disabled = true;
+            const esUltima = actual === ronda.length - 1;
+            $("acciones").innerHTML = '<button class="btn-comprobar" id="btn-sig">' + (esUltima ? "Ver resultado ➜" : "Siguiente ➜") + "</button>";
+            $("btn-sig").onclick = () => { if (esUltima) terminar(); else { actual++; mostrar(); } };
         } else {
-            resultadoDiv.innerHTML = "Orden incorrecto. Tocá las palabras de arriba para devolverlas e intentá de nuevo.";
-            resultadoDiv.style.color = "red";
+            res.innerText = "Orden incorrecto. Tocá las palabras de arriba para devolverlas e intentá de nuevo.";
+            res.style.color = "red";
+            conError.add(actual);
+            const clave = actual + "|" + armado.join(" ");
+            if (!errores.some(e => e.clave === clave)) {
+                errores.push({ clave, prompt: "Querías decir: «" + p.es + "»", elegido: mostrarFrase(armado),
+                    correcta: p.en.replace(/ ([?.])/g, "$1"), explicacion: explicarOrden(armado, correcto, p.nota) });
+            }
         }
     }
+
+    function terminar() {
+        if (window.GB) GB.progress.record("airport-scramble", { score: ronda.length - conError.size, total: ronda.length, errors: errores.length });
+        $("progreso").innerText = "¡Misión completada!";
+        $("frase-es").innerText = "¡Llegaste a tu destino! ✈️🏆";
+        $("respuesta-armada").hidden = true; $("banco-palabras").hidden = true; $("botones-juego").hidden = true;
+        $("resultado").innerText = ""; $("explicacion").hidden = true;
+        $("acciones").innerHTML = '<button class="btn-comprobar" onclick="iniciar()">🔄 Jugar de nuevo (otras frases)</button>';
+        if (window.GB) GB.review.render($("repaso"), errores);
+    }
+
+    iniciar();
 </script>
 
 </body>

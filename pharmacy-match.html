@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Pharmacy Match</title>
     <link rel="stylesheet" href="assets/css/base.css">
+    <link rel="manifest" href="manifest.webmanifest">
+    <meta name="theme-color" content="#4f46e5">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+    <script src="assets/js/gb.js" data-title="Pharmacy Match"></script>
     <style>
         body { font-family: Arial, sans-serif; background-color: #e9ecef; text-align: center; padding: 20px; }
         .game-container { background-color: white; padding: 30px; border-radius: 10px; max-width: 700px; margin: 0 auto; box-shadow: 0px 4px 10px rgba(0,0,0,0.1); }
@@ -31,157 +35,115 @@
         .incorrecto { background-color: #dc3545; border-color: #c82333; color: white; }
 
         #resultado { margin-top: 20px; font-weight: bold; font-size: 18px; min-height: 25px; }
+        #progreso { color: #666; font-size: 14px; margin-bottom: 12px; }
+        .btn-accion { background: #7b2cbf; color: #fff; border: 0; border-radius: 8px; padding: 12px 18px; font-size: 16px; cursor: pointer; margin-top: 14px; width: 100%; font-weight: 600; }
+        .btn-accion:hover { background: #5a189a; }
     </style>
 </head>
 <body>
 
 <div class="game-container">
     <h2>Misión: The Pharmacy Match 💊</h2>
-    <p>Tocá un medicamento en inglés y luego tocala con su uso correcto en español para emparejarlos.</p>
+    <p>Tocá un término en inglés y luego tocá su significado en español para emparejarlos.</p>
+    <div id="progreso"></div>
 
-    <div class="columnas">
-        <!-- Columna Izquierda: Palabras en Inglés -->
+    <div class="columnas" id="tablero">
         <div class="columna" id="columna-ingles"></div>
-        
-        <!-- Columna Derecha: Definiciones -->
         <div class="columna" id="columna-espanol"></div>
     </div>
 
     <div id="resultado"></div>
+    <div id="acciones"></div>
+    <div id="repaso"></div>
 </div>
 
 <script>
-    // 1. NUESTRA BASE DE DATOS DE PARES
-    // Cada par tiene un "id" (identificador) único para que la compu sepa cuáles coinciden.
-    const pares = [
-        { id: 1, ingles: "Painkillers (Ibuprofen)", espanol: "Analgésicos para dolor o fiebre" },
-        { id: 2, ingles: "Motion sickness pills", espanol: "Pastillas para mareos en auto o avión" },
-        { id: 3, ingles: "Band-aids", espanol: "Curitas para cortes o heridas" },
-        { id: 4, ingles: "Prescription", espanol: "Receta médica firmada por un doctor" }
+    // Banco de términos (de la planificación de clases). Cada partida usa algunos al azar.
+    const BANCO = [
+        { id: 1,  en: "Painkillers (Ibuprofen)", es: "Medicina para calmar dolores leves" },
+        { id: 2,  en: "Motion sickness pills",   es: "Pastillas para mareos en auto o avión" },
+        { id: 3,  en: "Band-aids",               es: "Curitas para cortes o heridas" },
+        { id: 4,  en: "Prescription",            es: "Receta médica firmada por un doctor" },
+        { id: 5,  en: "Over the counter",        es: "Se compra sin receta médica" },
+        { id: 6,  en: "Cough drops",             es: "Pastillas para la garganta" },
+        { id: 7,  en: "Eye drops",               es: "Gotas para los ojos" },
+        { id: 8,  en: "Antihistamines",          es: "Pastillas para alergias leves" },
+        { id: 9,  en: "Antibiotics",             es: "Medicina que se compra solo con receta" },
+        { id: 10, en: "Fever",                   es: "Temperatura alta del cuerpo" },
+        { id: 11, en: "Headache",                es: "Dolor de cabeza" },
+        { id: 12, en: "Sore throat",             es: "Dolor de garganta" }
     ];
+    const POR_PARTIDA = 5;
 
-    // Variables para recordar qué botones tocó el alumno
-    let botonInglesSeleccionado = null;
-    let botonEspanolSeleccionado = null;
-    let paresCompletados = 0;
+    let pares = [], selIng = null, selEsp = null, completados = 0, errores = [], paresConError = new Set();
+    const $ = (id) => document.getElementById(id);
 
-    // 2. FUNCIÓN PARA MEZCLAR LAS PALABRAS
-    // Esto evita que la respuesta correcta esté siempre justo al lado
-    function mezclarArray(array) {
-        return array.sort(() => Math.random() - 0.5);
+    function mezclar(a) {
+        const r = [...a];
+        for (let i = r.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [r[i], r[j]] = [r[j], r[i]]; }
+        return r;
     }
 
-    // 3. INICIAR EL JUEGO
-    function cargarJuego() {
-        const colIngles = document.getElementById('columna-ingles');
-        const colEspanol = document.getElementById('columna-espanol');
-
-        // Clonamos el array original y los mezclamos para cada columna
-        const listaIngles = mezclarArray([...pares]);
-        const listaEspanol = mezclarArray([...pares]);
-
-        // Creamos los botones de la columna izquierda
-        listaIngles.forEach(item => {
-            const btn = document.createElement('button');
-            btn.className = 'btn-match';
-            btn.innerText = item.ingles;
-            // Al hacer clic, ejecuta la función de seleccionar enviando su "id"
-            btn.onclick = () => seleccionarIngles(btn, item.id);
-            colIngles.appendChild(btn);
-        });
-
-        // Creamos los botones de la columna derecha
-        listaEspanol.forEach(item => {
-            const btn = document.createElement('button');
-            btn.className = 'btn-match';
-            btn.innerText = item.espanol;
-            btn.onclick = () => seleccionarEspanol(btn, item.id);
-            colEspanol.appendChild(btn);
-        });
+    function iniciar() {
+        pares = mezclar(BANCO).slice(0, POR_PARTIDA);
+        selIng = selEsp = null; completados = 0; errores = []; paresConError = new Set();
+        $("tablero").hidden = false; $("repaso").innerHTML = ""; $("acciones").innerHTML = ""; $("resultado").innerText = "";
+        const colI = $("columna-ingles"), colE = $("columna-espanol");
+        colI.innerHTML = ""; colE.innerHTML = "";
+        mezclar(pares).forEach(p => colI.appendChild(crearBoton(p.en, p, "en")));
+        mezclar(pares).forEach(p => colE.appendChild(crearBoton(p.es, p, "es")));
+        actualizarProgreso();
     }
 
-    // 4. LÓGICA AL TOCAR UN BOTÓN EN INGLÉS
-    function seleccionarIngles(boton, id) {
-        // Si el botón ya está correcto, no hacemos nada
-        if (boton.classList.contains('correcto')) return;
-
-        // Despinta el botón que estaba seleccionado antes (si había uno)
-        if (botonInglesSeleccionado) {
-            botonInglesSeleccionado.boton.classList.remove('seleccionado');
-        }
-
-        // Pinta de amarillo el nuevo botón tocado y lo guarda en la memoria
-        boton.classList.add('seleccionado');
-        botonInglesSeleccionado = { boton: boton, id: id };
-
-        verificarMatch();
+    function crearBoton(texto, par, lado) {
+        const b = document.createElement("button");
+        b.className = "btn-match"; b.textContent = texto;
+        b.onclick = () => seleccionar(b, par, lado);
+        return b;
     }
 
-    // 5. LÓGICA AL TOCAR UN BOTÓN EN ESPAÑOL
-    function seleccionarEspanol(boton, id) {
-        if (boton.classList.contains('correcto')) return;
+    function actualizarProgreso() { $("progreso").innerText = "Parejas encontradas: " + completados + " de " + pares.length; }
 
-        if (botonEspanolSeleccionado) {
-            botonEspanolSeleccionado.boton.classList.remove('seleccionado');
-        }
-
-        boton.classList.add('seleccionado');
-        botonEspanolSeleccionado = { boton: boton, id: id };
-
-        verificarMatch();
+    function seleccionar(boton, par, lado) {
+        if (boton.classList.contains("correcto")) return;
+        const actual = lado === "en" ? selIng : selEsp;
+        if (actual) actual.boton.classList.remove("seleccionado");
+        boton.classList.add("seleccionado");
+        if (lado === "en") selIng = { boton, par }; else selEsp = { boton, par };
+        if (selIng && selEsp) verificar();
     }
 
-    // 6. COMPROBAR SI SON PAREJA
-    function verificarMatch() {
-        // Solo verifica si el alumno ya tocó un botón de cada lado
-        if (botonInglesSeleccionado && botonEspanolSeleccionado) {
-            
-            const btn1 = botonInglesSeleccionado.boton;
-            const btn2 = botonEspanolSeleccionado.boton;
-            const resultadoDiv = document.getElementById('resultado');
-
-            // Si los ID coinciden...
-            if (botonInglesSeleccionado.id === botonEspanolSeleccionado.id) {
-                btn1.classList.remove('seleccionado');
-                btn2.classList.remove('seleccionado');
-                btn1.classList.add('correcto');
-                btn2.classList.add('correcto');
-                
-                resultadoDiv.innerText = "¡Correcto! ✔️";
-                resultadoDiv.style.color = "green";
-                paresCompletados++;
-
-                // Chequeamos si ganó el juego
-                if (paresCompletados === pares.length) {
-                    resultadoDiv.innerText = "¡Misión completada! Tienes tu botiquín listo. 🚑";
-                }
-
-            } else {
-                // Si se equivocó
-                btn1.classList.remove('seleccionado');
-                btn2.classList.remove('seleccionado');
-                btn1.classList.add('incorrecto');
-                btn2.classList.add('incorrecto');
-                
-                resultadoDiv.innerText = "Ups... esos no coinciden.";
-                resultadoDiv.style.color = "red";
-
-                // Le sacamos el color rojo rápido para que siga jugando
-                setTimeout(() => {
-                    btn1.classList.remove('incorrecto');
-                    btn2.classList.remove('incorrecto');
-                    resultadoDiv.innerText = "";
-                }, 1000);
+    function verificar() {
+        const a = selIng, b = selEsp, res = $("resultado");
+        selIng = selEsp = null;
+        a.boton.classList.remove("seleccionado"); b.boton.classList.remove("seleccionado");
+        if (a.par.id === b.par.id) {
+            a.boton.classList.add("correcto"); b.boton.classList.add("correcto");
+            res.innerText = "¡Correcto! ✔️"; res.style.color = "green";
+            completados++; actualizarProgreso();
+            if (completados === pares.length) terminar();
+        } else {
+            a.boton.classList.add("incorrecto"); b.boton.classList.add("incorrecto");
+            res.innerText = "Ups... esos no coinciden."; res.style.color = "red";
+            const clave = a.par.id + "-" + b.par.id;
+            paresConError.add(a.par.id);
+            if (!errores.some(e => e.clave === clave)) {
+                errores.push({ clave, prompt: "Intentaste emparejar «" + a.par.en + "» con «" + b.par.es + "»",
+                    elegido: a.par.en + " ↔ " + b.par.es, correcta: a.par.en + " ↔ " + a.par.es,
+                    explicacion: "«" + a.par.en + "» significa «" + a.par.es + "». Y «" + b.par.es + "» se dice «" + b.par.en + "»." });
             }
-
-            // Vaciamos la memoria para la próxima pareja
-            botonInglesSeleccionado = null;
-            botonEspanolSeleccionado = null;
+            setTimeout(() => { a.boton.classList.remove("incorrecto"); b.boton.classList.remove("incorrecto"); res.innerText = ""; }, 900);
         }
     }
 
-    // Arrancamos el juego
-    cargarJuego();
+    function terminar() {
+        if (window.GB) GB.progress.record("pharmacy-match", { score: pares.length - paresConError.size, total: pares.length, errors: errores.length });
+        $("resultado").innerText = "¡Misión completada! Tu botiquín está listo. 🚑"; $("resultado").style.color = "green";
+        $("acciones").innerHTML = '<button class="btn-accion" onclick="iniciar()">🔄 Jugar de nuevo (otros términos)</button>';
+        if (window.GB) GB.review.render($("repaso"), errores);
+    }
+
+    iniciar();
 </script>
 
 </body>

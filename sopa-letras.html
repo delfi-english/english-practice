@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Word Search: Dynamic Pro</title>
     <link rel="stylesheet" href="assets/css/base.css">
+    <link rel="manifest" href="manifest.webmanifest">
+    <meta name="theme-color" content="#4f46e5">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+    <script src="assets/js/gb.js" data-title="Sopa de letras"></script>
     <style>
         body { font-family: Arial, sans-serif; background-color: #f4f4f9; text-align: center; padding: 20px; user-select: none; }
         .game-container { background-color: white; padding: 20px; border-radius: 10px; max-width: 800px; margin: 0 auto; box-shadow: 0px 4px 10px rgba(0,0,0,0.1); }
@@ -61,7 +65,6 @@
 <body>
 
 <div class="game-container">
-    <div style="text-align:left; margin-bottom:10px;"><a class="btn-home" href="index.html">🏠 Menú principal</a></div>
     <h2>Sopa de Letras Dinámica 🔍</h2>
     <p>Arrastrá el dedo (o el mouse) sobre las letras para marcarlas. Podés marcar varias y comprobarlas al final. <strong>Podés marcar una palabra en partes, tocar una letra suelta para marcarla y tocarla de nuevo para desmarcarla.</strong></p>
 
@@ -320,6 +323,10 @@
 
         const resultadoDiv = document.getElementById("resultado");
         if (palabrasObjetivo.length === 0) {
+            if (window.GB && !window.__sopaRegistrada) {
+                window.__sopaRegistrada = true;
+                GB.progress.record("sopa-letras", { score: datosPalabras.length, total: datosPalabras.length, errors: 0 });
+            }
             resultadoDiv.innerText = "¡Ganaste! Encontraste todas las palabras. 🎉";
             resultadoDiv.style.color = "green";
         } else if (aciertosEnEstaRonda > 0) {
