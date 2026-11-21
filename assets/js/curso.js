@@ -24,7 +24,7 @@ window.CURSO = {
         }
       ],
       "juegos": [
-        "starter-module",
+        "flashcards-basicos",
         "sopa-letras"
       ],
       "proximamente": [
@@ -261,16 +261,17 @@ window.CURSO = {
     }
   ],
   "juegos": {
-    "starter-module": {
-      "titulo": "Starter Module",
-      "desc": "Aprende y escucha vocabulario esencial con tarjetas interactivas de memoria 3D.",
-      "emoji": "🚀",
+    "flashcards-basicos": {
+      "titulo": "Flashcards: vocabulario básico",
+      "desc": "Tarjetas con audio para aprender saludos, lugares, cosas cotidianas, colores y familia.",
+      "emoji": "🎴",
       "bg": "bg-indigo",
       "tags": [
         "Vocab",
         "Listening",
-        "Basics"
-      ]
+        "Audio"
+      ],
+      "practica": true
     },
     "phonetics-studio": {
       "titulo": "Phonetics Studio",

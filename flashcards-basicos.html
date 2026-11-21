@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Get By · Flashcards de vocabulario</title>
+    <link rel="stylesheet" href="assets/css/base.css">
+    <link rel="manifest" href="manifest.webmanifest">
+    <meta name="theme-color" content="#4f46e5">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+    <script src="assets/js/gb.js" data-title="Flashcards"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #4f46e5; --primary-dark: #3730a3; --text-dark: #1f2937; --text-light: #6b7280; --white: #ffffff; }
+        body { font-family: 'Inter', system-ui, sans-serif; margin: 0; padding: 12px; background-color: #f9fafb; color: var(--text-dark); }
+        .contenedor { max-width: 900px; margin: 0 auto; }
+        h1 { font-size: 1.6rem; margin: 6px 0 6px; }
+        .intro { color: var(--text-light); margin: 0 0 16px; }
+        .filters { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+        .filter-btn { background: var(--white); border: 1px solid #d1d5db; padding: 8px 14px; border-radius: 20px; cursor: pointer; font-weight: 600; color: var(--text-light); transition: 0.2s; font-family: inherit; }
+        .filter-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .filter-btn.active { background: var(--primary); border-color: var(--primary); color: var(--white); }
+        .contador { color: var(--text-light); font-size: .9rem; margin: 0 0 14px; }
+        .flashcards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+        .flashcard { background: transparent; width: 100%; height: 150px; perspective: 1000px; cursor: pointer; }
+        .flashcard-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border-radius: 16px; }
+        .flashcard.flipped .flashcard-inner { transform: rotateY(180deg); }
+        .flashcard-front, .flashcard-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 16px; padding: 14px; }
+        .flashcard-front { background-color: var(--white); color: var(--text-dark); border: 2px solid #e5e7eb; }
+        .flashcard-back { background-color: var(--primary); color: var(--white); transform: rotateY(180deg); border: 2px solid var(--primary-dark); }
+        .word-en { font-size: 1.15rem; font-weight: 800; margin-bottom: 8px; line-height: 1.3; }
+        .word-es { font-size: 1.05rem; font-weight: 600; line-height: 1.3; }
+        .btn-audio { background: #eef2ff; border: none; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; margin-top: 6px; font-size: 1.1rem; }
+        .btn-audio:hover { background: #c7d2fe; transform: scale(1.1); }
+    </style>
+</head>
+<body>
+<div class="contenedor">
+    <h1>🎴 Flashcards de vocabulario</h1>
+    <p class="intro">Tocá la tarjeta para ver la traducción y el parlante para escuchar la pronunciación. Repasá la teoría de este tema en <a href="teoria-nivel1.html#survival">Survival Chunks</a>.</p>
+    <div class="filters" id="filters-container">
+        <button class="filter-btn active" onclick="filterCards('all', this)">Todos</button>
+        <button class="filter-btn" onclick="filterCards('greetings', this)">Saludos</button>
+        <button class="filter-btn" onclick="filterCards('places', this)">Lugares</button>
+        <button class="filter-btn" onclick="filterCards('basics', this)">Cosas básicas</button>
+        <button class="filter-btn" onclick="filterCards('colors', this)">Colores</button>
+        <button class="filter-btn" onclick="filterCards('family', this)">Familia</button>
+    </div>
+    <p class="contador" id="contador"></p>
+    <div class="flashcards-grid" id="flashcards-container"></div>
+</div>
+
+<script>
+    // Si una tarjeta lleva "speech", se lee ese texto en lugar del que se ve (por ejemplo, sin la barra "/").
+    const flashcardsData = [
+            // Greetings & Chunks
+            { en: "Hello", es: "Hola", cat: "greetings" },
+            { en: "Good Morning", es: "Buen día", cat: "greetings" },
+            { en: "Good Afternoon", es: "Buenas tardes", cat: "greetings" },
+            { en: "Good Evening", es: "Buenas noches (al llegar)", cat: "greetings" },
+            { en: "Good Night", es: "Buenas noches (despedida)", cat: "greetings" },
+            { en: "How's it going?", es: "¿Qué tal? / ¿Cómo te va?", cat: "greetings" },
+            { en: "What's up?", es: "¿Qué pasa? / ¿Qué onda?", cat: "greetings" },
+            { en: "Pretty good", es: "Bastante bien", cat: "greetings" },
+            { en: "Not bad, you?", es: "Nada mal, ¿vos?", cat: "greetings", speech: "Not bad, you?" },
+            { en: "Have a good one", es: "Que tengas un buen día", cat: "greetings" },
+            { en: "Long time no see!", es: "¡Cuánto tiempo sin verte!", cat: "greetings" },
+            { en: "Catch you later", es: "Nos vemos luego", cat: "greetings" },
+            { en: "Excuse me", es: "Disculpe / Permiso", cat: "greetings" },
+            { en: "I don't understand", es: "No entiendo", cat: "greetings" },
+            { en: "Do you speak Spanish?", es: "¿Hablas español?", cat: "greetings" },
+            
+            // Places
+            { en: "Airport", es: "Aeropuerto", cat: "places" },
+            { en: "Hospital", es: "Hospital", cat: "places" },
+            { en: "Pharmacy / Drugstore", es: "Farmacia", cat: "places", speech: "Pharmacy, Drugstore" },
+            { en: "ATM machine", es: "Cajero automático", cat: "places" },
+            { en: "Bank", es: "Banco", cat: "places" },
+            { en: "Restaurant", es: "Restaurante", cat: "places" },
+            { en: "Coffee shop", es: "Cafetería", cat: "places" },
+            { en: "Bus station", es: "Terminal de colectivo", cat: "places" },
+            { en: "Train station", es: "Estación de tren", cat: "places" },
+            { en: "Subway", es: "Subte / Metro", cat: "places" },
+            { en: "Museum", es: "Museo", cat: "places" },
+            { en: "Movie theater", es: "Cine", cat: "places" },
+            { en: "Park", es: "Parque", cat: "places" },
+            { en: "Church", es: "Iglesia", cat: "places" },
+            { en: "Hotel", es: "Hotel", cat: "places" },
+            { en: "Clinic", es: "Clínica", cat: "places" },
+            
+            // Basics
+            { en: "Wallet", es: "Billetera", cat: "basics" },
+            { en: "Keys", es: "Llaves", cat: "basics" },
+            { en: "Phone", es: "Teléfono celular", cat: "basics" },
+            { en: "Bag / Backpack", es: "Bolso / Mochila", cat: "basics", speech: "Bag, Backpack" },
+            { en: "Ticket", es: "Boleto / Pasaje", cat: "basics" },
+            { en: "Passport", es: "Pasaporte", cat: "basics" },
+            { en: "Cash", es: "Efectivo", cat: "basics" },
+            { en: "Credit card", es: "Tarjeta de crédito", cat: "basics" },
+            
+            // Colors
+            { en: "Red", es: "Rojo", cat: "colors" },
+            { en: "Blue", es: "Azul", cat: "colors" },
+            { en: "Green", es: "Verde", cat: "colors" },
+            { en: "Yellow", es: "Amarillo", cat: "colors" },
+            { en: "Black", es: "Negro", cat: "colors" },
+            { en: "White", es: "Blanco", cat: "colors" },
+            { en: "Gray", es: "Gris", cat: "colors" },
+            { en: "Pink", es: "Rosa", cat: "colors" },
+            { en: "Orange", es: "Naranja", cat: "colors" },
+            { en: "Purple", es: "Violeta", cat: "colors" },
+            { en: "Brown", es: "Marrón", cat: "colors" },
+            
+            // Family
+            { en: "Parents", es: "Padres", cat: "family" },
+            { en: "Mother / Mom", es: "Madre / Mamá", cat: "family", speech: "Mother, Mom" },
+            { en: "Father / Dad", es: "Padre / Papá", cat: "family", speech: "Father, Dad" },
+            { en: "Sibling", es: "Hermano/a (General)", cat: "family" },
+            { en: "Brother", es: "Hermano", cat: "family" },
+            { en: "Sister", es: "Hermana", cat: "family" },
+            { en: "Aunt", es: "Tía", cat: "family" },
+            { en: "Uncle", es: "Tío", cat: "family" },
+            { en: "Cousin", es: "Primo/a", cat: "family" },
+            { en: "Grandparents", es: "Abuelos/as", cat: "family" },
+            { en: "Grandfather / Grandpa", es: "Abuelo", cat: "family", speech: "Grandfather, Grandpa" },
+            { en: "Grandmother / Grandma", es: "Abuela", cat: "family", speech: "Grandmother, Grandma" }
+        ];
+
+    const container = document.getElementById('flashcards-container');
+    const synth = window.speechSynthesis;
+    const vistas = new Set();
+    let registrado = false;
+
+    function createCard(data) {
+        const card = document.createElement('div');
+        card.className = 'flashcard';
+        card.onclick = function () {
+            this.classList.toggle('flipped');
+            vistas.add(data.en);
+            actualizarContador();
+            // Con 10 tarjetas distintas giradas, la actividad cuenta como practicada
+            if (!registrado && vistas.size >= 10 && window.GB) {
+                registrado = true;
+                GB.progress.record('flashcards-basicos', { score: 1, total: 1, errors: 0 });
+            }
+        };
+        const inner = document.createElement('div');
+        inner.className = 'flashcard-inner';
+        const front = document.createElement('div');
+        front.className = 'flashcard-front';
+        front.innerHTML = `<div class="word-en">${data.en}</div>`;
+        const audioBtn = document.createElement('button');
+        audioBtn.className = 'btn-audio';
+        audioBtn.innerHTML = '🔊';
+        audioBtn.setAttribute('aria-label', 'Escuchar ' + data.en);
+        audioBtn.onclick = function (e) { e.stopPropagation(); speak(data.en, data.speech); };
+        front.appendChild(audioBtn);
+        const back = document.createElement('div');
+        back.className = 'flashcard-back';
+        back.innerHTML = `<div class="word-es">${data.es}</div>`;
+        inner.appendChild(front); inner.appendChild(back); card.appendChild(inner);
+        return card;
+    }
+
+    function actualizarContador() {
+        document.getElementById('contador').textContent = 'Tarjetas vistas: ' + vistas.size + ' de ' + flashcardsData.length + ' · Mostrando ' + container.children.length;
+    }
+
+    function filterCards(category, boton) {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        if (boton) boton.classList.add('active'); else document.querySelector('.filter-btn').classList.add('active');
+        container.innerHTML = '';
+        (category === 'all' ? flashcardsData : flashcardsData.filter(i => i.cat === category))
+            .forEach(item => container.appendChild(createCard(item)));
+        actualizarContador();
+    }
+
+    function speak(text, speechText) {
+        if (!synth) return;
+        if (synth.speaking) synth.cancel();
+        const u = new SpeechSynthesisUtterance(speechText || text);
+        u.lang = 'en-US';
+        u.rate = 0.9;
+        synth.speak(u);
+    }
+
+    filterCards('all');
+</script>
+</body>
+</html>

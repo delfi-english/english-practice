@@ -44,7 +44,7 @@
         var g = C.juegos[id], p = prog(id);
         return '<a class="juego-fila" href="' + id + '.html"><span class="juego-ico ' + g.bg + '">' + g.emoji + '</span>' +
           '<span class="juego-info"><strong>' + esc(g.titulo) + '</strong><small>' + esc(g.desc) + '</small>' +
-          (p ? '<em class="juego-prog">✅ Jugado ' + plural(p.plays, "vez", "veces") + ' · mejor: ' + p.bestPct + '%</em>' : '') +
+          (p ? '<em class="juego-prog">✅ ' + (g.practica ? 'Practicado ' + plural(p.plays, "vez", "veces") : 'Jugado ' + plural(p.plays, "vez", "veces") + ' · mejor: ' + p.bestPct + '%') + '</em>' : '') +
           '</span><span class="juego-go">▶</span></a>';
       }).join("") + '</div>';
     } else {
