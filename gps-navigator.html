@@ -18,7 +18,7 @@
         .destino-texto { font-size: 14px; background-color: rgba(0,0,0,0.2); padding: 5px 10px; border-radius: 5px; margin-top: 5px; display: inline-block; }
         
         /* Ciudad de 5x5 */
-        .mapa-grid { display: grid; grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(5, 75px); background-color: #343a40; gap: 4px; padding: 4px; position: relative; }
+        .mapa-grid { display: grid; grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(5, 64px); background-color: #343a40; gap: 4px; padding: 4px; position: relative; }
         
         .cell { display: flex; justify-content: center; align-items: center; font-size: 12px; font-weight: bold; text-align: center; border-radius: 4px; position: relative; flex-direction: column; }
         
@@ -40,35 +40,45 @@
         .btn-instruccion:active { transform: scale(0.95); }
 
         #resultado { text-align: center; margin-top: 15px; font-weight: bold; font-size: 16px; min-height: 25px; }
+        .panel-indic { background: #fff; padding: 12px 16px; border-bottom: 1px solid #dee2e6; }
+        .panel-indic h3 { margin: 0 0 8px; font-size: 14px; color: #495057; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+        .panel-indic label { font-size: 13px; font-weight: normal; cursor: pointer; }
+        .paso-fila { display: flex; align-items: center; gap: 8px; padding: 5px 6px; border-radius: 6px; font-size: 15px; color: #6c757d; }
+        .paso-fila .marca { width: 20px; text-align: center; flex: none; }
+        .paso-fila .txt { flex: 1; }
+        .paso-fila .es { display: block; font-size: 12px; color: #868e96; font-style: italic; }
+        .paso-fila.hecho { color: #28a745; }
+        .paso-fila.actual { background: #e8f5e9; color: #1b5e20; font-weight: bold; }
+        .btn-voz { border: none; background: #eef2ff; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; flex: none; }
+        .btn-accion { background-color: #28a745; color: #fff; border: none; padding: 12px 16px; font-size: 16px; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; }
+        #repaso { padding: 0 16px 16px; background: #f8f9fa; }
+        #aviso { text-align: center; min-height: 22px; font-size: 14px; color: #dc3545; margin-top: 8px; }
     </style>
 </head>
 <body>
-
 <div class="dispositivo-gps">
     <div class="gps-header">
         <div>📍 Navegador GPS</div>
         <div class="destino-texto" id="texto-mision">Calculando ruta...</div>
     </div>
-
-    <!-- EL MINI MAPA DINÁMICO -->
-    <div class="mapa-grid" id="mapa">
-        <!-- Se llena con JavaScript -->
+    <div class="mapa-grid" id="mapa"></div>
+    <div class="panel-indic">
+        <h3><span id="progreso">Indicaciones</span><label><input type="checkbox" id="ver-es" onchange="dibujarPasos()"> Mostrar traducción</label></h3>
+        <div id="pasos"></div>
     </div>
-
-    <!-- PANEL DE CONTROLES -->
     <div class="panel-control">
-        <div class="botones-grid">
-            <button class="btn-instruccion" onclick="girar(-90)">↺ Turn left</button>
-            <button class="btn-instruccion" style="background-color: #7b2cbf; color: white;" onclick="avanzar()">⬆ Go straight ahead</button>
-            <button class="btn-instruccion" onclick="girar(90)">Turn right ↻</button>
+        <div class="botones-grid" id="controles">
+            <button class="btn-instruccion" onclick="pulsar('L')">↺ Turn left</button>
+            <button class="btn-instruccion" style="background-color: #7b2cbf; color: white;" onclick="pulsar('F')">⬆ Go straight ahead</button>
+            <button class="btn-instruccion" onclick="pulsar('R')">Turn right ↻</button>
         </div>
+        <div id="aviso"></div>
         <div id="resultado"></div>
     </div>
+    <div id="repaso"></div>
 </div>
-
 <script>
-    // 1. DIBUJAMOS LA CIUDAD (Matriz 5x5)
-    // E = Edificio, C = Calle, X = Cruce
+    // Ciudad 5x5: C = calle, X = cruce (donde se puede girar)
     const plano = [
         ['Hospital', 'C', 'Police Station', 'C', 'Bank'],
         ['C', 'X', 'C', 'X', 'C'],
@@ -76,123 +86,169 @@
         ['C', 'X', 'C', 'X', 'C'],
         ['Museum', 'C', 'Cafe', 'C', 'Supermarket']
     ];
+    const iconos = { 'Hospital': '🏥', 'Police Station': '🚓', 'Bank': '🏦', 'School': '🏫', 'Park': '🌳', 'Cinema': '🍿', 'Museum': '🏛️', 'Cafe': '☕', 'Supermarket': '🛒' };
+    const nombreEs = { 'Hospital': 'El Hospital', 'Police Station': 'La Comisaría', 'Bank': 'El Banco', 'School': 'La Escuela', 'Park': 'El Parque', 'Cinema': 'El Cine', 'Museum': 'El Museo', 'Cafe': 'El Café', 'Supermarket': 'El Supermercado' };
+    const DIRS = [[-1, 0], [0, 1], [1, 0], [0, -1]]; // Norte, Este, Sur, Oeste
+    const NUM_EN = ["", "one", "two", "three", "four", "five", "six", "seven", "eight"];
+    const NUM_ES = ["", "una", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho"];
+    const MISIONES = 3;
 
-    // Emojis para los edificios
-    const iconos = {
-        'Hospital': '🏥', 'Police Station': '🚓', 'Bank': '🏦', 
-        'School': '🏫', 'Park': '🌳', 'Cinema': '🍿', 
-        'Museum': '🏛️', 'Cafe': '☕', 'Supermarket': '🛒'
-    };
+    let pos = { f: 4, c: 1 }, rot = 0;              // el taxi empieza abajo a la izquierda, mirando al Norte
+    let mision = 0, destino = "", pasos = [], iPaso = 0, hechos = 0, erroresMision = 0, misionesConError = 0;
+    let errores = [], ultimoDestino = "", enMarcha = false;
+    const $ = (id) => document.getElementById(id);
+    const dirDe = (r) => ((Math.round(r / 90) % 4) + 4) % 4;
+    const esCalle = (f, c) => f >= 0 && f < 5 && c >= 0 && c < 5 && (plano[f][c] === 'C' || plano[f][c] === 'X');
 
-    // 2. ESTADO DEL TAXI
-    let taxiPos = { f: 4, c: 1 }; // Empieza en la calle de abajo a la izquierda
-    let taxiRotacion = 0; // 0 = Norte, 90 = Este, 180 = Sur, -90 = Oeste
-    let destinoActual = "";
+    // ---- Mapa ----
+    function dibujarMapa() {
+        const m = $("mapa"); m.innerHTML = "";
+        for (let f = 0; f < 5; f++) for (let c = 0; c < 5; c++) {
+            const cel = document.createElement("div"); cel.id = "celda-" + f + "-" + c;
+            const t = plano[f][c];
+            if (t === 'C') cel.className = "cell calle";
+            else if (t === 'X') cel.className = "cell calle cruce";
+            else { cel.className = "cell edificio"; cel.innerHTML = "<span>" + iconos[t] + "</span>" + t; }
+            m.appendChild(cel);
+        }
+        colocarTaxi();
+    }
+    function colocarTaxi() {
+        let taxi = $("taxi");
+        if (!taxi) { taxi = document.createElement("div"); taxi.id = "taxi"; taxi.innerText = "🚕"; }
+        taxi.style.transform = "rotate(" + rot + "deg)";
+        $("celda-" + pos.f + "-" + pos.c).appendChild(taxi);
+    }
 
-    // 3. INICIAR EL MAPA
-    function inicializarJuego() {
-        const mapaDiv = document.getElementById("mapa");
-        mapaDiv.innerHTML = "";
-        let edificiosDisponibles = [];
-
-        // Construir la grilla visual
-        for (let f = 0; f < 5; f++) {
-            for (let c = 0; c < 5; c++) {
-                const celda = document.createElement("div");
-                celda.id = `celda-${f}-${c}`;
-                
-                let tipo = plano[f][c];
-                if (tipo === 'C') {
-                    celda.className = "cell calle";
-                } else if (tipo === 'X') {
-                    celda.className = "cell calle cruce";
-                } else {
-                    celda.className = "cell edificio";
-                    celda.innerHTML = `<span>${iconos[tipo]}</span>${tipo}`;
-                    edificiosDisponibles.push(tipo); // Guardamos la lista de lugares
-                }
-                mapaDiv.appendChild(celda);
+    // ---- Ruta: búsqueda del camino más corto que termina con el destino a un costado ----
+    function lateral(f, c, d, nombre) {
+        const izq = DIRS[(d + 3) % 4], der = DIRS[(d + 1) % 4];
+        if (plano[f + izq[0]] && plano[f + izq[0]][c + izq[1]] === nombre) return "left";
+        if (plano[f + der[0]] && plano[f + der[0]][c + der[1]] === nombre) return "right";
+        return null;
+    }
+    // Un callejón sin salida es un lugar donde el taxi no puede avanzar ni girar
+    function esCallejon(f, c, d) {
+        const v = DIRS[d];
+        if (esCalle(f + v[0], c + v[1])) return false;
+        if (plano[f][c] !== 'X') return true;
+        return ![1, 3].some(delta => { const w = DIRS[(d + delta) % 4]; return esCalle(f + w[0], c + w[1]); });
+    }
+    function buscarRuta(nombre, f0, c0, d0, evitarCallejon) {
+        const cola = [{ f: f0, c: c0, d: d0, giro: false, mov: [] }], visto = new Set([f0 + "," + c0 + "," + d0 + ",0"]);
+        while (cola.length) {
+            const s = cola.shift();
+            const lado = lateral(s.f, s.c, s.d, nombre);
+            if (lado && !(evitarCallejon && esCallejon(s.f, s.c, s.d))) return { mov: s.mov, lado };
+            const sig = [];
+            const v = DIRS[s.d];
+            if (esCalle(s.f + v[0], s.c + v[1])) sig.push({ f: s.f + v[0], c: s.c + v[1], d: s.d, giro: false, m: "F" });
+            if (!s.giro && plano[s.f][s.c] === 'X') {                                    // se gira solo en los cruces
+                [["L", 3], ["R", 1]].forEach(([m, delta]) => {
+                    const nd = (s.d + delta) % 4, w = DIRS[nd];
+                    if (esCalle(s.f + w[0], s.c + w[1])) sig.push({ f: s.f, c: s.c, d: nd, giro: true, m });
+                });
             }
+            sig.forEach(n => { const k = n.f + "," + n.c + "," + n.d + "," + (n.giro ? 1 : 0); if (!visto.has(k)) { visto.add(k); cola.push({ ...n, mov: [...s.mov, n.m] }); } });
         }
-
-        // Elegir un destino al azar que no sea el punto de inicio
-        destinoActual = edificiosDisponibles[Math.floor(Math.random() * edificiosDisponibles.length)];
-        document.getElementById("texto-mision").innerText = `"Where is the ${destinoActual}?"`;
-
-        // Colocar el taxi
-        crearTaxi();
+        return null;
+    }
+    function agrupar(mov, lado, nombre) {
+        const out = [];
+        mov.forEach(m => {
+            const u = out[out.length - 1];
+            if (m === "F" && u && u.t === "F") u.n++;
+            else out.push({ t: m, n: 1 });
+        });
+        out.forEach(p => {
+            if (p.t === "F") { p.en = "Go straight for " + NUM_EN[p.n] + (p.n === 1 ? " block." : " blocks."); p.es = "Seguí derecho " + NUM_ES[p.n] + (p.n === 1 ? " cuadra." : " cuadras."); }
+            else if (p.t === "L") { p.en = "Turn left at the corner."; p.es = "Doblá a la izquierda en la esquina."; }
+            else { p.en = "Turn right at the corner."; p.es = "Doblá a la derecha en la esquina."; }
+        });
+        out.push({ t: "FIN", n: 1, en: "The " + nombre + " is on your " + lado + ".", es: nombreEs[nombre] + " está a tu " + (lado === "left" ? "izquierda" : "derecha") + "." });
+        return out;
     }
 
-    function crearTaxi() {
-        let taxi = document.getElementById("taxi");
-        if (!taxi) {
-            taxi = document.createElement("div");
-            taxi.id = "taxi";
-            taxi.innerText = "🚕";
+    // ---- Misiones ----
+    function nuevaMision() {
+        const nombres = Object.keys(iconos).filter(n => n !== ultimoDestino);
+        const calcular = () => nombres.map(n => ({ n, r: buscarRuta(n, pos.f, pos.c, dirDe(rot), true) || buscarRuta(n, pos.f, pos.c, dirDe(rot), false) })).filter(x => x.r && x.r.mov.length >= 2);
+        let candidatos = calcular(), volvioAlInicio = false;
+        if (!candidatos.length) {            // callejón sin salida (no se puede girar): el taxi vuelve a la cochera
+            pos = { f: 4, c: 1 }; rot = 0; colocarTaxi(); volvioAlInicio = true;
+            candidatos = calcular();
         }
-        taxi.style.transform = `rotate(${taxiRotacion}deg)`;
-        document.getElementById(`celda-${taxiPos.f}-${taxiPos.c}`).appendChild(taxi);
+        const e = candidatos[Math.floor(Math.random() * candidatos.length)];
+        destino = e.n; ultimoDestino = destino;
+        pasos = agrupar(e.r.mov, e.r.lado, destino);
+        iPaso = 0; hechos = 0; erroresMision = 0; enMarcha = true;
+        $("texto-mision").innerText = "Misión " + (mision + 1) + " de " + MISIONES + ': find the ' + destino;
+        $("resultado").innerHTML = ""; $("aviso").innerText = volvioAlInicio ? "🚕 El taxi volvió a la cochera para la nueva ruta." : "";
+        dibujarPasos();
     }
-
-    // 4. LÓGICA DE MOVIMIENTO
-    function girar(grados) {
-        taxiRotacion += grados;
-        document.getElementById("taxi").style.transform = `rotate(${taxiRotacion}deg)`;
-        document.getElementById("resultado").innerText = "";
+    function dibujarPasos() {
+        const ver = $("ver-es").checked, cont = $("pasos"); cont.innerHTML = "";
+        pasos.forEach((p, i) => {
+            const fila = document.createElement("div");
+            const estado = i < iPaso ? "hecho" : (i === iPaso && enMarcha ? "actual" : "");
+            fila.className = "paso-fila " + estado;
+            fila.innerHTML = '<span class="marca">' + (estado === "hecho" ? "✓" : (estado === "actual" ? "▶" : (i + 1))) + '</span><span class="txt">' + p.en + (ver ? '<span class="es">' + p.es + '</span>' : '') + '</span>';
+            const b = document.createElement("button"); b.className = "btn-voz"; b.innerText = "🔊"; b.setAttribute("aria-label", "Escuchar indicación");
+            b.onclick = () => hablar(p.en); fila.appendChild(b);
+            cont.appendChild(fila);
+        });
+        $("progreso").innerText = "Indicaciones (paso " + Math.min(iPaso + 1, pasos.length) + " de " + pasos.length + ")";
     }
+    function hablar(t) { const s = window.speechSynthesis; if (!s) return; s.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = "en-US"; u.rate = 0.9; s.speak(u); }
 
-    function avanzar() {
-        // Determinamos hacia dónde apunta el auto (normalizando los grados a 360)
-        let direccion = ((taxiRotacion % 360) + 360) % 360;
-        let nuevaF = taxiPos.f;
-        let nuevaC = taxiPos.c;
-
-        if (direccion === 0) nuevaF -= 1; // Apunta Norte (arriba)
-        else if (direccion === 90) nuevaC += 1; // Apunta Este (derecha)
-        else if (direccion === 180) nuevaF += 1; // Apunta Sur (abajo)
-        else if (direccion === 270) nuevaC -= 1; // Apunta Oeste (izquierda)
-
-        const resultadoDiv = document.getElementById("resultado");
-
-        // Validar que no se salga del mapa
-        if (nuevaF < 0 || nuevaF > 4 || nuevaC < 0 || nuevaC > 4) {
-            resultadoDiv.innerText = "¡Cuidado! Te saliste de la ciudad. 🚫";
-            resultadoDiv.style.color = "red";
+    const NOMBRE_BTN = { L: "Turn left", F: "Go straight ahead", R: "Turn right" };
+    function registrar(p, accion, explicacion) {
+        erroresMision++;
+        const clave = mision + "|" + iPaso + "|" + accion + "|" + hechos;
+        if (!errores.some(e => e.clave === clave)) {
+            errores.push({ clave, prompt: "Misión " + (mision + 1) + " (" + destino + ") · Indicación: «" + p.en + "»", elegido: NOMBRE_BTN[accion], correcta: NOMBRE_BTN[p.t], explicacion });
+        }
+        $("aviso").innerText = "Esa no era la indicación. Escuchá o leé el paso actual de nuevo.";
+    }
+    function pulsar(accion) {
+        if (!enMarcha) return;
+        const p = pasos[iPaso]; $("aviso").innerText = "";
+        if (accion === p.t) {
+            if (accion === "F") {
+                const v = DIRS[dirDe(rot)]; pos = { f: pos.f + v[0], c: pos.c + v[1] }; hechos++;
+                if (hechos === p.n) { iPaso++; hechos = 0; }
+            } else { rot += accion === "L" ? -90 : 90; iPaso++; }
+            colocarTaxi();
+            if (pasos[iPaso].t === "FIN") return llegada();
+            dibujarPasos();
             return;
         }
-
-        let tipoDestino = plano[nuevaF][nuevaC];
-
-        // Validar a dónde está intentando ir
-        if (tipoDestino === 'C' || tipoDestino === 'X') {
-            // Es una calle, avanzamos normal
-            taxiPos.f = nuevaF;
-            taxiPos.c = nuevaC;
-            crearTaxi();
-            resultadoDiv.innerText = "";
-        } else {
-            // Es un edificio. ¿Es el correcto?
-            if (tipoDestino === destinoActual) {
-                taxiPos.f = nuevaF;
-                taxiPos.c = nuevaC;
-                crearTaxi();
-                resultadoDiv.innerText = `¡Llegaste a ${destinoActual}! 🎉`;
-                resultadoDiv.style.color = "green";
-                
-                // Botón para reiniciar y buscar otro destino
-                setTimeout(() => {
-                    resultadoDiv.innerHTML = `<button class="btn-instruccion" style="background-color: #28a745; color: white;" onclick="location.reload()">Buscar nuevo destino</button>`;
-                }, 1000);
-            } else {
-                // Chocó con el edificio equivocado
-                resultadoDiv.innerText = `Ese es el ${tipoDestino}, ¡seguí buscando!`;
-                resultadoDiv.style.color = "red";
-            }
-        }
+        // error
+        let por;
+        const es = { left: "izquierda", right: "derecha" };
+        if (p.t === "F") por = "La indicación era «" + p.en + "» (" + p.es + ") y todavía te faltaban " + (p.n - hechos) + (p.n - hechos === 1 ? " cuadra" : " cuadras") + " antes de girar. «Block» es cuadra.";
+        else if (accion === "F") por = "La indicación era «" + p.en + "» (" + p.es + "): había que girar, no seguir derecho. «Straight» es derecho; «turn» es girar.";
+        else por = "La indicación decía «" + (p.t === "L" ? "left" : "right") + "» (" + es[p.t === "L" ? "left" : "right"] + ") y giraste hacia el otro lado: «" + (accion === "L" ? "left" : "right") + "» es " + es[accion === "L" ? "left" : "right"] + ".";
+        registrar(p, accion, por);
+    }
+    function llegada() {
+        enMarcha = false; iPaso = pasos.length - 1; dibujarPasos();
+        if (erroresMision > 0) misionesConError++;
+        const ult = mision === MISIONES - 1;
+        $("resultado").innerHTML = '<div style="color:#28a745;margin-bottom:10px;">¡Llegaste! 🎉 ' + pasos[pasos.length - 1].en + '</div>' +
+            '<button class="btn-accion" id="btn-sig">' + (ult ? "Ver resultado ➜" : "Siguiente destino ➜") + '</button>';
+        $("btn-sig").onclick = () => { if (ult) terminar(); else { mision++; nuevaMision(); } };
+    }
+    function terminar() {
+        if (window.GB) GB.progress.record("gps-navigator", { score: MISIONES - misionesConError, total: MISIONES, errors: errores.length });
+        $("controles").hidden = true; $("controles").style.display = "none"; $("pasos").innerHTML = ""; $("progreso").innerText = "¡Ruta completada!"; $("aviso").innerText = "";
+        $("texto-mision").innerText = "¡Llegaste a todos tus destinos!";
+        $("resultado").innerHTML = '<button class="btn-accion" onclick="location.reload()">🔄 Jugar de nuevo</button>';
+        if (window.GB) GB.review.render($("repaso"), errores);
     }
 
-    inicializarJuego();
+    dibujarMapa();
+    nuevaMision();
 </script>
-
 </body>
 </html>

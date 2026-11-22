@@ -13,7 +13,7 @@
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #e9ecef; display: flex; justify-content: center; padding: 20px; }
         
         /* Simulamos la pantalla de un celular */
-        .phone-container { background-color: white; width: 100%; max-width: 400px; height: 650px; border-radius: 20px; box-shadow: 0px 10px 20px rgba(0,0,0,0.2); display: flex; flex-direction: column; overflow: hidden; border: 8px solid #343a40; }
+        .phone-container { background-color: white; width: 100%; max-width: 400px; height: calc(100dvh - 110px); max-height: 680px; min-height: 460px; border-radius: 20px; box-shadow: 0px 10px 20px rgba(0,0,0,0.2); display: flex; flex-direction: column; overflow: hidden; border: 8px solid #343a40; }
         
         .chat-header { background-color: #7b2cbf; color: white; padding: 15px; text-align: center; font-weight: bold; font-size: 18px; }
         
@@ -36,130 +36,198 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        .burbuja.sistema { background-color: #fff3cd; color: #664d03; align-self: center; text-align: center; font-size: 13px; max-width: 92%; }
+        .btn-opcion:disabled { cursor: default; }
+        .btn-opcion.mal { background-color: #f8d7da; border-color: #dc3545; color: #721c24; }
+        .btn-opcion.accion { text-align: center; background-color: #7b2cbf; color: #fff; border-color: #7b2cbf; font-weight: 600; }
+        #resumen-final { align-self: stretch; }
     </style>
 </head>
 <body>
-
 <div class="phone-container">
-    <div class="chat-header">
-        Sunny Side Cupcakes 🧁
-    </div>
-    
-    <!-- Acá se van a ir dibujando los mensajes -->
+    <div class="chat-header">Sunny Side Cupcakes 🧁</div>
     <div class="chat-box" id="chat-box"></div>
-    
-    <!-- Acá van a aparecer las opciones para contestar -->
     <div class="opciones-container" id="opciones-container"></div>
 </div>
-
 <script>
-    // 1. EL GUIÓN DEL CHAT (Basado en la clase 20/8 y 2 Broke Girls)
-    const conversacion = [
-        {
-            mensajeNpc: "Welcome to Sunny Side Cupcakes. What can I get you?",
-            opciones: [
-                "I'm traveling for business.",
-                "Can I have a blueberry muffin, please?",
-                "Is the elevator working?"
-            ],
-            correcta: 1 // La opción B es la correcta
-        },
-        {
-            mensajeNpc: "Sure! To go or for here?",
-            opciones: [
-                "I'd like a cup of black tea.",
-                "To go, please.",
-                "Where is the nearest bus stop?"
-            ],
-            correcta: 1
-        },
-        {
-            mensajeNpc: "Alright, that will be $4. Cash or card?",
-            opciones: [
-                "I'll pay with card. Where do I tap it?",
-                "Is service included in the bill?",
-                "How much is it?"
-            ],
-            correcta: 0
-        }
+    // Cada escenario tiene 4 turnos. Cada turno: [lo que dice el vendedor, opción correcta, opción incorrecta, opción incorrecta]
+    // y cada opción es [frase en inglés, explicación]. El orden de las opciones se mezcla en cada partida.
+    const ESCENARIOS = [
+        { titulo: "Pedir para llevar", situacion: "Entrás a una pastelería y querés comprar un muffin para llevar.", turnos: [
+            ["Welcome to Sunny Side Cupcakes. What can I get you?",
+                ["Can I have a blueberry muffin, please?", "«Can I have... please?» es la forma natural y educada de pedir algo."],
+                ["I'm traveling for business.", "Cuenta por qué viajás, pero no responde qué querés pedir."],
+                ["Is the elevator working?", "Pregunta por un ascensor, algo que no tiene sentido en una pastelería."]],
+            ["Sure! To go or for here?",
+                ["To go, please.", "«To go» es para llevar; «for here» es para comer en el lugar."],
+                ["I'd like a cup of black tea.", "Pide otra cosa, pero te preguntaron si es para llevar o para comer ahí."],
+                ["Where is the nearest bus stop?", "Pregunta por una parada de colectivo y no responde la pregunta."]],
+            ["Alright, that will be $4. Cash or card?",
+                ["I'll pay with card. Where do I tap it?", "«I'll pay with card» elige el medio de pago, y «tap» es apoyar la tarjeta en el lector."],
+                ["Is service included in the bill?", "Pregunta por el servicio o la propina, pero no elige cómo pagar."],
+                ["How much is it?", "Ya te dijeron el precio: son $4."]],
+            ["Here you go. Have a nice day!",
+                ["Thank you, you too!", "«You too» significa «igualmente» y responde al saludo."],
+                ["Can I have the menu?", "Ya recibiste tu pedido; no hace falta el menú."],
+                ["I'm sorry, I don't understand.", "Entendiste perfecto, y esta frase se usa cuando no entendés."]] ] },
+        { titulo: "Elegir y pedir con detalles", situacion: "Querés un cupcake y un café, y te preguntan cómo lo querés.", turnos: [
+            ["Hi there! Do you need a minute to decide?",
+                ["Yes, just a minute, please.", "«Just a minute» significa «un minuto, por favor» y responde que todavía no decidiste."],
+                ["Yes, I'm 25 years old.", "Dice tu edad; no responde a la pregunta."],
+                ["I have a reservation.", "En una pastelería no se hace reserva y no responde si necesitás tiempo."]],
+            ["Sure. What can I get for you?",
+                ["I'd like a chocolate cupcake and a coffee, please.", "«I'd like...» (quisiera) es una manera cortés de pedir."],
+                ["I want chocolate cupcake and coffee.", "Se entiende, pero suena brusco y faltan los artículos («a chocolate cupcake»)."],
+                ["I'm liking a chocolate cupcake.", "«Like» no se usa en -ing para gustos; se dice «I like» o «I'd like»."]],
+            ["Would you like it with milk or sugar?",
+                ["Milk, please, no sugar.", "Elige una de las dos opciones, que es lo que se pregunta."],
+                ["Yes, I would like.", "La pregunta ofrece dos opciones (milk or sugar): no se responde con yes/no."],
+                ["I would like it for tomorrow.", "Habla de mañana, pero preguntaron por la leche o el azúcar."]],
+            ["Anything else?",
+                ["No, that's all, thanks.", "«That's all» significa «eso es todo» y cierra el pedido."],
+                ["No, I'm all.", "«I'm all» no existe con ese sentido; se dice «That's all»."],
+                ["Yes, the bill is correct.", "Todavía no pagaste, así que no corresponde hablar de la cuenta."]] ] },
+        { titulo: "Alergias y pedidos especiales", situacion: "Tenés alergia a las nueces y necesitás algo sin ellas.", turnos: [
+            ["Hi! What would you like today?",
+                ["I'm allergic to nuts. Is there anything without them?", "«I'm allergic to + algo» explica la alergia, y después preguntás por una opción segura."],
+                ["I'm allergy to nuts. Is there anything without them?", "«Allergy» es el sustantivo; después de «I'm» va el adjetivo «allergic»."],
+                ["I'm nuts. Is there anything without them?", "«I'm nuts» significa «estoy loco/a», no que seas alérgico/a."]],
+            ["Our lemon cupcake is nut-free. Would you like to try it?",
+                ["Yes, that sounds great. I'll take it.", "«That sounds great» (suena bien) y «I'll take it» (me lo llevo) aceptan la oferta."],
+                ["Yes, it sounds like great.", "Con un adjetivo se dice «it sounds great», sin «like»."],
+                ["Yes, I want to try you.", "«Try» necesita el objeto correcto: «try it» (probarlo), no «try you»."]],
+            ["Anything to drink?",
+                ["Just a glass of water, please.", "«A glass of water» es la estructura correcta, y «just» significa «solo»."],
+                ["A glass water, please.", "Falta «of»: se dice «a glass of water»."],
+                ["Water glass for me.", "El orden no es natural; la estructura es «a glass of + bebida»."]],
+            ["That's $5.50. Cash or card?",
+                ["Card, please.", "Elige una de las opciones y pide con educación."],
+                ["I pay the card.", "Se dice «I'll pay by card» o «with card»; «pay the card» no se usa."],
+                ["How are you?", "Es un saludo y no responde la pregunta sobre cómo pagar."]] ] },
+        { titulo: "Trabajar un rato en el café", situacion: "Te sentás a trabajar con la computadora y necesitás Wi-Fi y el baño.", turnos: [
+            ["Hi, welcome! Take a seat anywhere you like.",
+                ["Thank you! Is there Wi-Fi here?", "«Is there...?» pregunta si algo existe; Wi-Fi es singular."],
+                ["Thank you! Are there Wi-Fi here?", "«Wi-Fi» no se cuenta en plural: se dice «Is there Wi-Fi?»."],
+                ["Thank you! Does Wi-Fi exist?", "Suena extraño; lo natural es «Is there Wi-Fi?»."]],
+            ["Yes, the password is on the receipt.",
+                ["Great, thanks. Where is the restroom?", "«Where is...?» pregunta por la ubicación, y «restroom» es el baño."],
+                ["Great, thanks. Where are you the restroom?", "La pregunta correcta es «Where is the restroom?», no «Where are you...?»."],
+                ["Great, thanks. What is the restroom?", "«What» pregunta qué es algo; para ubicación se usa «Where»."]],
+            ["It's down the hall, on the left.",
+                ["Thank you very much!", "Agradecés la indicación, que es lo que corresponde."],
+                ["You're welcome!", "«You're welcome» lo dice quien ayuda; vos tenés que agradecer."],
+                ["Of course, I'm fine.", "No responde: te dieron una indicación y corresponde agradecer."]],
+            ["Can I get you anything else?",
+                ["Yes, could I have a cappuccino, please?", "«Could I have...?» es un pedido cortés."],
+                ["Yes, I can get you a cappuccino.", "Invierte los roles: el que sirve es el vendedor, no vos."],
+                ["Yes, I have a cappuccino.", "Dice que tenés un cappuccino; no que lo estás pidiendo."]] ] },
+        { titulo: "Pedir la cuenta", situacion: "Terminaste de comer y querés pagar y dejar el vuelto de propina.", turnos: [
+            ["How was everything?",
+                ["Everything was delicious, thank you!", "«Was delicious» usa el pasado de to be y un adjetivo para valorar la comida."],
+                ["Everything is deliciously, thank you!", "Después de «be» va un adjetivo (delicious), no un adverbio, y la comida ya terminó (was)."],
+                ["I am eating everything.", "No responde cómo estuvo; solo dice lo que estás haciendo."]],
+            ["Great! Would you like anything else?",
+                ["No, thanks. Could we have the bill, please?", "«Could we have the bill?» es la forma educada de pedir la cuenta."],
+                ["No, thanks. I want pay now.", "Falta «to» (I want to pay) y «Could we have the bill?» suena más cortés."],
+                ["No, thanks. Give me the money.", "Suena muy brusco y confunde quién tiene que pagar."]],
+            ["Sure. That's $12 in total.",
+                ["Here you go. Keep the change.", "«Keep the change» significa «quedate con el vuelto»."],
+                ["Here you go. Keep the changing.", "«Change» es el vuelto; «changing» no se usa así."],
+                ["Here you go. Bring me the change.", "Pide el vuelto de vuelta, pero querés dejarlo de propina."]],
+            ["Thank you so much! Have a great day.",
+                ["You too! See you next time.", "«You too» es igualmente, y «next time» es la próxima vez, sin «the»."],
+                ["You too! See you the next time.", "Se dice «next time», sin «the»."],
+                ["Me too! I have a great day.", "«You too» es la respuesta al deseo; «Me too» no encaja acá."]] ] },
+        { titulo: "Pedir una recomendación", situacion: "Es tu primera vez en el lugar y no sabés qué elegir.", turnos: [
+            ["Hi! First time here?",
+                ["Yes! What do you recommend?", "Después de «do» el verbo va en forma base: «What do you recommend?»."],
+                ["Yes! What do you recommended?", "Después de «do» el verbo va en base (recommend), no en pasado."],
+                ["Yes! What recommend you?", "Falta el auxiliar y el orden está mal: «What do you recommend?»."]],
+            ["Our red velvet cupcake is the most popular.",
+                ["Sounds good. How much is it?", "«How much» pregunta el precio."],
+                ["Sounds good. How many is it?", "«How many» es para cosas que se cuentan; para el precio se usa «How much»."],
+                ["Sounds good. What is the price of it cost?", "Mezcla dos estructuras; lo simple es «How much is it?»."]],
+            ["It's $3.50 each.",
+                ["I'll take two cupcakes, please.", "«I'll take...» se usa para decidir en el momento, y con dos o más va el plural."],
+                ["I'll take two cupcake, please.", "Con dos o más, el sustantivo va en plural: «cupcakes»."],
+                ["I take two cupcakes, please.", "Para decidir en el momento se usa «I'll take», no «I take»."]],
+            ["Would you like a bag?",
+                ["No, thanks. I don't need a bag.", "Para negar con «need» se usa «don't»: «I don't need»."],
+                ["No, thanks. I no need a bag.", "La negación en presente lleva «don't»: «I don't need»."],
+                ["Yes, I'm a bag.", "Dice que vos sos una bolsa; para aceptar se dice «Yes, please»."]] ] }
     ];
 
-    let pasoActual = 0;
     const chatBox = document.getElementById("chat-box");
     const opcionesContainer = document.getElementById("opciones-container");
+    let indiceEscenario = -1, escenario = null, paso = 0, errores = [], pasosConError = new Set();
 
-    // 2. FUNCIÓN PARA AGREGAR UN MENSAJE AL CHAT
+    function mezclar(a) { const r = [...a]; for (let i = r.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [r[i], r[j]] = [r[j], r[i]]; } return r; }
+
     function agregarMensaje(texto, tipo) {
         const div = document.createElement("div");
-        div.className = `burbuja ${tipo}`; // Puede ser 'npc', 'user' o 'error'
+        div.className = "burbuja " + tipo;
         div.innerText = texto;
         chatBox.appendChild(div);
-        
-        // Hace que el chat baje automáticamente si hay muchos mensajes
-        chatBox.scrollTop = chatBox.scrollHeight; 
+        chatBox.scrollTop = chatBox.scrollHeight;
+        return div;
     }
 
-    // 3. FUNCIÓN PARA MOSTRAR LAS OPCIONES DEL USUARIO
+    function nuevoDialogo() {
+        let i;
+        do { i = Math.floor(Math.random() * ESCENARIOS.length); } while (i === indiceEscenario && ESCENARIOS.length > 1);
+        indiceEscenario = i; escenario = ESCENARIOS[i];
+        paso = 0; errores = []; pasosConError = new Set();
+        chatBox.innerHTML = "";
+        agregarMensaje("Situación: " + escenario.situacion, "sistema");
+        setTimeout(cargarPaso, 500);
+    }
+
     function cargarPaso() {
-        opcionesContainer.innerHTML = ""; // Limpiamos los botones anteriores
+        opcionesContainer.innerHTML = "";
+        if (paso >= escenario.turnos.length) return terminar();
+        const t = escenario.turnos[paso];
+        agregarMensaje(t[0], "npc");
+        mezclar([{ t: t[1][0], x: t[1][1], ok: true }, { t: t[2][0], x: t[2][1], ok: false }, { t: t[3][0], x: t[3][1], ok: false }]).forEach(op => {
+            const btn = document.createElement("button");
+            btn.className = "btn-opcion"; btn.innerText = op.t;
+            btn.onclick = () => elegir(op, btn, t);
+            opcionesContainer.appendChild(btn);
+        });
+    }
 
-        if (pasoActual < conversacion.length) {
-            const paso = conversacion[pasoActual];
-            
-            // 1ro: Max (NPC) envía su mensaje
-            agregarMensaje(paso.mensajeNpc, "npc");
-
-            // 2do: Mostramos los botones para que el alumno responda
-            paso.opciones.forEach((opcionTexto, index) => {
-                const btn = document.createElement("button");
-                btn.className = "btn-opcion";
-                btn.innerText = opcionTexto;
-                btn.onclick = () => verificarRespuesta(index, opcionTexto);
-                opcionesContainer.appendChild(btn);
-            });
-        } else {
-            // Si ya no hay más pasos, terminó el juego
-            agregarMensaje("¡Misión completada! Tienes tu pedido listo. ☕", "error"); // Usamos el estilo rojo para destacar el fin
-            opcionesContainer.innerHTML = "<button class='btn-opcion' style='text-align: center; background-color: #7b2cbf; color: white;' onclick='location.reload()'>Jugar de nuevo</button>";
+    function elegir(op, btn, turno) {
+        if (op.ok) {
+            opcionesContainer.innerHTML = "";
+            agregarMensaje(op.t, "user");
+            paso++;
+            setTimeout(cargarPaso, 900);
+            return;
+        }
+        btn.classList.add("mal"); btn.disabled = true;
+        const aviso = agregarMensaje("Esa frase no encaja acá. ¡Intentá de nuevo!", "error");
+        setTimeout(() => aviso.remove(), 1800);
+        pasosConError.add(paso);
+        if (!errores.some(e => e.clave === paso + "|" + op.t)) {
+            errores.push({ clave: paso + "|" + op.t, prompt: "El vendedor dijo: «" + turno[0] + "»", elegido: op.t, correcta: turno[1][0], explicacion: op[ "x" ] });
         }
     }
 
-    // 4. FUNCIÓN PARA VERIFICAR LA RESPUESTA
-    function verificarRespuesta(indexElegido, textoElegido) {
-        const paso = conversacion[pasoActual];
-
-        if (indexElegido === paso.correcta) {
-            // El usuario acertó: mostramos su mensaje en verde
-            opcionesContainer.innerHTML = ""; // Borramos los botones
-            agregarMensaje(textoElegido, "user");
-
-            pasoActual++;
-            
-            // Esperamos 1 segundo antes de que Max responda (simula que está escribiendo)
-            setTimeout(() => {
-                cargarPaso();
-            }, 1000);
-
-        } else {
-            // Se equivocó: mostramos una alerta roja chiquita que desaparece sola
-            const errorDiv = document.createElement("div");
-            errorDiv.className = "burbuja error";
-            errorDiv.innerText = "Esa frase no tiene sentido acá. ¡Intentá de nuevo!";
-            chatBox.appendChild(errorDiv);
-            chatBox.scrollTop = chatBox.scrollHeight;
-
-            setTimeout(() => {
-                errorDiv.remove(); // Borra el error después de 2 segundos
-            }, 2000);
-        }
+    function terminar() {
+        if (window.GB) GB.progress.record("cafe-dialogue", { score: escenario.turnos.length - pasosConError.size, total: escenario.turnos.length, errors: errores.length });
+        agregarMensaje("¡Misión completada! Tenés tu pedido listo. ☕", "sistema");
+        const cont = document.createElement("div");
+        cont.id = "resumen-final";
+        chatBox.appendChild(cont);
+        if (window.GB) GB.review.render(cont, errores);
+        chatBox.scrollTop = chatBox.scrollHeight;
+        opcionesContainer.innerHTML = "";
+        const b = document.createElement("button");
+        b.className = "btn-opcion accion"; b.innerText = "Jugar otro diálogo ➜";
+        b.onclick = nuevoDialogo;
+        opcionesContainer.appendChild(b);
     }
 
-    // Iniciamos el chat
-    setTimeout(() => {
-        cargarPaso();
-    }, 500); // Pequeña pausa inicial para que parezca más real
-
+    nuevoDialogo();
 </script>
-
 </body>
 </html>

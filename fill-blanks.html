@@ -30,93 +30,114 @@
         .btn-comprobar { background-color: #7b2cbf; color: white; border: none; padding: 12px 25px; font-size: 18px; border-radius: 5px; cursor: pointer; margin-top: 20px; width: 100%; }
         .btn-comprobar:hover { background-color: #5a189a; }
         #resultado { margin-top: 20px; font-weight: bold; font-size: 18px; text-align: center; }
+        .btn-sec { background-color: #6c757d; }
+        .btn-sec:hover { background-color: #565e64; }
+        #progreso { text-align: center; color: #666; font-size: 14px; margin: 0 0 8px; }
+        @media (max-width: 480px) { .game-container { padding: 18px 14px; } .texto-ejercicio { font-size: 17px; line-height: 2.2; } input[type="text"] { width: 108px; } }
     </style>
 </head>
 <body>
-
 <div class="game-container">
-    <h2>Misión: The Daily Routine ☕</h2>
-    <p style="text-align: center;">Completá el texto conjugando los verbos en Present Simple.</p>
-
-    <!-- Ahora esta caja está vacía en el HTML, la llenará JavaScript de forma aleatoria -->
+    <h2 id="titulo">Misión: The Daily Routine ☕</h2>
+    <p style="text-align: center;">Completá el texto conjugando los verbos en Present Simple. <small>(&laquo;not&raquo; + verbo = forma negativa)</small></p>
+    <div id="progreso"></div>
     <div id="banco-palabras" class="banco-palabras"></div>
-
-    <div class="texto-ejercicio">
-        David is a software developer. Every day, he <input type="text" id="blank0" autocomplete="off"> at 7:00 AM. 
-        He <input type="text" id="blank1" autocomplete="off"> a cup of green tea and toast for breakfast. 
-        At 8:00 AM, he <input type="text" id="blank2" autocomplete="off"> the bus to his office. 
-        He <input type="text" id="blank3" autocomplete="off"> from 9:00 AM to 5:00 PM. 
-        After he <input type="text" id="blank4" autocomplete="off"> work, he often <input type="text" id="blank5" autocomplete="off"> his friends at a café. 
-        In the evening, he <input type="text" id="blank6" autocomplete="off"> television; instead, he prefers to relax at home and <input type="text" id="blank7" autocomplete="off"> a book before going to sleep.
-    </div>
-
-    <button class="btn-comprobar" onclick="comprobarRespuestas()">Comprobar Respuestas</button>
+    <div class="texto-ejercicio" id="texto"></div>
+    <button class="btn-comprobar" id="btn-comprobar" onclick="comprobarRespuestas()">Comprobar Respuestas</button>
     <div id="resultado"></div>
+    <div id="acciones"></div>
+    <div id="repaso"></div>
 </div>
-
 <script>
-    // 1. LOS VERBOS EN INFINITIVO (Para mostrar mezclados al alumno)
-    const opcionesVerbos = [
-        "wake up", "have", "catch", "work", "finish", "meet", "not watch", "read"
+    // Cada texto: huecos [n] en el orden en que aparecen. Cada hueco: base (lo que se muestra), ok (respuestas aceptadas) y por qué.
+    const TEXTOS = [
+        { titulo: "Misión: The Daily Routine ☕",
+          texto: "David is a software developer. Every day, he [0] at 7:00 AM. He [1] a cup of green tea and toast for breakfast. At 8:00 AM, he [2] the bus to his office. He [3] from 9:00 AM to 5:00 PM. After he [4] work, he often [5] his friends at a café. In the evening, he [6] television; instead, he prefers to relax at home and [7] a book before going to sleep.",
+          huecos: [
+            { base: "wake up", ok: ["wakes up"], por: "Con he/she/it el verbo lleva -s: wake up → wakes up." },
+            { base: "have", ok: ["has"], por: "«Have» es irregular en 3ª persona: has (no «haves»)." },
+            { base: "catch", ok: ["catches"], por: "Los verbos terminados en -ch llevan -es: catch → catches." },
+            { base: "work", ok: ["works"], por: "Con he/she/it el verbo lleva -s: work → works." },
+            { base: "finish", ok: ["finishes"], por: "Los verbos terminados en -sh llevan -es: finish → finishes." },
+            { base: "meet", ok: ["meets"], por: "Con he/she/it el verbo lleva -s: meet → meets." },
+            { base: "not watch", ok: ["doesn't watch", "does not watch"], por: "En negativo con he/she/it se usa doesn't + verbo base (sin -s): doesn't watch." },
+            { base: "read", ok: ["reads"], por: "Con he/she/it el verbo lleva -s: read → reads (se escribe distinto, suena /ríidz/)." } ] },
+        { titulo: "Misión: A Nurse's Day 🏥",
+          texto: "Sofia is a nurse. She [0] at 5:30 AM every day. She [1] her teeth and [2] a strong coffee. She [3] to the hospital by bike. At lunch, she [4] English on her phone. She [5] fast food; she [6] healthy meals at home. At 10:00 PM, she [7] asleep right away.",
+          huecos: [
+            { base: "wake up", ok: ["wakes up"], por: "Con she el verbo lleva -s: wake up → wakes up." },
+            { base: "brush", ok: ["brushes"], por: "Los verbos terminados en -sh llevan -es: brush → brushes." },
+            { base: "drink", ok: ["drinks"], por: "Con she el verbo lleva -s: drink → drinks." },
+            { base: "go", ok: ["goes"], por: "Los verbos terminados en -o llevan -es: go → goes." },
+            { base: "study", ok: ["studies"], por: "Si el verbo termina en consonante + y, la y pasa a -ies: study → studies." },
+            { base: "not eat", ok: ["doesn't eat", "does not eat"], por: "En negativo con she se usa doesn't + verbo base: doesn't eat." },
+            { base: "cook", ok: ["cooks"], por: "Con she el verbo lleva -s: cook → cooks." },
+            { base: "fall", ok: ["falls"], por: "Con she el verbo lleva -s: fall → falls (fall asleep = quedarse dormida)." } ] },
+        { titulo: "Misión: Brothers at Home 🏠",
+          texto: "My brother and I [0] in a big city. We [1] an apartment. My brother [2] in a bank, and I [3] at the university. We [4] noisy places, so we [5] home on weekends. He [6] video games and I [7] series.",
+          huecos: [
+            { base: "live", ok: ["live"], por: "Con «My brother and I» (we) el verbo va sin -s: live." },
+            { base: "share", ok: ["share"], por: "Con we el verbo va sin -s: share." },
+            { base: "work", ok: ["works"], por: "«My brother» equivale a he, así que lleva -s: works." },
+            { base: "study", ok: ["study"], por: "Con I el verbo va sin -s: study." },
+            { base: "not like", ok: ["don't like", "do not like"], por: "En negativo con we se usa don't + verbo base: don't like." },
+            { base: "stay", ok: ["stay"], por: "Con we el verbo va sin -s: stay." },
+            { base: "play", ok: ["plays"], por: "Con he el verbo lleva -s: play → plays." },
+            { base: "watch", ok: ["watch"], por: "Con I el verbo va sin -s: watch." } ] }
     ];
 
-    // 2. LAS RESPUESTAS CORRECTAS CONJUGADAS (En el orden exacto del texto)
-    const respuestasCorrectas = [
-        "wakes up", 
-        "has", 
-        "catches", 
-        "works", 
-        "finishes", 
-        "meets", 
-        "doesn't watch", 
-        "reads"
-    ];
+    let indice = -1, actual = null, huecosConError = new Set(), errores = [], resuelto = false;
+    const $ = (id) => document.getElementById(id);
+    const esc = (t) => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;");
+    function mezclar(a) { const r = [...a]; for (let i = r.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [r[i], r[j]] = [r[j], r[i]]; } return r; }
+    const normalizar = (t) => t.trim().toLowerCase().replace(/[’`]/g, "'").replace(/\s+/g, " ");
 
-    // Función para mezclar un array (la misma lógica que usamos en el juego de farmacia)
-    function mezclarArray(array) {
-        return array.sort(() => Math.random() - 0.5);
+    function nuevoTexto() {
+        let i;
+        do { i = Math.floor(Math.random() * TEXTOS.length); } while (i === indice && TEXTOS.length > 1);
+        indice = i; actual = TEXTOS[i];
+        huecosConError = new Set(); errores = []; resuelto = false;
+        $("titulo").innerText = actual.titulo;
+        $("banco-palabras").innerText = mezclar(actual.huecos.map(h => h.base)).join("  |  ");
+        $("texto").innerHTML = esc(actual.texto).replace(/\[(\d+)\]/g, (m, n) => '<input type="text" id="blank' + n + '" autocomplete="off" autocapitalize="none" spellcheck="false">');
+        $("resultado").innerText = ""; $("acciones").innerHTML = ""; $("repaso").innerHTML = "";
+        $("btn-comprobar").hidden = false;
+        $("progreso").innerText = "Completá los " + actual.huecos.length + " espacios";
     }
 
-    // Esta función se ejecuta apenas carga la página
-    function cargarBancoPalabras() {
-        // Hacemos una copia del array de verbos y la mezclamos
-        const opcionesMezcladas = mezclarArray([...opcionesVerbos]);
-        
-        // Agarramos las palabras mezcladas y las unimos poniéndoles " | " en el medio
-        document.getElementById("banco-palabras").innerText = opcionesMezcladas.join("  |  ");
-    }
-
-    // Lógica de corrección
     function comprobarRespuestas() {
+        if (resuelto) return;
         let aciertos = 0;
-
-        for (let i = 0; i < respuestasCorrectas.length; i++) {
-            const input = document.getElementById("blank" + i);
-            const respuestaAlumno = input.value.trim().toLowerCase(); 
-
+        actual.huecos.forEach((h, n) => {
+            const input = $("blank" + n);
+            const resp = normalizar(input.value);
             input.classList.remove("correcto", "incorrecto");
-
-            if (respuestaAlumno === respuestasCorrectas[i]) {
-                input.classList.add("correcto");
-                aciertos++;
-            } else {
+            if (h.ok.map(normalizar).includes(resp)) { input.classList.add("correcto"); aciertos++; }
+            else {
                 input.classList.add("incorrecto");
+                huecosConError.add(n);
+                const clave = n + "|" + resp;
+                if (resp !== "" && !errores.some(e => e.clave === clave)) {
+                    errores.push({ clave, prompt: "Hueco " + (n + 1) + ": verbo «" + h.base + "»", elegido: input.value.trim(), correcta: h.ok[0], explicacion: h.por });
+                } else if (resp === "" && !errores.some(e => e.clave === n + "|")) {
+                    errores.push({ clave: n + "|", prompt: "Hueco " + (n + 1) + ": verbo «" + h.base + "»", elegido: "(vacío)", correcta: h.ok[0], explicacion: h.por });
+                }
             }
-        }
-
-        const resultadoDiv = document.getElementById("resultado");
-        if (aciertos === respuestasCorrectas.length) {
-            resultadoDiv.innerText = "¡Excelente! Aplicaste perfecto la regla de la 3ra persona. 🏆";
-            resultadoDiv.style.color = "green";
+        });
+        const res = $("resultado");
+        if (aciertos === actual.huecos.length) {
+            resuelto = true;
+            res.innerText = "¡Excelente! Aplicaste bien las reglas. 🏆"; res.style.color = "green";
+            $("btn-comprobar").hidden = true;
+            if (window.GB) GB.progress.record("fill-blanks", { score: actual.huecos.length - huecosConError.size, total: actual.huecos.length, errors: errores.length });
+            $("acciones").innerHTML = '<button class="btn-comprobar btn-sec" onclick="nuevoTexto()">🔄 Jugar con otro texto</button>';
+            if (window.GB) GB.review.render($("repaso"), errores);
         } else {
-            resultadoDiv.innerText = "Tuviste " + aciertos + " aciertos. ¡Revisá los casilleros en rojo y volvé a intentar!";
-            resultadoDiv.style.color = "red";
+            res.innerText = "Tuviste " + aciertos + " de " + actual.huecos.length + ". ¡Revisá los casilleros en rojo y volvé a intentar!"; res.style.color = "red";
         }
     }
 
-    // ¡Acá llamamos a la función para que llene la caja de palabras al empezar!
-    cargarBancoPalabras();
+    nuevoTexto();
 </script>
-
 </body>
 </html>

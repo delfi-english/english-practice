@@ -445,6 +445,7 @@
             document.getElementById('game-play').classList.remove('active');
             document.getElementById('game-end').classList.add('active');
             
+            if (window.GB) GB.progress.record('spot-object', { score: score, total: playingData.length, errors: mistakes.length });
             const scoreEl = document.getElementById('final-score');
             scoreEl.innerText = score;
             
