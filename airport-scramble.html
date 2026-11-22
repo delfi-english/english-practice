@@ -9,6 +9,7 @@
     <meta name="theme-color" content="#4f46e5">
     <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
     <script src="assets/js/gb.js" data-title="Airport Scramble"></script>
+    <script src="assets/js/curso.js"></script>
     <style>
         body { font-family: Arial, sans-serif; background-color: #e9ecef; text-align: center; padding: 20px; }
         .game-container { background-color: white; padding: 30px; border-radius: 10px; max-width: 600px; margin: 0 auto; box-shadow: 0px 4px 10px rgba(0,0,0,0.1); }
@@ -52,6 +53,7 @@
         #resultado { margin-top: 20px; font-weight: bold; font-size: 18px; }
         .es-frase { font-size: 19px; font-weight: bold; color: #1d3557; margin: 6px 0 4px; }
         #progreso { color: #666; font-size: 14px; margin-bottom: 8px; }
+        #pista { margin-top: 10px; font-size: 15px; text-align: left; background: #fff8e1; border: 1px solid #ffe082; border-radius: 8px; padding: 10px 12px; color: #5d4037; }
         #explicacion { margin-top: 10px; font-size: 15px; text-align: left; background: #eef7f0; border-radius: 8px; padding: 10px 12px; }
         .fila-botones { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
         .btn-sec { background: #6c757d; color: #fff; border: 0; border-radius: 5px; padding: 12px 18px; font-size: 16px; cursor: pointer; margin-top: 15px; }
@@ -74,6 +76,7 @@
         <button class="btn-comprobar" id="btn-comprobar" onclick="comprobarRespuesta()">Comprobar Oración</button>
     </div>
     <div id="resultado"></div>
+    <div id="pista" hidden></div>
     <div id="explicacion" hidden></div>
     <div id="acciones"></div>
     <div id="repaso"></div>
@@ -98,7 +101,7 @@
     ];
     const POR_PARTIDA = 6;
 
-    let ronda = [], actual = 0, errores = [], conError = new Set(), resuelta = false;
+    let ronda = [], actual = 0, errores = [], conError = new Set(), resuelta = false, intentos = {};
     const $ = (id) => document.getElementById(id);
 
     function mezclar(a) {
@@ -111,7 +114,7 @@
 
     function iniciar() {
         ronda = mezclar(BANCO).slice(0, POR_PARTIDA);
-        actual = 0; errores = []; conError = new Set();
+        actual = 0; errores = []; conError = new Set(); intentos = {};
         $("repaso").innerHTML = ""; $("acciones").innerHTML = ""; $("botones-juego").hidden = false;
         $("respuesta-armada").hidden = false; $("banco-palabras").hidden = false; $("frase-es").hidden = false;
         mostrar();
@@ -122,7 +125,7 @@
         const p = ronda[actual];
         $("progreso").innerText = "Frase " + (actual + 1) + " de " + ronda.length;
         $("frase-es").innerText = "«" + p.es + "»";
-        $("resultado").innerText = ""; $("explicacion").hidden = true; $("acciones").innerHTML = "";
+        $("resultado").innerText = ""; $("explicacion").hidden = true; $("pista").hidden = true; $("acciones").innerHTML = "";
         $("btn-comprobar").disabled = false; $("btn-reiniciar").disabled = false;
         $("respuesta-armada").innerHTML = "";
         const banco = $("banco-palabras"); banco.innerHTML = "";
@@ -159,6 +162,14 @@
         return (parte + " " + nota).trim();
     }
 
+    // Pista progresiva: cada intento fallido de la misma frase da una ayuda más concreta
+    function mostrarPista(p, correcto, n) {
+        let t = "💡 Pista: " + p.nota;
+        if (n === 2) t += " La frase empieza con «" + correcto[0] + "».";
+        if (n >= 3) t += " Las primeras palabras son: «" + correcto.slice(0, Math.min(3, correcto.length - 1)).join(" ") + "…».";
+        $("pista").innerText = t; $("pista").hidden = false;
+    }
+
     function comprobarRespuesta() {
         if (resuelta) return;
         const p = ronda[actual], correcto = tokens(p.en);
@@ -168,6 +179,7 @@
         if (armado.join(" ") === correcto.join(" ")) {
             resuelta = true;
             res.innerText = "¡Perfecto! Recuperaste tu equipaje. 🧳"; res.style.color = "green";
+            $("pista").hidden = true;
             $("explicacion").innerText = "💡 " + p.nota; $("explicacion").hidden = false;
             $("btn-comprobar").disabled = true; $("btn-reiniciar").disabled = true;
             const esUltima = actual === ronda.length - 1;
@@ -177,6 +189,8 @@
             res.innerText = "Orden incorrecto. Tocá las palabras de arriba para devolverlas e intentá de nuevo.";
             res.style.color = "red";
             conError.add(actual);
+            intentos[actual] = (intentos[actual] || 0) + 1;
+            mostrarPista(p, correcto, intentos[actual]);
             const clave = actual + "|" + armado.join(" ");
             if (!errores.some(e => e.clave === clave)) {
                 errores.push({ clave, prompt: "Querías decir: «" + p.es + "»", elegido: mostrarFrase(armado),

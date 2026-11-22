@@ -37,6 +37,8 @@ body { overflow-wrap: break-word; }
     box-shadow: 0 2px 8px rgba(0,0,0,.2);
 }
 .gb-bar a { color: #fff; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; min-height: 36px; }
+.gb-bar .gb-bar-mod { margin-left: auto; background: rgba(255,255,255,.2); border-radius: 999px; padding: 6px 12px; font-size: 14px; min-height: 36px; }
+.gb-bar .gb-bar-mod:hover { background: rgba(255,255,255,.35); }
 .gb-bar-title { opacity: .85; font-weight: 500; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* ===== Insignias de progreso en el inicio ===== */

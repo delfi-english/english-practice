@@ -71,13 +71,19 @@
     var bar = document.createElement("nav");
     bar.className = "gb-bar";
     bar.setAttribute("aria-label", "Navegación Get By");
+    // Si la página es un juego de algún módulo (según assets/js/curso.js), la barra ofrece volver a ese módulo
+    var juego = location.pathname.split("/").pop().replace(/\.html.*$/, "");
+    var mod = window.CURSO && CURSO.modulos.filter(function (m) { return m.juegos.indexOf(juego) >= 0; })[0];
     bar.innerHTML = '<a class="gb-bar-home" href="index.html">🏠 <b>Get By</b></a>' +
-      (cfg.title ? '<span class="gb-bar-title">' + esc(cfg.title) + '</span>' : '');
+      (mod ? '<a class="gb-bar-mod" href="index.html#modulo-' + mod.id + '" aria-label="Volver al módulo ' + esc(mod.titulo) + '">↩ Volver al módulo</a>'
+           : (cfg.title ? '<span class="gb-bar-title">' + esc(cfg.title) + '</span>' : ''));
     // La barra es fija arriba: no participa del layout de cada juego (algunos usan flex en el body)
     document.body.insertBefore(bar, document.body.firstChild);
     var alto = bar.offsetHeight;
     var padActual = parseFloat(getComputedStyle(document.body).paddingTop) || 0;
-    document.body.style.paddingTop = (alto + Math.min(padActual, 12)) + "px";
+    var arriba = alto + Math.min(padActual, 12);
+    document.body.style.paddingTop = arriba + "px";
+    document.documentElement.style.setProperty("--gb-top", arriba + "px"); // espacio que ocupa la barra, para que los juegos ajusten su alto
   }
 
   /* ---------- Progreso visible en el inicio ---------- */

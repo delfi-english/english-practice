@@ -9,11 +9,12 @@
     <meta name="theme-color" content="#4f46e5">
     <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
     <script src="assets/js/gb.js" data-title="Sunny Side Cupcakes"></script>
+    <script src="assets/js/curso.js"></script>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #e9ecef; display: flex; justify-content: center; padding: 20px; }
         
         /* Simulamos la pantalla de un celular */
-        .phone-container { background-color: white; width: 100%; max-width: 400px; height: calc(100dvh - 110px); max-height: 680px; min-height: 460px; border-radius: 20px; box-shadow: 0px 10px 20px rgba(0,0,0,0.2); display: flex; flex-direction: column; overflow: hidden; border: 8px solid #343a40; }
+        .phone-container { background-color: white; width: 100%; max-width: 400px; height: calc(100dvh - 120px); max-height: 760px; min-height: 420px; border-radius: 20px; box-shadow: 0px 10px 20px rgba(0,0,0,0.2); display: flex; flex-direction: column; overflow: hidden; border: 8px solid #343a40; }
         
         .chat-header { background-color: #7b2cbf; color: white; padding: 15px; text-align: center; font-weight: bold; font-size: 18px; }
         
@@ -32,6 +33,14 @@
         .btn-opcion { background-color: #f8f9fa; border: 1px solid #ced4da; padding: 12px; border-radius: 8px; font-size: 14px; text-align: left; cursor: pointer; transition: 0.2s; color: #495057; font-weight: bold; }
         .btn-opcion:hover { background-color: #e2e6ea; border-color: #adb5bd; }
 
+        /* Celular: el teléfono usa todo el alto disponible (debajo de la barra Get By), sin marco ni márgenes extra */
+        @media (max-width: 520px) {
+            body { margin: 0; padding-left: 0 !important; padding-right: 0 !important; padding-bottom: 0 !important; }
+            .phone-container { max-width: none; height: calc(100dvh - var(--gb-top, 64px)); max-height: none; border-width: 0; border-radius: 0; box-shadow: none; }
+            .chat-header { padding: 10px; font-size: 16px; }
+            .opciones-container { padding: 10px; gap: 6px; }
+            .btn-opcion { padding: 10px; }
+        }
         @keyframes aparecer {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -158,6 +167,8 @@
     ];
 
     const chatBox = document.getElementById("chat-box");
+    // Cuando aparecen las opciones el chat se achica: se mantiene siempre al final para que el último mensaje quede a la vista
+    if (window.ResizeObserver) new ResizeObserver(() => { chatBox.scrollTop = chatBox.scrollHeight; }).observe(chatBox);
     const opcionesContainer = document.getElementById("opciones-container");
     let indiceEscenario = -1, escenario = null, paso = 0, errores = [], pasosConError = new Set();
 
