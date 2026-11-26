@@ -330,12 +330,13 @@
             }
             resultadoDiv.innerText = "¡Ganaste! Encontraste todas las palabras. 🎉";
             resultadoDiv.style.color = "green";
+            if (window.GB) GB.fin(resultadoDiv);
         } else if (aciertosEnEstaRonda > 0) {
             resultadoDiv.innerText = `¡Bien! Comprobaste ${aciertosEnEstaRonda} correctas. Faltan ${palabrasObjetivo.length}.`;
-            resultadoDiv.style.color = "green";
+            resultadoDiv.style.color = "green"; if (window.GB) GB.sound.ok();
         } else {
             resultadoDiv.innerText = "Ninguna de las marcas era correcta. ¡Seguí buscando!";
-            resultadoDiv.style.color = "red";
+            resultadoDiv.style.color = "red"; if (window.GB) GB.sound.error();
         }
     }
 

@@ -8,7 +8,7 @@
     <link rel="manifest" href="manifest.webmanifest">
     <meta name="theme-color" content="#4f46e5">
     <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-    <script src="assets/js/gb.js" data-bar="off"></script>
+    <script src="assets/js/gb.js" data-bar="off" data-sound="float"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
 
@@ -411,9 +411,9 @@
                 btnClicked.classList.add('correct');
                 document.getElementById('q-blank').innerText = selectedText;
                 document.getElementById('q-blank').style.color = "var(--success-dark)";
-                score++;
+                score++; if (window.GB) GB.sound.ok();
             } else {
-                btnClicked.classList.add('wrong');
+                btnClicked.classList.add('wrong'); if (window.GB) GB.sound.error();
                 document.getElementById('q-blank').innerText = selectedText;
                 document.getElementById('q-blank').style.color = "var(--danger-dark)";
                 
@@ -446,6 +446,7 @@
             document.getElementById('game-end').classList.add('active');
             
             if (window.GB) GB.progress.record('spot-object', { score: score, total: playingData.length, errors: mistakes.length });
+            if (window.GB) GB.fin(document.getElementById('game-end'));
             const scoreEl = document.getElementById('final-score');
             scoreEl.innerText = score;
             

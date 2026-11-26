@@ -65,8 +65,63 @@
     }
   };
 
+  /* ---------- SONIDO y aviso de fin (se genera con Web Audio: no hay archivos de audio) ---------- */
+  var KEY_MUTE = "getby:mute";
+  var ctxAudio = null;
+  function silenciado() { try { return localStorage.getItem(KEY_MUTE) === "1"; } catch (e) { return false; } }
+  function audio() {
+    try {
+      if (!ctxAudio) { var AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null; ctxAudio = new AC(); }
+      if (ctxAudio.state === "suspended") ctxAudio.resume();
+      return ctxAudio;
+    } catch (e) { return null; }
+  }
+  function nota(freq, inicio, dur, tipo, vol) {
+    var a = audio(); if (!a) return;
+    var o = a.createOscillator(), g = a.createGain(), t0 = a.currentTime + inicio;
+    o.type = tipo || "sine"; o.frequency.setValueAtTime(freq, t0);
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(vol || 0.18, t0 + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    o.connect(g); g.connect(a.destination); o.start(t0); o.stop(t0 + dur + 0.05);
+  }
+  function actualizarBotonesSonido() {
+    document.querySelectorAll(".gb-snd").forEach(function (b) {
+      b.textContent = silenciado() ? "🔇" : "🔊";
+      b.setAttribute("aria-label", silenciado() ? "Activar sonido" : "Silenciar sonido");
+    });
+  }
+  GB.sound = {
+    ok: function () { if (silenciado()) return; nota(660, 0, 0.12); nota(880, 0.1, 0.18); },
+    error: function () { if (silenciado()) return; nota(220, 0, 0.22, "sawtooth", 0.12); nota(165, 0.12, 0.25, "sawtooth", 0.12); },
+    done: function () { if (silenciado()) return; [523, 659, 784, 1047].forEach(function (f, i) { nota(f, i * 0.14, 0.3); }); nota(1047, 0.62, 0.6, "triangle", 0.2); },
+    muted: silenciado,
+    toggle: function () {
+      var m = !silenciado();
+      try { localStorage.setItem(KEY_MUTE, m ? "1" : "0"); } catch (e) {}
+      actualizarBotonesSonido();
+      if (!m) GB.sound.ok();
+      return m;
+    }
+  };
+  // Al terminar una actividad: sonido + vibración + se lleva a la vista el resultado
+  // (útil si el celular tiene la letra agrandada y el final queda fuera de la pantalla)
+  GB.fin = function (el) {
+    GB.sound.done();
+    if (!silenciado() && navigator.vibrate) { try { navigator.vibrate([120, 60, 120]); } catch (e) {} }
+    if (el && el.scrollIntoView) setTimeout(function () { el.scrollIntoView({ behavior: "smooth", block: "start" }); }, 150);
+  };
+  function crearBotonSonido(flotante) {
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "gb-snd" + (flotante ? " gb-snd-float" : "");
+    b.addEventListener("click", function () { GB.sound.toggle(); });
+    return b;
+  }
+
   /* ---------- 3) BARRA SUPERIOR ---------- */
   function crearBarra() {
+    // Páginas sin barra pueden pedir solo el botón de sonido flotante con data-sound="float"
+    if (cfg.bar === "off" && cfg.sound === "float" && !document.querySelector(".gb-snd")) { document.body.appendChild(crearBotonSonido(true)); actualizarBotonesSonido(); }
     if (cfg.bar === "off" || document.querySelector(".gb-bar")) return;
     var bar = document.createElement("nav");
     bar.className = "gb-bar";
@@ -75,12 +130,14 @@
     var juego = location.pathname.split("/").pop().replace(/\.html.*$/, "");
     var mod = window.CURSO && CURSO.modulos.filter(function (m) { return m.juegos.indexOf(juego) >= 0; })[0];
     bar.innerHTML = '<a class="gb-bar-home" href="index.html">🏠 <b>Get By</b></a>' +
-      (mod ? '<a class="gb-bar-mod" href="index.html#modulo-' + mod.id + '" aria-label="Volver al módulo ' + esc(mod.titulo) + '">↩ Volver al módulo</a>'
+      (mod ? '<a class="gb-bar-mod" href="index.html#modulo-' + mod.id + '" aria-label="Volver al módulo ' + esc(mod.titulo) + '">↩ <span class="gb-largo">Volver al </span><span class="gb-mod-w">módulo</span></a>'
            : (cfg.title ? '<span class="gb-bar-title">' + esc(cfg.title) + '</span>' : ''));
+    bar.appendChild(crearBotonSonido(false));
     // La barra es fija arriba: no participa del layout de cada juego (algunos usan flex en el body)
     document.body.insertBefore(bar, document.body.firstChild);
     var alto = bar.offsetHeight;
     var padActual = parseFloat(getComputedStyle(document.body).paddingTop) || 0;
+    actualizarBotonesSonido();
     var arriba = alto + Math.min(padActual, 12);
     document.body.style.paddingTop = arriba + "px";
     document.documentElement.style.setProperty("--gb-top", arriba + "px"); // espacio que ocupa la barra, para que los juegos ajusten su alto

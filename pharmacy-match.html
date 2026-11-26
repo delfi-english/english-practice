@@ -163,10 +163,10 @@
             a.boton.classList.add("correcto"); b.boton.classList.add("correcto");
             res.innerText = "¡Correcto! ✔️"; res.style.color = "green";
             completados++; actualizarProgreso();
-            if (completados === pares.length) terminar();
+            if (completados === pares.length) terminar(); else if (window.GB) GB.sound.ok();
         } else {
             a.boton.classList.add("incorrecto"); b.boton.classList.add("incorrecto");
-            res.innerText = "Ups... esos no coinciden."; res.style.color = "red";
+            res.innerText = "Ups... esos no coinciden."; res.style.color = "red"; if (window.GB) GB.sound.error();
             const clave = a.par.id + "-" + b.par.id;
             paresConError.add(a.par.id);
             if (!errores.some(e => e.clave === clave)) {
@@ -183,6 +183,7 @@
         $("resultado").innerText = "¡Misión completada! Tu botiquín está listo. 🚑"; $("resultado").style.color = "green";
         $("acciones").innerHTML = '<button class="btn-accion" onclick="iniciar()">🔄 Jugar de nuevo (otras parejas)</button>';
         if (window.GB) GB.review.render($("repaso"), errores);
+        if (window.GB) GB.fin($("progreso"));
     }
 
     iniciar();

@@ -8,7 +8,8 @@
     <link rel="manifest" href="manifest.webmanifest">
     <meta name="theme-color" content="#4f46e5">
     <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-    <script src="assets/js/gb.js" data-bar="off"></script>
+    <script src="assets/js/gb.js" data-title="Comparison Clash"></script>
+    <script src="assets/js/curso.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
 
@@ -347,115 +348,13 @@
 </head>
 <body>
 
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <h2>Grammar Module</h2>
-        </div>
-        <button class="nav-btn active" onclick="showSection('theory-comp')">1. Comparatives & Superlatives</button>
-        <button class="nav-btn" onclick="showSection('theory-as')">2. Igualdad (As... As)</button>
-        <button class="nav-btn" onclick="showSection('game-section')">3. Game: Comparison Clash</button>
-        <button class="nav-btn" onclick="window.location.href='index.html#modulo-comparar'">↩ Volver al módulo</button>
-    </div>
-
     <div class="main-content">
         
-        <div id="theory-comp" class="section active">
-            <h1>Comparatives & Superlatives</h1>
-            <p>Usamos los comparativos para contrastar <strong>dos cosas</strong> (usando <em>THAN</em>). Usamos los superlativos para destacar <strong>uno en un grupo</strong> (usando <em>THE</em>).</p>
-            
-            <div class="theory-card">
-                <table>
-                    <tr>
-                        <th>Tipo de Adjetivo</th>
-                        <th>Comparativo (+ than)</th>
-                        <th>Superlativo (the +)</th>
-                    </tr>
-                    <tr>
-                        <td><strong>Cortos (1 sílaba)</strong><br><em>fast, old, tall</em></td>
-                        <td><span class="highlight">-er than</span><br>faster than</td>
-                        <td><span class="highlight">the -est</span><br>the fastest</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Terminados en -E</strong><br><em>nice, large</em></td>
-                        <td><span class="highlight">-r than</span><br>nicer than</td>
-                        <td><span class="highlight">the -st</span><br>the nicest</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Consonante-Vocal-Consonante</strong><br><em>big, hot</em></td>
-                        <td><span class="highlight">Doble consonante + -er</span><br>bigger than</td>
-                        <td><span class="highlight">Doble consonante + -est</span><br>the biggest</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Terminados en -Y (2 sílabas)</strong><br><em>easy, funny</em></td>
-                        <td><span class="highlight">-ier than</span><br>easier than</td>
-                        <td><span class="highlight">the -iest</span><br>the easiest</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Largos (2+ sílabas)</strong><br><em>expensive, modern</em></td>
-                        <td><span class="highlight">more ... than</span><br>more expensive than</td>
-                        <td><span class="highlight">the most ...</span><br>the most expensive</td>
-                    </tr>
-                </table>
-            </div>
-
-            <h2>Los 3 Irregulares Indispensables</h2>
-            <div class="theory-card">
-                <table>
-                    <tr>
-                        <th>Adjetivo</th>
-                        <th>Comparativo</th>
-                        <th>Superlativo</th>
-                    </tr>
-                    <tr>
-                        <td><strong>good</strong> (bueno)</td>
-                        <td>better than</td>
-                        <td>the best</td>
-                    </tr>
-                    <tr>
-                        <td><strong>bad</strong> (malo)</td>
-                        <td>worse than</td>
-                        <td>the worst</td>
-                    </tr>
-                    <tr>
-                        <td><strong>far</strong> (lejos)</td>
-                        <td>farther / further than</td>
-                        <td>the farthest / furthest</td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-
-        <div id="theory-as" class="section">
-            <h1>Igualdad y Desigualdad</h1>
-            <p>Cuando dos cosas son equivalentes, no usamos <em>-er</em> ni <em>more</em>. Usamos el adjetivo en su forma base.</p>
-            
-            <div class="theory-card">
-                <h3>Igualdad (=)</h3>
-                <p><strong>Fórmula:</strong> as + adjetivo base + as</p>
-                <p><em>Ejemplo:</em> "My brother is <span class="highlight">as tall as</span> me." (Es tan alto como yo).</p>
-                
-                <hr style="border:0; border-top:1px solid #e5e7eb; margin: 20px 0;">
-                
-                <h3>Desigualdad (≠)</h3>
-                <p><strong>Fórmula:</strong> not as + adjetivo base + as</p>
-                <p><em>Ejemplo:</em> "My town is <span class="highlight">not as noisy as</span> the capital." (No es tan ruidoso como la capital).</p>
-            </div>
-
-            <div class="error-box">
-                <h3 style="margin-top:0; color:var(--danger);">⚠️ Los 3 Errores Fatales a evitar</h3>
-                <ul style="color:var(--text-dark);">
-                    <li>❌ <em>He is as taller as me.</em> → ✅ <strong>He is as tall as me.</strong> (Nunca lleva -er entre los "as").</li>
-                    <li>❌ <em>My city is more quiet than...</em> → ✅ <strong>My city is quieter than...</strong> (Adjetivos cortos llevan -er).</li>
-                    <li>❌ <em>This hotel is not as better as...</em> → ✅ <strong>This hotel is not as good as...</strong> (Volvemos a la forma base).</li>
-                </ul>
-            </div>
-        </div>
-
-        <div id="game-section" class="section">
-            <div class="game-container" id="game-start">
+        <div id="game-section" class="section active">
+            <div class="game-container section active" id="game-start">
                 <h1>Comparison Clash ⚔️</h1>
-                <p>Misión: Selecciona la estructura correcta. Si te equivocas, lee la pista para corregirlo.</p>
-                <p style="font-size: 0.9rem; color: var(--text-light);">💡 <em>Tip: Deja presionado el adjetivo en amarillo para ver su traducción.</em></p>
+                <p>Misión: Seleccioná la estructura correcta. Si te equivocás, leé la pista para corregirlo. ¿Necesitás repasar? Mirá la <a href="teoria-nivel1.html#comparatives">teoría de comparativos</a>.</p>
+                <p style="font-size: 0.9rem; color: var(--text-light);">💡 <em>Tip: Dejá presionado el adjetivo violeta (el que tiene la línea punteada) para ver su traducción.</em></p>
                 <button class="btn-primary" onclick="startGame()">Empezar Misión</button>
             </div>
 
@@ -485,60 +384,53 @@
                 <p style="font-size: 1.2rem; margin: 20px 0;">Puntaje Perfecto: <span id="final-score" class="highlight">0</span> / 10</p>
                 <p style="color: var(--text-light); margin-bottom: 30px;">(Solo suman punto las respuestas correctas al primer intento).</p>
                 <button class="btn-primary" onclick="startGame()">Jugar de nuevo (Nuevas frases)</button>
+                <div id="repaso" style="text-align:left; margin-top:24px;"></div>
             </div>
         </div>
 
     </div>
 
     <script>
-        function showSection(sectionId) {
-            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-            
-            document.getElementById(sectionId).classList.add('active');
-            event.currentTarget.classList.add('active');
-        }
-
         const gameDataMaster = [
             { start: "My brother is ", base: "tall", trans: "alto", end: " me.", correct: "taller than", distractors: [{ text: "more tall than", hint: "❌ 'Tall' es un adjetivo corto de 1 sílaba. Se le agrega '-er', no 'more'." }, { text: "as taller as", hint: "❌ En la estructura 'as... as' el adjetivo se usa normal, sin '-er'." }] },
             { start: "February is ", base: "short", trans: "corto", end: " month of the year.", correct: "the shortest", distractors: [{ text: "the most short", hint: "❌ 'Short' es de 1 sílaba. En superlativos se le agrega '-est'." }, { text: "the shorter", hint: "❌ '-er' es solo para comparar dos cosas. Para destacar en un grupo es '-est'." }] },
             { start: "My bicycle is old, but it is ", base: "fast", trans: "rápida", end: " my friend's new bike.", correct: "as fast as", distractors: [{ text: "as faster as", hint: "❌ Nunca se usa '-er' en medio de 'as... as'." }, { text: "more fast than", hint: "❌ 'Fast' es un adjetivo corto, no usa 'more'." }] },
-            { start: "Today is ", base: "cold", trans: "frío", end: " yesterday.", correct: "colder than", distractors: [{ text: "more cold than", hint: "❌ 'Cold' tiene 1 sílaba. Lleva la terminación '-er'." }, { text: "the coldest", hint: "❌ Estás comparando solo dos días (hoy y ayer). Usa el comparativo." }] },
-            { start: "Living in a village is ", base: "safe", trans: "seguro", end: " living in a metropolis.", correct: "safer than", distractors: [{ text: "more safe than", hint: "❌ 'Safe' termina en -E. Solo le agregas la '-r'." }, { text: "the safest", hint: "❌ Se están comparando dos lugares. Necesitas '-er than'." }] },
-            { start: "Yesterday was ", base: "hot", trans: "caluroso", end: " day of the whole summer!", correct: "the hottest", distractors: [{ text: "the most hot", hint: "❌ 'Hot' es de 1 sílaba (Consonante-Vocal-Consonante). Dobla la 't' y agrega '-est'." }, { text: "hotter than", hint: "❌ Está destacando un día sobre 'todo el verano'. Es un superlativo." }] },
+            { start: "Today is ", base: "cold", trans: "frío", end: " yesterday.", correct: "colder than", distractors: [{ text: "more cold than", hint: "❌ 'Cold' tiene 1 sílaba. Lleva la terminación '-er'." }, { text: "the coldest", hint: "❌ Estás comparando solo dos días (hoy y ayer). Usá el comparativo." }] },
+            { start: "Living in a village is ", base: "safe", trans: "seguro", end: " living in a metropolis.", correct: "safer than", distractors: [{ text: "more safe than", hint: "❌ 'Safe' termina en -E. Solo le agregás la '-r'." }, { text: "the safest", hint: "❌ Se están comparando dos lugares. Necesitás '-er than'." }] },
+            { start: "Yesterday was ", base: "hot", trans: "caluroso", end: " day of the whole summer!", correct: "the hottest", distractors: [{ text: "the most hot", hint: "❌ 'Hot' es de 1 sílaba (Consonante-Vocal-Consonante). Doblá la 't' y agregá '-est'." }, { text: "hotter than", hint: "❌ Está destacando un día sobre 'todo el verano'. Es un superlativo." }] },
             { start: "Our new apartment is ", base: "large", trans: "grande/amplio", end: " the old one.", correct: "larger than", distractors: [{ text: "more large than", hint: "❌ 'Large' es corto (termina en E). Solo se le agrega la '-r'." }, { text: "the largest", hint: "❌ Compara dos cosas (nuevo vs viejo). Requiere comparativo." }] },
             { start: "Russia is ", base: "large", trans: "grande/extenso", end: " country in the world.", correct: "the largest", distractors: [{ text: "the most large", hint: "❌ Al ser un adjetivo corto, el superlativo se forma con 'the ...-st'." }, { text: "larger than", hint: "❌ Se compara con 'todo el mundo'. Requiere superlativo." }] },
-            { start: "My house is ", base: "old", trans: "vieja/antigua", end: " the library.", correct: "not as old as", distractors: [{ text: "not as older as", hint: "❌ Recuerda: entre 'as... as' el adjetivo vuelve a su forma base." }, { text: "not older as", hint: "❌ La estructura de igualdad siempre lleva dos 'as' (as + adj + as)." }] },
+            { start: "My house is ", base: "old", trans: "vieja/antigua", end: " the library.", correct: "not as old as", distractors: [{ text: "not as older as", hint: "❌ Recordá: entre 'as... as' el adjetivo vuelve a su forma base." }, { text: "not older as", hint: "❌ La estructura de igualdad siempre lleva dos 'as' (as + adj + as)." }] },
             { start: "Lucas is ", base: "funny", trans: "gracioso", end: " person in our group.", correct: "the funniest", distractors: [{ text: "the most funny", hint: "❌ Termina en -Y. Se cambia por '-iest'." }, { text: "the funnier", hint: "❌ '-er' es comparativo. Para destacar a 1 persona en un grupo es '-est'." }] },
             { start: "Our new apartment is ", base: "noisy", trans: "ruidoso", end: " the old one.", correct: "noisier than", distractors: [{ text: "more noisy than", hint: "❌ Si tiene 2 sílabas y termina en -Y, se cambia por '-ier'." }, { text: "noisy than", hint: "❌ Te faltó aplicar la regla del comparativo (-ier)." }] },
             { start: "This test was not ", base: "easy", trans: "fácil", end: " last week's exam.", correct: "as easy as", distractors: [{ text: "as easier as", hint: "❌ ¡Error fatal! Entre 'as... as' el adjetivo nunca lleva modificaciones." }, { text: "easy than", hint: "❌ 'Than' solo se usa si hay un adjetivo modificado con -er o more." }] },
             { start: "My town is ", base: "dirty", trans: "sucio", end: " the capital.", correct: "not as dirty as", distractors: [{ text: "not as dirtier as", hint: "❌ Entre 'as' y 'as', el adjetivo va 100% puro, en su forma base." }, { text: "more dirty than", hint: "❌ 'Dirty' termina en -Y. Su comparativo sería 'dirtier', pero la opción no está." }] },
-            { start: "This is ", base: "heavy", trans: "pesado", end: " suitcase I have ever carried.", correct: "the heaviest", distractors: [{ text: "the most heavy", hint: "❌ Termina en -Y. Cámbiala por 'i' latina y agrega '-est'." }, { text: "heavier than", hint: "❌ Es el superlativo absoluto de todos los bolsos que cargaste en tu vida." }] },
+            { start: "This is ", base: "heavy", trans: "pesado", end: " suitcase I have ever carried.", correct: "the heaviest", distractors: [{ text: "the most heavy", hint: "❌ Termina en -Y. Cambiala por 'i' latina y agregá '-est'." }, { text: "heavier than", hint: "❌ Es el superlativo absoluto de todos los bolsos que cargaste en tu vida." }] },
             { start: "An apartment downtown is ", base: "expensive", trans: "caro", end: " a house in the suburbs.", correct: "more expensive than", distractors: [{ text: "expensiver than", hint: "❌ Para adjetivos largos (3 sílabas), usamos 'more' adelante." }, { text: "as expensive than", hint: "❌ La pareja de 'as' es otro 'as'. La pareja de 'more' es 'than'." }] },
             { start: "Central Park is one of ", base: "famous", trans: "famoso", end: " parks in the world.", correct: "the most famous", distractors: [{ text: "the famousest", hint: "❌ 'Famous' es largo. No se le puede agregar '-est'." }, { text: "more famous", hint: "❌ Estás hablando de 'los del mundo'. Falta 'the most'." }] },
-            { start: "Living in a quiet village is ", base: "relaxing", trans: "relajante", end: " living in a huge metropolis.", correct: "more relaxing than", distractors: [{ text: "relaxinger than", hint: "❌ Los adjetivos que terminan en -ING siempre usan 'more'." }, { text: "the most relaxing", hint: "❌ Compara solo dos estilos de vida. Usa comparativo." }] },
-            { start: "My sister is ", base: "patient", trans: "paciente", end: " my brother.", correct: "more patient than", distractors: [{ text: "patienter than", hint: "❌ 'Patient' es largo. Usa 'more'." }, { text: "not as patient than", hint: "❌ Estructura cruzada. Es 'not as patient as'." }] },
+            { start: "Living in a quiet village is ", base: "relaxing", trans: "relajante", end: " living in a huge metropolis.", correct: "more relaxing than", distractors: [{ text: "relaxinger than", hint: "❌ Los adjetivos que terminan en -ING siempre usan 'more'." }, { text: "the most relaxing", hint: "❌ Compara solo dos estilos de vida. Usá comparativo." }] },
+            { start: "My sister is ", base: "patient", trans: "paciente", end: " my brother.", correct: "more patient than", distractors: [{ text: "patienter than", hint: "❌ 'Patient' es largo. Usá 'more'." }, { text: "not as patient than", hint: "❌ Estructura cruzada. Es 'not as patient as'." }] },
             { start: "This book is ", base: "interesting", trans: "interesante", end: " the movie.", correct: "as interesting as", distractors: [{ text: "as more interesting as", hint: "❌ ¡Regla de oro! En medio de 'as... as' NUNCA va 'more'." }, { text: "interesting than", hint: "❌ Te olvidaste el 'more' o los 'as...as'." }] },
             { start: "That hotel was ", base: "expensive", trans: "caro", end: " place in the entire city.", correct: "the most expensive", distractors: [{ text: "the expensivest", hint: "❌ Nunca agregues '-est' a una palabra tan larga." }, { text: "more expensive than", hint: "❌ Es el #1 de TODA la ciudad. Es un superlativo." }] },
             { start: "This pizza is ", base: "good", trans: "buena", end: " the one we had in Italy!", correct: "as good as", distractors: [{ text: "as better as", hint: "❌ ¡Error fatal! 'as... as' requiere el adjetivo en estado puro (good)." }, { text: "more good than", hint: "❌ 'Good' es irregular, su comparativo es 'better'." }] },
             { start: "That was ", base: "bad", trans: "malo", end: " coffee I ever drank in my life!", correct: "the worst", distractors: [{ text: "the baddest", hint: "❌ 'Bad' es totalmente irregular. Su superlativo es 'the worst'." }, { text: "the worse", hint: "❌ 'Worse' es comparativo. Para el superlativo se usa 'worst'." }] },
-            { start: "My sister thinks coffee is ", base: "good", trans: "bueno", end: " tea.", correct: "better than", distractors: [{ text: "more good than", hint: "❌ 'Good' es irregular. Cambia completamente a 'better'." }, { text: "the best", hint: "❌ Compara solo dos bebidas (café y té). Usa comparativo." }] },
-            { start: "The first movie was bad, but the sequel is ", base: "bad", trans: "malo", end: ".", correct: "worse", distractors: [{ text: "badder", hint: "❌ 'Bad' es irregular. No acepta terminaciones normales." }, { text: "the worst", hint: "❌ Estás comparando la secuela directamente con la primera. Usa comparativo." }] },
+            { start: "My sister thinks coffee is ", base: "good", trans: "bueno", end: " tea.", correct: "better than", distractors: [{ text: "more good than", hint: "❌ 'Good' es irregular. Cambiá completamente a 'better'." }, { text: "the best", hint: "❌ Compara solo dos bebidas (café y té). Usá comparativo." }] },
+            { start: "The first movie was bad, but the sequel is ", base: "bad", trans: "malo", end: ".", correct: "worse", distractors: [{ text: "badder", hint: "❌ 'Bad' es irregular. No acepta terminaciones normales." }, { text: "the worst", hint: "❌ Estás comparando la secuela directamente con la primera. Usá comparativo." }] },
             { start: "Mendoza is ", base: "far", trans: "lejos", end: " Bariloche from our city.", correct: "not as far as", distractors: [{ text: "not as farther as", hint: "❌ El adjetivo adentro de 'as... as' no lleva transformaciones." }, { text: "more far than", hint: "❌ 'Far' es irregular. Su comparativo es 'farther' o 'further'." }] },
-            { start: "This is ", base: "good", trans: "bueno", end: " chocolate cake I've ever tasted.", correct: "the best", distractors: [{ text: "the most good", hint: "❌ Irregular: good -> better -> the best." }, { text: "better than", hint: "❌ Es la número 1 de todas las que probaste. Usa superlativo." }] },
+            { start: "This is ", base: "good", trans: "bueno", end: " chocolate cake I've ever tasted.", correct: "the best", distractors: [{ text: "the most good", hint: "❌ Irregular: good -> better -> the best." }, { text: "better than", hint: "❌ Es la número 1 de todas las que probaste. Usá superlativo." }] },
             { start: "Learning Spanish is ", base: "easy", trans: "fácil", end: " learning Mandarin.", correct: "easier than", distractors: [{ text: "more easy than", hint: "❌ 'Easy' termina en -Y. Se cambia por '-ier', no se usa 'more'." }, { text: "as easier as", hint: "❌ En la estructura 'as... as' el adjetivo no lleva modificaciones." }] },
-            { start: "This book is ", base: "interesting", trans: "interesante", end: " the movie.", correct: "more interesting than", distractors: [{ text: "interestinger than", hint: "❌ Adjetivo largo (3+ sílabas). No lleva '-er', se usa 'more' adelante." }, { text: "the most interesting", hint: "❌ Compara solo dos cosas (libro vs película). Usa comparativo." }] },
-            { start: "The weather today is ", base: "bad", trans: "malo", end: " yesterday.", correct: "worse than", distractors: [{ text: "badder than", hint: "❌ 'Bad' es irregular. Cambia completamente a 'worse'." }, { text: "more bad than", hint: "❌ Al ser irregular, no usa reglas normales. Su forma es 'worse'." }] },
-            { start: "My new laptop is ", base: "light", trans: "liviano", end: " my old one.", correct: "lighter than", distractors: [{ text: "more light than", hint: "❌ 'Light' es un adjetivo corto de 1 sílaba. Solo lleva '-er'." }, { text: "the lightest", hint: "❌ Estás comparando solo dos laptops. Usa el comparativo." }] },
+            { start: "This book is ", base: "interesting", trans: "interesante", end: " the movie.", correct: "more interesting than", distractors: [{ text: "interestinger than", hint: "❌ Adjetivo largo (3+ sílabas). No lleva '-er', se usa 'more' adelante." }, { text: "the most interesting", hint: "❌ Compara solo dos cosas (libro vs película). Usá comparativo." }] },
+            { start: "The weather today is ", base: "bad", trans: "malo", end: " yesterday.", correct: "worse than", distractors: [{ text: "badder than", hint: "❌ 'Bad' es irregular. Cambiá completamente a 'worse'." }, { text: "more bad than", hint: "❌ Al ser irregular, no usa reglas normales. Su forma es 'worse'." }] },
+            { start: "My new laptop is ", base: "light", trans: "liviano", end: " my old one.", correct: "lighter than", distractors: [{ text: "more light than", hint: "❌ 'Light' es un adjetivo corto de 1 sílaba. Solo lleva '-er'." }, { text: "the lightest", hint: "❌ Estás comparando solo dos laptops. Usá el comparativo." }] },
             { start: "The test was ", base: "hard", trans: "difícil", end: " we expected.", correct: "harder than", distractors: [{ text: "more hard than", hint: "❌ 'Hard' es un adjetivo corto. Se le agrega '-er', no 'more'." }, { text: "as harder as", hint: "❌ Nunca se usa '-er' en medio de 'as... as'." }] },
             { start: "Her presentation was ", base: "good", trans: "buena", end: " his.", correct: "better than", distractors: [{ text: "more good than", hint: "❌ 'Good' es irregular. Su comparativo es 'better'." }, { text: "gooder than", hint: "❌ ¡Cuidado! 'Good' es un adjetivo irregular (good -> better -> the best)." }] },
-            { start: "This soup is ", base: "spicy", trans: "picante", end: " the curry we had last night.", correct: "spicier than", distractors: [{ text: "more spicy than", hint: "❌ 'Spicy' termina en -Y. Cambiá la Y por '-ier'." }, { text: "the spiciest", hint: "❌ Estás comparando la sopa con el curry (dos cosas). Usa comparativo." }] },
+            { start: "This soup is ", base: "spicy", trans: "picante", end: " the curry we had last night.", correct: "spicier than", distractors: [{ text: "more spicy than", hint: "❌ 'Spicy' termina en -Y. Cambiá la Y por '-ier'." }, { text: "the spiciest", hint: "❌ Estás comparando la sopa con el curry (dos cosas). Usá comparativo." }] },
             { start: "He arrived ", base: "early", trans: "temprano", end: " anyone else in the office.", correct: "earlier than", distractors: [{ text: "more early than", hint: "❌ 'Early' termina en -Y. Se reemplaza por '-ier'." }, { text: "as earlier as", hint: "❌ No se puede combinar la estructura 'as... as' con un adjetivo en '-er'." }] },
             { start: "Mount Everest is ", base: "high", trans: "alto", end: " mountain in the world.", correct: "the highest", distractors: [{ text: "the most high", hint: "❌ 'High' es de 1 sílaba. En superlativos se le agrega '-est'." }, { text: "higher than", hint: "❌ Destaca una montaña sobre todas 'en el mundo'. Es superlativo." }] },
-            { start: "She is ", base: "smart", trans: "inteligente", end: " student in her class.", correct: "the smartest", distractors: [{ text: "smarter than", hint: "❌ Destaca a una estudiante dentro de toda la clase. Usa superlativo." }, { text: "the most smart", hint: "❌ 'Smart' es un adjetivo corto. El superlativo se forma con 'the ...-est'." }] },
+            { start: "She is ", base: "smart", trans: "inteligente", end: " student in her class.", correct: "the smartest", distractors: [{ text: "smarter than", hint: "❌ Destaca a una estudiante dentro de toda la clase. Usá superlativo." }, { text: "the most smart", hint: "❌ 'Smart' es un adjetivo corto. El superlativo se forma con 'the ...-est'." }] },
             { start: "This is ", base: "beautiful", trans: "hermoso", end: " painting in the museum.", correct: "the most beautiful", distractors: [{ text: "the beautifullest", hint: "❌ 'Beautiful' es largo. No se le puede agregar '-est'." }, { text: "more beautiful than", hint: "❌ Es el número 1 de TODO el museo. Se requiere un superlativo." }] },
-            { start: "Antarctica is ", base: "cold", trans: "frío", end: " place on the planet.", correct: "the coldest", distractors: [{ text: "the most cold", hint: "❌ 'Cold' es corto (1 sílaba). Agrega '-est' al final." }, { text: "colder than", hint: "❌ No lo compara con otro, lo destaca en todo el planeta." }] },
-            { start: "Friday is ", base: "busy", trans: "ocupado/movido", end: " day of the week for our restaurant.", correct: "the busiest", distractors: [{ text: "the most busy", hint: "❌ 'Busy' termina en -Y. Cambiá la Y por '-iest'." }, { text: "busier than", hint: "❌ Compara un día contra toda la semana. Usa superlativo." }] },
+            { start: "Antarctica is ", base: "cold", trans: "frío", end: " place on the planet.", correct: "the coldest", distractors: [{ text: "the most cold", hint: "❌ 'Cold' es corto (1 sílaba). Agregá '-est' al final." }, { text: "colder than", hint: "❌ No lo compara con otro, lo destaca en todo el planeta." }] },
+            { start: "Friday is ", base: "busy", trans: "ocupado/movido", end: " day of the week for our restaurant.", correct: "the busiest", distractors: [{ text: "the most busy", hint: "❌ 'Busy' termina en -Y. Cambiá la Y por '-iest'." }, { text: "busier than", hint: "❌ Compara un día contra toda la semana. Usá superlativo." }] },
             { start: "This is ", base: "easy", trans: "fácil", end: " level of the video game.", correct: "the easiest", distractors: [{ text: "the most easy", hint: "❌ Termina en -Y. Reemplázala por '-iest'." }, { text: "easier than", hint: "❌ Destaca este nivel sobre TODOS los demás del juego." }] },
             { start: "She wore ", base: "elegant", trans: "elegante", end: " dress at the party.", correct: "the most elegant", distractors: [{ text: "the elegantest", hint: "❌ 'Elegant' es una palabra larga, no se le agrega '-est'." }, { text: "more elegant than", hint: "❌ Su vestido destacó por encima de todos en la fiesta. Es superlativo." }] },
             { start: "It was ", base: "happy", trans: "feliz", end: " day of my life.", correct: "the happiest", distractors: [{ text: "the most happy", hint: "❌ 'Happy' termina en -Y. Forma el superlativo con '-iest'." }, { text: "happier than", hint: "❌ No está comparando dos días, es el #1 de toda su vida." }] },
@@ -556,10 +448,10 @@
             { start: "Today is ", base: "warm", trans: "cálido", end: " it was yesterday.", correct: "not as warm as", distractors: [{ text: "not as warmer as", hint: "❌ ¡Error fatal! Entre 'as... as' no va la terminación '-er'." }, { text: "not warmer as", hint: "❌ Falta el primer 'as'. La estructura es completa: not as + adj + as." }] },
             { start: "This recipe is ", base: "complicated", trans: "complicado", end: " it looks.", correct: "not as complicated as", distractors: [{ text: "not as more complicated as", hint: "❌ 'as... as' no admite 'more' en el medio." }, { text: "less complicated than", hint: "❌ 'Less... than' existe, pero la estructura clásica y más natural para desigualdad es 'not as... as'." }] },
             { start: "Silver is ", base: "valuable", trans: "valioso", end: " gold.", correct: "not as valuable as", distractors: [{ text: "not as more valuable as", hint: "❌ Nunca uses 'more' cuando armas una comparación de igualdad o desigualdad con 'as'." }, { text: "valuable than", hint: "❌ Si usás 'than' necesitas 'more' o 'less'. Si usás 'not as', falta el otro 'as'." }] },
-            { start: "Her new apartment is ", base: "spacious", trans: "espacioso", end: " her old one.", correct: "not as spacious as", distractors: [{ text: "not as more spacious as", hint: "❌ Recuerda que la palabra vuelve a su estado original sin 'more'." }, { text: "not spaciouser as", hint: "❌ La palabra 'spacious' es larga, jamás llevaría '-er'." }] },
+            { start: "Her new apartment is ", base: "spacious", trans: "espacioso", end: " her old one.", correct: "not as spacious as", distractors: [{ text: "not as more spacious as", hint: "❌ Recordá que la palabra vuelve a su estado original sin 'more'." }, { text: "not spaciouser as", hint: "❌ La palabra 'spacious' es larga, jamás llevaría '-er'." }] },
             { start: "The trip was ", base: "long", trans: "largo", end: " we expected.", correct: "not as long as", distractors: [{ text: "not as longer as", hint: "❌ No le agregues '-er' al adjetivo cuando usas 'not as... as'." }, { text: "not longer as", hint: "❌ Te falta la primera parte de la estructura. Es 'not AS... as'." }] },
             { start: "The second book is ", base: "popular", trans: "popular", end: " the first.", correct: "not as popular as", distractors: [{ text: "not as more popular as", hint: "❌ El adjetivo 'popular' debe ir solo, sin 'more'." }, { text: "not popularier as", hint: "❌ ¡Invento gramatical! No se puede combinar sufijos raros con 'as'." }] },
-            { start: "This coffee is ", base: "strong", trans: "fuerte", end: " the espresso.", correct: "not as strong as", distractors: [{ text: "not as stronger as", hint: "❌ Vuelve a la base: quítale el '-er'." }, { text: "more strong than", hint: "❌ 'Strong' es corto, su comparativo sería 'stronger', pero aquí buscamos decir que NO lo alcanza (desigualdad)." }] },
+            { start: "This coffee is ", base: "strong", trans: "fuerte", end: " the espresso.", correct: "not as strong as", distractors: [{ text: "not as stronger as", hint: "❌ Volvé a la base: sacale el '-er'." }, { text: "more strong than", hint: "❌ 'Strong' es corto, su comparativo sería 'stronger', pero aquí buscamos decir que NO lo alcanza (desigualdad)." }] },
             { start: "She is ", base: "outgoing", trans: "extrovertido", end: " her best friend.", correct: "not as outgoing as", distractors: [{ text: "not as more outgoing as", hint: "❌ Elimina el 'more'. El adjetivo va limpio." }, { text: "not outgoing than", hint: "❌ No mezcles estructuras. O es 'not as... as' o es comparativo + than." }] },
             { start: "The exam was ", base: "stressful", trans: "estresante", end: " I had imagined.", correct: "not as stressful as", distractors: [{ text: "not as more stressful as", hint: "❌ Dentro de la burbuja 'as... as', el adjetivo no lleva adornos." }, { text: "not stressful as", hint: "❌ Olvidaste el primer 'as'. La pareja debe estar completa." }] }
         ];
@@ -568,6 +460,7 @@
         let currentQuestion = 0;
         let score = 0;
         let attemptsThisQuestion = 0; 
+        let errores = [];
 
         function shuffle(array) {
             return array.sort(() => Math.random() - 0.5);
@@ -577,6 +470,8 @@
             playingData = shuffle([...gameDataMaster]).slice(0, 10);
             currentQuestion = 0;
             score = 0;
+            errores = [];
+            document.getElementById('repaso').innerHTML = '';
             
             document.getElementById('game-start').classList.remove('active');
             document.getElementById('game-end').classList.remove('active');
@@ -631,6 +526,7 @@
                 if (attemptsThisQuestion === 0) {
                     score++;
                 }
+                if (window.GB) GB.sound.ok();
 
                 hintBox.classList.remove('visible');
                 
@@ -647,6 +543,11 @@
 
             } else {
                 attemptsThisQuestion++;
+                if (window.GB) GB.sound.error();
+                const qActual = playingData[currentQuestion];
+                if (!errores.some(e => e.clave === currentQuestion + '|' + optionSelected.text)) {
+                    errores.push({ clave: currentQuestion + '|' + optionSelected.text, prompt: qActual.start + '_____' + qActual.end, elegido: optionSelected.text, correcta: qActual.correct, explicacion: optionSelected.hint.replace(/^❌\s*/, '') });
+                }
                 btnClicked.classList.add('wrong');
                 btnClicked.disabled = true; 
                 
@@ -661,6 +562,11 @@
             document.getElementById('game-play').classList.remove('active');
             document.getElementById('game-end').classList.add('active');
             document.getElementById('final-score').innerText = score;
+            if (window.GB) {
+                GB.progress.record('comparatives-module', { score: score, total: playingData.length, errors: errores.length });
+                GB.review.render(document.getElementById('repaso'), errores);
+                GB.fin(document.getElementById('game-end'));
+            }
         }
     </script>
 </body>

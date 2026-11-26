@@ -18,6 +18,11 @@ window.CURSO = {
           "emoji": "🆘"
         },
         {
+          "id": "basicvocab",
+          "label": "Vocabulario básico",
+          "emoji": "🔢"
+        },
+        {
           "id": "pronouns",
           "label": "Pronouns & Possessives",
           "emoji": "👤"

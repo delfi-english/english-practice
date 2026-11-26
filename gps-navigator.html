@@ -32,7 +32,8 @@
         .cruce { background-image: radial-gradient(#ced4da 15%, transparent 16%), radial-gradient(#ced4da 15%, transparent 16%); background-size: 20px 20px; background-position: 0 0, 10px 10px; }
 
         /* Nuestro vehículo interactivo */
-        #taxi { font-size: 28px; position: absolute; transition: transform 0.3s ease; z-index: 10; line-height: 1; }
+        #taxi { font-size: 28px; position: absolute; z-index: 10; line-height: 1; }
+  #taxi .rumbo { position: absolute; top: -7px; right: -9px; width: 17px; height: 17px; border-radius: 50%; background: #7b2cbf; color: #fff; font-size: 12px; font-weight: bold; display: grid; place-items: center; transition: transform 0.3s ease; box-shadow: 0 1px 3px rgba(0,0,0,.4); }
         
         .panel-control { padding: 20px; background-color: #f8f9fa; }
         .botones-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
@@ -116,8 +117,8 @@
     }
     function colocarTaxi() {
         let taxi = $("taxi");
-        if (!taxi) { taxi = document.createElement("div"); taxi.id = "taxi"; taxi.innerText = "🚕"; }
-        taxi.style.transform = "rotate(" + rot + "deg)";
+        if (!taxi) { taxi = document.createElement("div"); taxi.id = "taxi"; taxi.innerHTML = '<span class="auto">🚖</span><span class="rumbo">↑</span>'; }
+        taxi.querySelector(".rumbo").style.transform = "rotate(" + rot + "deg)"; // el auto queda siempre derecho; la flecha indica hacia dónde mira
         $("celda-" + pos.f + "-" + pos.c).appendChild(taxi);
     }
 
@@ -204,6 +205,7 @@
 
     const NOMBRE_BTN = { L: "Turn left", F: "Go straight ahead", R: "Turn right" };
     function registrar(p, accion, explicacion) {
+        if (window.GB) GB.sound.error();
         erroresMision++;
         const clave = mision + "|" + iPaso + "|" + accion + "|" + hechos;
         if (!errores.some(e => e.clave === clave)) {
@@ -220,6 +222,7 @@
                 if (hechos === p.n) { iPaso++; hechos = 0; }
             } else { rot += accion === "L" ? -90 : 90; iPaso++; }
             colocarTaxi();
+            if (window.GB && pasos[iPaso].t !== "FIN") GB.sound.ok();
             if (pasos[iPaso].t === "FIN") return llegada();
             dibujarPasos();
             return;
@@ -236,6 +239,7 @@
         enMarcha = false; iPaso = pasos.length - 1; dibujarPasos();
         if (erroresMision > 0) misionesConError++;
         const ult = mision === MISIONES - 1;
+        if (window.GB && !ult) GB.sound.ok();
         $("resultado").innerHTML = '<div style="color:#28a745;margin-bottom:10px;">¡Llegaste! 🎉 ' + pasos[pasos.length - 1].en + '</div>' +
             '<button class="btn-accion" id="btn-sig">' + (ult ? "Ver resultado ➜" : "Siguiente destino ➜") + '</button>';
         $("btn-sig").onclick = () => { if (ult) terminar(); else { mision++; nuevaMision(); } };
@@ -246,6 +250,7 @@
         $("texto-mision").innerText = "¡Llegaste a todos tus destinos!";
         $("resultado").innerHTML = '<button class="btn-accion" onclick="location.reload()">🔄 Jugar de nuevo</button>';
         if (window.GB) GB.review.render($("repaso"), errores);
+        if (window.GB) GB.fin($("progreso"));
     }
 
     dibujarMapa();

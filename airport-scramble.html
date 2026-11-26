@@ -179,6 +179,7 @@
         if (armado.join(" ") === correcto.join(" ")) {
             resuelta = true;
             res.innerText = "¡Perfecto! Recuperaste tu equipaje. 🧳"; res.style.color = "green";
+            if (window.GB) GB.sound.ok();
             $("pista").hidden = true;
             $("explicacion").innerText = "💡 " + p.nota; $("explicacion").hidden = false;
             $("btn-comprobar").disabled = true; $("btn-reiniciar").disabled = true;
@@ -187,7 +188,7 @@
             $("btn-sig").onclick = () => { if (esUltima) terminar(); else { actual++; mostrar(); } };
         } else {
             res.innerText = "Orden incorrecto. Tocá las palabras de arriba para devolverlas e intentá de nuevo.";
-            res.style.color = "red";
+            res.style.color = "red"; if (window.GB) GB.sound.error();
             conError.add(actual);
             intentos[actual] = (intentos[actual] || 0) + 1;
             mostrarPista(p, correcto, intentos[actual]);
@@ -207,6 +208,7 @@
         $("resultado").innerText = ""; $("explicacion").hidden = true;
         $("acciones").innerHTML = '<button class="btn-comprobar" onclick="iniciar()">🔄 Jugar de nuevo (otras frases)</button>';
         if (window.GB) GB.review.render($("repaso"), errores);
+        if (window.GB) GB.fin($("progreso"));
     }
 
     iniciar();

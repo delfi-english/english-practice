@@ -497,6 +497,7 @@
         } else {
             const misionesConError = new Set(erroresDeLaPartida.map(e => e.clave.split("|")[0])).size;
             if (window.GB) GB.progress.record("chronos-arcade", { score: maxRondas - misionesConError, total: maxRondas, errors: erroresDeLaPartida.length });
+            if (window.GB) GB.fin(document.getElementById("contenedor-reinicio"));
             document.getElementById("contador-misiones").innerText = maxRondas;
             document.getElementById("pantalla").innerHTML = "<span style='color:#66fcf1'>¡LÍNEA TEMPORAL RESTAURADA AL 100%! 🚀</span>";
             document.getElementById("panel-epocas").classList.add("hidden");

@@ -46,6 +46,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
         .burbuja.sistema { background-color: #fff3cd; color: #664d03; align-self: center; text-align: center; font-size: 13px; max-width: 92%; }
+        .objetivo { background: #fff8e1; border: 1px solid #ffe082; color: #5d4037; border-radius: 8px; padding: 8px 10px; font-size: 13px; line-height: 1.35; }
         .btn-opcion:disabled { cursor: default; }
         .btn-opcion.mal { background-color: #f8d7da; border-color: #dc3545; color: #721c24; }
         .btn-opcion.accion { text-align: center; background-color: #7b2cbf; color: #fff; border-color: #7b2cbf; font-weight: 600; }
@@ -62,7 +63,7 @@
     // Cada escenario tiene 4 turnos. Cada turno: [lo que dice el vendedor, opción correcta, opción incorrecta, opción incorrecta]
     // y cada opción es [frase en inglés, explicación]. El orden de las opciones se mezcla en cada partida.
     const ESCENARIOS = [
-        { titulo: "Pedir para llevar", situacion: "Entrás a una pastelería y querés comprar un muffin para llevar.", turnos: [
+        { titulo: "Pedir para llevar", situacion: "Entrás a una pastelería y querés comprar un muffin para llevar.", objetivos: ["Pedí un muffin de arándanos, con educación.", "Decí que es para llevar.", "Elegí pagar con tarjeta y preguntá dónde apoyarla.", "Agradecé y devolvé el saludo."], turnos: [
             ["Welcome to Sunny Side Cupcakes. What can I get you?",
                 ["Can I have a blueberry muffin, please?", "«Can I have... please?» es la forma natural y educada de pedir algo."],
                 ["I'm traveling for business.", "Cuenta por qué viajás, pero no responde qué querés pedir."],
@@ -79,7 +80,7 @@
                 ["Thank you, you too!", "«You too» significa «igualmente» y responde al saludo."],
                 ["Can I have the menu?", "Ya recibiste tu pedido; no hace falta el menú."],
                 ["I'm sorry, I don't understand.", "Entendiste perfecto, y esta frase se usa cuando no entendés."]] ] },
-        { titulo: "Elegir y pedir con detalles", situacion: "Querés un cupcake y un café, y te preguntan cómo lo querés.", turnos: [
+        { titulo: "Elegir y pedir con detalles", situacion: "Querés un cupcake y un café, y te preguntan cómo lo querés.", objetivos: ["Decí que necesitás un minuto más para decidir.", "Pedí un cupcake de chocolate y un café, con cortesía.", "Pedí el café con leche y sin azúcar.", "Decí que no querés nada más."], turnos: [
             ["Hi there! Do you need a minute to decide?",
                 ["Yes, just a minute, please.", "«Just a minute» significa «un minuto, por favor» y responde que todavía no decidiste."],
                 ["Yes, I'm 25 years old.", "Dice tu edad; no responde a la pregunta."],
@@ -96,7 +97,7 @@
                 ["No, that's all, thanks.", "«That's all» significa «eso es todo» y cierra el pedido."],
                 ["No, I'm all.", "«I'm all» no existe con ese sentido; se dice «That's all»."],
                 ["Yes, the bill is correct.", "Todavía no pagaste, así que no corresponde hablar de la cuenta."]] ] },
-        { titulo: "Alergias y pedidos especiales", situacion: "Tenés alergia a las nueces y necesitás algo sin ellas.", turnos: [
+        { titulo: "Alergias y pedidos especiales", situacion: "Tenés alergia a las nueces y necesitás algo sin ellas.", objetivos: ["Avisá que sos alérgico/a a las nueces y preguntá si hay algo sin ellas.", "Aceptá el cupcake de limón.", "Pedí solamente un vaso de agua.", "Elegí pagar con tarjeta."], turnos: [
             ["Hi! What would you like today?",
                 ["I'm allergic to nuts. Is there anything without them?", "«I'm allergic to + algo» explica la alergia, y después preguntás por una opción segura."],
                 ["I'm allergy to nuts. Is there anything without them?", "«Allergy» es el sustantivo; después de «I'm» va el adjetivo «allergic»."],
@@ -113,7 +114,7 @@
                 ["Card, please.", "Elige una de las opciones y pide con educación."],
                 ["I pay the card.", "Se dice «I'll pay by card» o «with card»; «pay the card» no se usa."],
                 ["How are you?", "Es un saludo y no responde la pregunta sobre cómo pagar."]] ] },
-        { titulo: "Trabajar un rato en el café", situacion: "Te sentás a trabajar con la computadora y necesitás Wi-Fi y el baño.", turnos: [
+        { titulo: "Trabajar un rato en el café", situacion: "Te sentás a trabajar con la computadora y necesitás Wi-Fi y el baño.", objetivos: ["Agradecé y preguntá si hay Wi-Fi.", "Agradecé y preguntá dónde está el baño.", "Agradecé mucho.", "Pedí un cappuccino, con cortesía."], turnos: [
             ["Hi, welcome! Take a seat anywhere you like.",
                 ["Thank you! Is there Wi-Fi here?", "«Is there...?» pregunta si algo existe; Wi-Fi es singular."],
                 ["Thank you! Are there Wi-Fi here?", "«Wi-Fi» no se cuenta en plural: se dice «Is there Wi-Fi?»."],
@@ -130,7 +131,7 @@
                 ["Yes, could I have a cappuccino, please?", "«Could I have...?» es un pedido cortés."],
                 ["Yes, I can get you a cappuccino.", "Invierte los roles: el que sirve es el vendedor, no vos."],
                 ["Yes, I have a cappuccino.", "Dice que tenés un cappuccino; no que lo estás pidiendo."]] ] },
-        { titulo: "Pedir la cuenta", situacion: "Terminaste de comer y querés pagar y dejar el vuelto de propina.", turnos: [
+        { titulo: "Pedir la cuenta", situacion: "Terminaste de comer y querés pagar y dejar el vuelto de propina.", objetivos: ["Decí que todo estuvo delicioso y agradecé.", "Decí que no querés nada más y pedí la cuenta.", "Entregá el dinero y decí que se quede con el vuelto.", "Devolvé el saludo y despedite."], turnos: [
             ["How was everything?",
                 ["Everything was delicious, thank you!", "«Was delicious» usa el pasado de to be y un adjetivo para valorar la comida."],
                 ["Everything is deliciously, thank you!", "Después de «be» va un adjetivo (delicious), no un adverbio, y la comida ya terminó (was)."],
@@ -147,7 +148,7 @@
                 ["You too! See you next time.", "«You too» es igualmente, y «next time» es la próxima vez, sin «the»."],
                 ["You too! See you the next time.", "Se dice «next time», sin «the»."],
                 ["Me too! I have a great day.", "«You too» es la respuesta al deseo; «Me too» no encaja acá."]] ] },
-        { titulo: "Pedir una recomendación", situacion: "Es tu primera vez en el lugar y no sabés qué elegir.", turnos: [
+        { titulo: "Pedir una recomendación", situacion: "Es tu primera vez en el lugar y no sabés qué elegir.", objetivos: ["Decí que es tu primera vez y pedí una recomendación.", "Aceptá la recomendación y preguntá el precio.", "Pedí dos cupcakes.", "Decí que no necesitás bolsa."], turnos: [
             ["Hi! First time here?",
                 ["Yes! What do you recommend?", "Después de «do» el verbo va en forma base: «What do you recommend?»."],
                 ["Yes! What do you recommended?", "Después de «do» el verbo va en base (recommend), no en pasado."],
@@ -198,6 +199,11 @@
         if (paso >= escenario.turnos.length) return terminar();
         const t = escenario.turnos[paso];
         agregarMensaje(t[0], "npc");
+        if (escenario.objetivos) {   // lo que querés decir, en español: elegís por significado, sin necesidad de saber la gramática
+            const o = document.createElement("div"); o.className = "objetivo";
+            o.textContent = "🎯 Querés: " + escenario.objetivos[paso] + (paso === 0 ? "  (Son frases para usar tal cual; la gramática viene más adelante.)" : "");
+            opcionesContainer.appendChild(o);
+        }
         mezclar([{ t: t[1][0], x: t[1][1], ok: true }, { t: t[2][0], x: t[2][1], ok: false }, { t: t[3][0], x: t[3][1], ok: false }]).forEach(op => {
             const btn = document.createElement("button");
             btn.className = "btn-opcion"; btn.innerText = op.t;
@@ -210,11 +216,12 @@
         if (op.ok) {
             opcionesContainer.innerHTML = "";
             agregarMensaje(op.t, "user");
+            if (window.GB && paso + 1 < escenario.turnos.length) GB.sound.ok();
             paso++;
             setTimeout(cargarPaso, 900);
             return;
         }
-        btn.classList.add("mal"); btn.disabled = true;
+        btn.classList.add("mal"); btn.disabled = true; if (window.GB) GB.sound.error();
         const aviso = agregarMensaje("Esa frase no encaja acá. ¡Intentá de nuevo!", "error");
         setTimeout(() => aviso.remove(), 1800);
         pasosConError.add(paso);
@@ -226,6 +233,7 @@
     function terminar() {
         if (window.GB) GB.progress.record("cafe-dialogue", { score: escenario.turnos.length - pasosConError.size, total: escenario.turnos.length, errors: errores.length });
         agregarMensaje("¡Misión completada! Tenés tu pedido listo. ☕", "sistema");
+        if (window.GB) GB.fin(null);
         const cont = document.createElement("div");
         cont.id = "resumen-final";
         chatBox.appendChild(cont);

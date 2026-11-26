@@ -35,6 +35,9 @@
         .btn-sec:hover { background-color: #565e64; }
         #progreso { text-align: center; color: #666; font-size: 14px; margin: 0 0 8px; }
         @media (max-width: 480px) { .game-container { padding: 18px 14px; } .texto-ejercicio { font-size: 17px; line-height: 2.2; } input[type="text"] { width: 108px; } }
+        .hueco { white-space: nowrap; display: inline-flex; align-items: center; gap: 2px; }
+        .borrar { width: auto !important; min-width: 0; margin: 0 !important; padding: 2px 4px !important; background: transparent !important; border: 0 !important; box-shadow: none !important; font-size: 16px !important; line-height: 1; cursor: pointer; visibility: hidden; }
+        input:not(:placeholder-shown) + .borrar { visibility: visible; }
     </style>
 </head>
 <body>
@@ -100,12 +103,17 @@
         huecosConError = new Set(); errores = []; resuelto = false;
         $("titulo").innerText = actual.titulo;
         $("banco-palabras").innerText = mezclar(actual.huecos.map(h => h.base)).join("  |  ");
-        $("texto").innerHTML = esc(actual.texto).replace(/\[(\d+)\]/g, (m, n) => '<input type="text" id="blank' + n + '" autocomplete="off" autocapitalize="none" spellcheck="false">');
+        $("texto").innerHTML = esc(actual.texto).replace(/\[(\d+)\]/g, (m, n) => '<span class="hueco"><input type="text" id="blank' + n + '" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder=" "><button type="button" class="borrar" onclick="borrarHueco(' + n + ')" aria-label="Borrar la palabra del hueco ' + (Number(n) + 1) + '">✏️</button></span>');
         $("resultado").innerText = ""; $("acciones").innerHTML = ""; $("repaso").innerHTML = "";
         $("btn-comprobar").hidden = false;
         $("progreso").innerText = "Completá los " + actual.huecos.length + " espacios";
     }
 
+    // Lápiz: borra lo escrito en un hueco y deja el cursor listo para volver a escribir
+    function borrarHueco(n) {
+        const i = $("blank" + n);
+        i.value = ""; i.classList.remove("correcto", "incorrecto"); i.focus();
+    }
     function comprobarRespuestas() {
         if (resuelto) return;
         let aciertos = 0;
@@ -129,12 +137,13 @@
         if (aciertos === actual.huecos.length) {
             resuelto = true;
             res.innerText = "¡Excelente! Aplicaste bien las reglas. 🏆"; res.style.color = "green";
+            if (window.GB) GB.fin(res);
             $("btn-comprobar").hidden = true;
             if (window.GB) GB.progress.record("fill-blanks", { score: actual.huecos.length - huecosConError.size, total: actual.huecos.length, errors: errores.length });
             $("acciones").innerHTML = '<button class="btn-comprobar btn-sec" onclick="nuevoTexto()">🔄 Jugar con otro texto</button>';
             if (window.GB) GB.review.render($("repaso"), errores);
         } else {
-            res.innerText = "Tuviste " + aciertos + " de " + actual.huecos.length + ". ¡Revisá los casilleros en rojo y volvé a intentar!"; res.style.color = "red";
+            res.innerText = "Tuviste " + aciertos + " de " + actual.huecos.length + ". ¡Revisá los casilleros en rojo y volvé a intentar!"; res.style.color = "red"; if (window.GB) GB.sound.error();
         }
     }
 

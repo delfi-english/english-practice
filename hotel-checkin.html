@@ -141,7 +141,7 @@
         if (!op.ok) {
             boton.classList.add("mal"); boton.disabled = true;
             $("resultado").innerText = "Mmm... esa no es la frase ideal. ¡Intentá de nuevo!";
-            $("resultado").style.color = "#c0392b";
+            $("resultado").style.color = "#c0392b"; if (window.GB) GB.sound.error();
             if (!errores.some(e => e.escenario === p.e && e.elegido === op.t)) {
                 errores.push({ escenario: p.e, elegido: op.t, correcta: p.ops.find(o => o.ok).t, explicacion: op.x, porque: p.ops.find(o => o.ok).x });
             }
@@ -152,6 +152,7 @@
         document.querySelectorAll("#opciones button").forEach(b => b.disabled = true);
         $("imagen-personaje").textContent = "🎉 " + p.s;
         $("resultado").innerText = "¡Excelente! 🎉"; $("resultado").style.color = "#2e9e5b";
+        if (window.GB) GB.sound.ok();
         $("explicacion").innerText = "💡 " + op.x; $("explicacion").hidden = false;
         const sig = document.createElement("button");
         const esUltima = actual === preguntas.length - 1;
@@ -163,6 +164,7 @@
     function terminar() {
         const conError = new Set(errores.map(e => e.escenario)).size;
         if (window.GB) GB.progress.record("hotel-checkin", { score: preguntas.length - conError, total: preguntas.length, errors: errores.length });
+        if (window.GB) GB.fin($("progreso"));
         $("progreso").innerText = "¡Módulo completado!";
         $("imagen-personaje").textContent = "🏆🎉";
         $("escenario").innerText = "¡Completaste el módulo del Hotel!";
