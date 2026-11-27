@@ -1,6 +1,6 @@
 /* Get By · Inicio: ruta de módulos y vista de cada módulo (assets/js/curso.js) */
 (function () {
-  var cont = document.getElementById("ruta"), cab = document.getElementById("cabecera-inicio");
+  var cont = document.getElementById("ruta"), cab = document.getElementById("cabecera-inicio"), menuTeoria = document.getElementById("nav-teoria-inicio");
   if (!cont || !window.CURSO) return;
   var C = CURSO;
   var esc = function (t) { return String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;"); };
@@ -26,6 +26,7 @@
     });
     cont.innerHTML = h + '</ol>';
     if (cab) cab.hidden = false;
+    if (menuTeoria) menuTeoria.style.display = "";
   }
 
   function vistaModulo(i) {
@@ -59,6 +60,7 @@
       (sig ? '<a href="#modulo-' + sig.id + '">' + esc(sig.titulo) + ' →</a>' : '<span></span>') + '</nav>';
     cont.innerHTML = h;
     if (cab) cab.hidden = true;
+    if (menuTeoria) menuTeoria.style.display = "none"; // dentro de un módulo, la teoría se ve desde el propio módulo
   }
 
   function mostrar() {

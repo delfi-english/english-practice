@@ -56,6 +56,11 @@ window.CURSO = {
           "emoji": "🗺️"
         },
         {
+          "id": "prepositions",
+          "label": "Prepositions of Place",
+          "emoji": "📌"
+        },
+        {
           "id": "thereis",
           "label": "There is / There are",
           "emoji": "📍"

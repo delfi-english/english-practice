@@ -180,7 +180,7 @@
                 "<div class='r-mal'>✗ Elegiste: " + esc(e.elegido) + "</div>" +
                 "<div class='r-expl'>💡 " + esc(e.explicacion) + "</div>" +
                 "<div class='r-bien'>✓ Correcta: " + esc(e.correcta) + "</div>" +
-                "<div class='r-expl'>" + esc(e.porque) + "</div></div>").join("") + "</div>";
+                "<div class='r-expl'>" + esc(e.porque) + "</div></div>").join("") + "</div>" + (window.GB ? GB.teoriaHtml() : "");
     }
 
     iniciar();

@@ -46,6 +46,14 @@
     return String(t == null ? "" : t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
   GB.esc = esc;
+  // Enlaces a la teoría del módulo al que pertenece el juego actual (para repasar después de equivocarse)
+  GB.teoriaHtml = function () {
+    var juego = location.pathname.split("/").pop().replace(/\.html.*$/, "");
+    var mod = window.CURSO && CURSO.modulos.filter(function (m) { return m.juegos.indexOf(juego) >= 0; })[0];
+    if (!mod || !mod.teoria.length) return "";
+    return '<div class="gb-teoria-links"><strong>📘 Repasá la teoría de este tema</strong>' +
+      mod.teoria.map(function (t) { return '<a href="teoria-nivel1.html#' + t.id + '">' + t.emoji + ' ' + esc(t.label) + '</a>'; }).join("") + '</div>';
+  };
   GB.review = {
     render: function (contenedor, errores) {
       if (!contenedor) return;
@@ -61,7 +69,7 @@
             '<div class="gb-review-bien">✓ Correcta: ' + esc(e.correcta) + '</div>' +
             (e.explicacion ? '<div class="gb-review-expl">💡 ' + esc(e.explicacion) + '</div>' : '') +
             '</div>';
-        }).join('') + '</div>';
+        }).join('') + GB.teoriaHtml() + '</div>';
     }
   };
 

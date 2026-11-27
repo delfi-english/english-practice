@@ -8,7 +8,8 @@
     <link rel="manifest" href="manifest.webmanifest">
     <meta name="theme-color" content="#4f46e5">
     <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-    <script src="assets/js/gb.js" data-bar="off" data-sound="float"></script>
+    <script src="assets/js/gb.js" data-title="Spot the Object"></script>
+    <script src="assets/js/curso.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
 
@@ -227,32 +228,13 @@
             .question-box { font-size: 1.1rem; padding: 15px; }
             .map-container img { max-height: 250px; }
         }
+        /* Sin menú lateral: el contenido ocupa todo el ancho */
+        .main-content { margin-left: 0 !important; }
     </style>
 </head>
 <body>
 
     <!-- SIDEBAR -->
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <a href="index.html" class="sidebar-brand">
-                <h2>Get By</h2>
-            </a>
-            <button class="pin-btn" id="pin-btn" onclick="togglePin()" title="Fijar menú">📌</button>
-        </div>
-        
-        <div class="sidebar-nav">
-            <div class="nav-category">Controles</div>
-            <button class="nav-item active" onclick="location.reload()">
-                <span class="nav-icon">🔄</span> <span class="nav-text">Reiniciar Misión</span>
-            </button>
-            <a href="teoria-nivel1.html#thereis" class="nav-item">
-                <span class="nav-icon">📖</span> <span class="nav-text">Repasar Teoría</span>
-            </a>
-            
-            <a href="index.html#modulo-ciudad" class="nav-item btn-back"><span class="nav-icon">◀</span> <span class="nav-text">Volver al módulo</span></a>
-        </div>
-    </div>
-
     <!-- MAIN CONTENT -->
     <div class="main-content">
         
@@ -308,6 +290,8 @@
                     </div>
                 </div>
 
+                <div id="teoria-final"></div>
+
                 <div style="margin-top: 30px;">
                     <button class="btn-primary" onclick="startGame()">Jugar de nuevo</button>
                     <a href="index.html#modulo-ciudad" class="btn-secondary">Volver al módulo</a>
@@ -318,14 +302,6 @@
     </div>
 
     <script>
-        const sidebar = document.getElementById('sidebar');
-        let isPinned = false;
-        function togglePin() {
-            isPinned = !isPinned;
-            if (isPinned) { sidebar.classList.add('pinned'); } 
-            else { sidebar.classList.remove('pinned'); }
-        }
-
         // --- BANCO DE PREGUNTAS (Basadas 100% en el mapa imagenes/mapa-ciudad-optimizado.jpg) ---
         const gameDataMaster = [
             // PARTE 1: THERE IS / THERE ARE (10 oraciones)
@@ -446,7 +422,7 @@
             document.getElementById('game-end').classList.add('active');
             
             if (window.GB) GB.progress.record('spot-object', { score: score, total: playingData.length, errors: mistakes.length });
-            if (window.GB) GB.fin(document.getElementById('game-end'));
+            if (window.GB) { document.getElementById('teoria-final').innerHTML = mistakes.length ? GB.teoriaHtml() : ''; GB.fin(document.getElementById('game-end')); }
             const scoreEl = document.getElementById('final-score');
             scoreEl.innerText = score;
             

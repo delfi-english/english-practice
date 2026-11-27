@@ -584,7 +584,7 @@
             `<div class='repaso-card'><div class='repaso-frase'>${e.frase}</div>` +
             `<div class='repaso-linea'><span class='r-mal'>✗ Elegiste: ${e.elegido}</span><span class='r-bien'>✓ Correcta: ${e.correcta}</span></div>` +
             `<div class='repaso-expl'>💡 ${e.explicacion}</div></div>`).join("");
-        return `<div class='repaso'><h3>📋 Repaso de errores (${erroresDeLaPartida.length})</h3>${tarjetas}</div>`;
+        return `<div class='repaso'><h3>📋 Repaso de errores (${erroresDeLaPartida.length})</h3>${tarjetas}</div>` + (window.GB ? GB.teoriaHtml() : '');
     }
 
     function elegirEpoca(epocaSeleccionada) {
